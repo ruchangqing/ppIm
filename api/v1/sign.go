@@ -1,0 +1,125 @@
+package v1
+
+import (
+	"github.com/gin-gonic/gin"
+	"ppIm/api"
+	"ppIm/global"
+	"ppIm/model"
+	"ppIm/utils"
+	"time"
+)
+
+// 用户登录接口
+func Login(ctx *gin.Context) {
+	// 参数获取与验证
+	username := ctx.PostForm("username")
+	password := ctx.PostForm("password")
+	result, msg := validateParams(&username, &password)
+	if false == result {
+		api.R(ctx, 500, msg, nil)
+		return
+	}
+
+	// 检测用户是否存在
+	var user model.User
+	var count int
+	global.Mysql.Where("username = ?", username).Select("id,username,password,password_salt,nickname,avatar,status").First(&user).Count(&count)
+	if count < 1 {
+		api.R(ctx, 500, "用户不存在，请更换用户名后重试", nil)
+		return
+	}
+
+	// 验证密码是否合法
+	postPassword := utils.Md5(utils.Md5(password) + user.PasswordSalt)
+	if postPassword != user.Password {
+		api.R(ctx, 500, "密码错误", nil)
+		return
+	}
+
+	// 密码正确，更新登陆时间
+	loginAt := time.Now().Format("2006-01-02 15:04:05")
+	global.Mysql.Model(&user).Updates(map[string]interface{}{"login_at": loginAt, "last_ip": ctx.ClientIP()})
+
+	// 生成jwt token和用户信息给用户
+	tokenString := api.MakeJwtToken(user.Id)
+	api.R(ctx, 200, "登录成功", gin.H{
+		"t": tokenString,
+		"user": gin.H{
+			"username": username,
+			"nickname": user.Nickname,
+			"avatar":   user.Avatar,
+			"status":   user.Status,
+		},
+	})
+}
+
+//用户注册接口
+func Register(ctx *gin.Context) {
+	// 参数获取与验证
+	username := ctx.PostForm("username")
+	password := ctx.PostForm("password")
+	result, msg := validateParams(&username, &password)
+	if false == result {
+		api.R(ctx, 500, msg, nil)
+		return
+	}
+
+	// 检测用户名是否存在
+	var user model.User
+	var count int
+	global.Mysql.Where("username = ?", username).First(&user).Count(&count)
+	if count > 0 {
+		api.R(ctx, 500, "用户已存在，请更换用户名后重试", nil)
+		return
+	}
+
+	// 新增用户数据，注册逻辑
+	passwordSalt := utils.RandStr(6)
+	password = utils.Md5(utils.Md5(password) + passwordSalt)
+	user = model.User{
+		Username:     username,
+		Password:     password,
+		PasswordSalt: passwordSalt,
+		RegisterAt:   time.Now().Format("2006-01-02 15:04:05"),
+		LoginAt:      time.Now().Format("2006-01-02 15:04:05"),
+		LastIp:       ctx.ClientIP(),
+	}
+	if err := global.Mysql.Create(&user).Error; err != nil {
+		api.R(ctx, 500, "注册失败："+err.Error(), nil)
+		return
+	}
+
+	// 生成jwt token和用户信息给用户
+	tokenString := api.MakeJwtToken(user.Id)
+	api.R(ctx, 200, "登录成功", gin.H{
+		"t": tokenString,
+		"user": gin.H{
+			"username": username,
+			"nickname": user.Nickname,
+			"avatar":   user.Avatar,
+			"status":   user.Status,
+		},
+	})
+}
+
+// --------------------- func --------------------- //
+
+// 检测用户名、密码参数是否合法
+func validateParams(username, password *string) (bool, string) {
+	if len(*username) < 1 {
+		return false, "请输入用户名"
+	}
+	if len(*username) < 6 || len(*username) > 20 {
+		return false, "用户名长度限制6-20位"
+	}
+	if len(*password) < 1 {
+		return false, "请输入密码"
+	}
+	if len(*password) < 6 || len(*password) > 20 {
+		return false, "密码长度限制6-20位"
+	}
+	if utils.IsChinese(*username) || utils.IsChinese(*password) {
+		return false, "用户名和密码不能含有中文"
+	}
+	return true, ""
+}
