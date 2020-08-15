@@ -20,7 +20,7 @@ func SetRouter(r *gin.Engine) {
 	// 用户注册
 	r.POST("/api/v1/register", v1.Register)
 
-	// JWT中间件
+	// 用户相关接口
 	user := r.Group("/api/v1/user")
 	user.Use(middleware.ValidateJwtToken)
 	{
@@ -32,6 +32,14 @@ func SetRouter(r *gin.Engine) {
 		user.POST("/update/realname", v1.RealNameVerify)
 		// 更新用户位置（经纬度）
 		user.POST("/update/location", v1.UpdateLocation)
+	}
+
+	// 位置相关接口
+	geo := r.Group("/api/v1/geo")
+	geo.Use(middleware.ValidateJwtToken)
+	{
+		// 用户列表（按距离排序）
+		geo.POST("/users", v1.GeoUsers)
 	}
 
 }

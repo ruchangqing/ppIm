@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
@@ -37,7 +38,7 @@ func Rt(ctx *gin.Context, code int, msg string, data gin.H) {
 	jwtToken := ctx.GetHeader("Login-Token")
 	cacheKey := fmt.Sprintf("user:token:%s", jwtToken)
 	id := uint(ctx.MustGet("id").(float64))
-	global.Redis.Del(global.RedisCtx, cacheKey)
+	global.Redis.Del(context.Background(), cacheKey)
 	data["t"] = MakeJwtToken(id)
 
 	responseType := viper.GetString("http.responseType")
@@ -65,7 +66,7 @@ func MakeJwtToken(id uint) string {
 
 	// 缓存用户最新token到redis，实现token只能使用一次
 	cacheKey := fmt.Sprintf("user:token:%s", tokenString)
-	global.Redis.Set(global.RedisCtx, cacheKey, id, 7*24*3600*time.Second)
+	global.Redis.Set(context.Background(), cacheKey, id, 7*24*3600*time.Second)
 
 	return tokenString
 }

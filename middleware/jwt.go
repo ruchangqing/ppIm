@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"context"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
@@ -22,7 +23,7 @@ func ValidateJwtToken(ctx *gin.Context) {
 
 	// 首先redis查询token是否有效
 	cacheKey := fmt.Sprintf("user:token:%s", jwtToken)
-	_, err := global.Redis.Get(global.RedisCtx, cacheKey).Result()
+	_, err := global.Redis.Get(context.Background(), cacheKey).Result()
 	if err == redis.Nil {
 		api.R(ctx, 401, "鉴权失败:-2", nil)
 		ctx.Abort()

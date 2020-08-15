@@ -1,14 +1,14 @@
 package global
 
 import (
-	"context"
 	"github.com/go-redis/redis/v8"
 	"github.com/jinzhu/gorm"
+	"github.com/olivere/elastic/v7"
 )
 
 var (
 	Mysql               *gorm.DB
 	Redis               *redis.Client
-	RedisCtx            context.Context
+	Elasticsearch		*elastic.Client
 	JwtHmacSampleSecret = []byte("pancoiscool!") // jwt加密密钥
 )

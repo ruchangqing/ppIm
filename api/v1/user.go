@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"context"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"path"
@@ -8,6 +9,7 @@ import (
 	"ppIm/global"
 	"ppIm/model"
 	"ppIm/utils"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -113,4 +115,14 @@ func UpdateLocation(ctx *gin.Context) {
 	user := &model.User{Id: id}
 	result := global.Mysql.Model(&user).Updates(map[string]interface{}{"longitude": longitude, "latitude": latitude, "last_ip": ctx.ClientIP()}).RowsAffected
 	api.Rt(ctx, 200, "更新位置成功", gin.H{"result": result})
+
+	// 更新经纬度到es，用于后期查询
+	data := fmt.Sprintf(`{
+    "uid": "%d",
+    "location": "%s,%s"
+    }`, id, latitude, longitude)
+	_, err := global.Elasticsearch.Index().Index("user_location").Id(strconv.Itoa(int(id))).BodyJson(data).Do(context.Background())
+	if err != nil {
+		fmt.Println(err)
+	}
 }
