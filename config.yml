@@ -2,20 +2,23 @@ http:
   host: "0.0.0.0"
   port: "8081"
   responseType: "json"  # json or xml
+socketio:
+  host: "0.0.0.0"
+  port: "8082"
 db:
   dbType: "mysql"
   host: "127.0.0.1"
   port: "3306"
   user: "root"
-  pass: "panco0825"
+  pass: "0825"
   dbname: "ppf"
   charset: "utf8mb4"
 redis:
-  host: "192.168.129.134"
+  host: "127.0.0.1"
   port: "6379"
-  pass: "0825"
+  pass: ""
 elasticsearch:
-  host: "192.168.129.134"
+  host: "127.0.0.1"
   port: "9200"
   user: "elastic"
   pass: ""

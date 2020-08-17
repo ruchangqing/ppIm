@@ -9,6 +9,7 @@ require (
 	github.com/go-playground/validator/v10 v10.3.0 // indirect
 	github.com/go-redis/redis/v8 v8.0.0-beta.7
 	github.com/golang/protobuf v1.4.2 // indirect
+	github.com/googollee/go-socket.io v1.4.3
 	github.com/jinzhu/gorm v1.9.16
 	github.com/json-iterator/go v1.1.10 // indirect
 	github.com/mailru/easyjson v0.7.3 // indirect
@@ -26,6 +27,6 @@ require (
 	golang.org/x/sys v0.0.0-20200814200057-3d37ad5750ed // indirect
 	google.golang.org/grpc v1.31.0 // indirect
 	google.golang.org/protobuf v1.25.0 // indirect
-	gopkg.in/ini.v1 v1.58.0 // indirect
+	gopkg.in/ini.v1 v1.60.0 // indirect
 	gopkg.in/yaml.v2 v2.3.0 // indirect
 )
