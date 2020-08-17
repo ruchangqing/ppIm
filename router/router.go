@@ -5,9 +5,12 @@ import (
 	"ppIm/api"
 	v1 "ppIm/api/v1"
 	"ppIm/middleware"
+	"ppIm/ws"
 )
 
 func SetRouter(r *gin.Engine) {
+
+	r.GET("/ws", ws.WsHandler)
 
 	// 首页
 	r.GET("/", api.Welcome)
