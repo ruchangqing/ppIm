@@ -10,7 +10,8 @@ import (
 
 func SetRouter(r *gin.Engine) {
 
-	r.GET("/ws", ws.WsHandler)
+	// websocket服务
+	r.GET("/ws", ws.WebsocketEntry)
 
 	// 首页
 	r.GET("/", api.Welcome)
@@ -41,7 +42,7 @@ func SetRouter(r *gin.Engine) {
 	geo := r.Group("/api/v1/geo")
 	geo.Use(middleware.ValidateJwtToken)
 	{
-		// 用户列表（按距离排序）
+		// 附近的人
 		geo.POST("/users", v1.GeoUsers)
 	}
 

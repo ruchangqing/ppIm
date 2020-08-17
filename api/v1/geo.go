@@ -12,7 +12,7 @@ import (
 	"strconv"
 )
 
-// 附近的用户列表
+// 附近的人
 func GeoUsers(ctx *gin.Context) {
 	// 经纬度校验
 	longitude, err1 := strconv.ParseFloat(ctx.PostForm("longitude"), 64)

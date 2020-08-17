@@ -8,7 +8,8 @@ import (
 	"time"
 )
 
-var WsUpgrade = websocket.Upgrader{
+// 升级http为websocket服务
+var WebsocketUpgrade = websocket.Upgrader{
 	ReadBufferSize:   1024,
 	WriteBufferSize:  1024,
 	HandshakeTimeout: 5 * time.Second,
@@ -18,12 +19,13 @@ var WsUpgrade = websocket.Upgrader{
 	},
 }
 
-func WsHandler(ctx *gin.Context) {
+// websocket服务入口
+func WebsocketEntry(ctx *gin.Context) {
 	w := ctx.Writer
 	r := ctx.Request
 	var conn *websocket.Conn
 	var err error
-	conn, err = WsUpgrade.Upgrade(w, r, nil)
+	conn, err = WebsocketUpgrade.Upgrade(w, r, nil)
 	if err != nil {
 		fmt.Println("Failed to set websocket upgrade: %+v", err)
 		return
@@ -31,12 +33,13 @@ func WsHandler(ctx *gin.Context) {
 
 	// 必须死循环，gin通过协程调用该handler函数，一旦退出函数，ws会被主动销毁
 	for {
-		t, reply, err := conn.ReadMessage()
+		t, rec, err := conn.ReadMessage()
 		if err != nil {
 			break
 		}
 
-		// todo：业务操作
-		fmt.Println(t, reply)
+		// 回复消息
+		msg := string(rec)
+		conn.WriteMessage(t, []byte(msg))
 	}
 }
