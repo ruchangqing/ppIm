@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
@@ -21,39 +22,48 @@ func ValidateJwtToken(ctx *gin.Context) {
 		return
 	}
 
+	_, err := ParseToken(ctx, jwtToken)
+	if err != nil {
+		// 解析失败，响应结束
+		api.R(ctx, 403, fmt.Sprintf("%e", err), nil)
+		ctx.Abort()
+		return
+	}
+
 	// 首先redis查询token是否有效
 	cacheKey := fmt.Sprintf("user:token:%s", jwtToken)
-	_, err := global.Redis.Get(context.Background(), cacheKey).Result()
+	_, err = global.Redis.Get(context.Background(), cacheKey).Result()
 	if err == redis.Nil {
 		api.R(ctx, 401, "鉴权失败:-2", nil)
 		ctx.Abort()
 		return
 	}
 
-	// 开始解析token
-	token, err := jwt.Parse(jwtToken, func(token *jwt.Token) (interface{}, error) {
+}
+
+// 解析token
+func ParseToken(ctx *gin.Context, jwtToken string) (uint, error) {
+	token, _ := jwt.Parse(jwtToken, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 		}
 		return global.JwtHmacSampleSecret, nil
 	})
+	// 开始解析token
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		// 解析成功
 		ctx.Set("id", claims["id"])
 		ctx.Set("at", claims["at"])
 		at := int64(ctx.MustGet("at").(float64)) // token生成时间戳
-		nowAt := time.Now().Unix()               // 当前时间戳
-		expireAt := at + 7*24*3600               // 过期时间戳，一周后
+		id := uint(ctx.MustGet("id").(float64))
+		nowAt := time.Now().Unix() // 当前时间戳
+		expireAt := at + 7*24*3600 // 过期时间戳，一周后
 		if nowAt > expireAt {
-			api.R(ctx, 401, "登陆状态已过期", nil)
-			ctx.Abort()
-			return
+			return 0, errors.New("登录状态已过期，请重新登录")
+		} else {
+			return id, nil
 		}
 	} else {
-		// 解析失败，响应结束
-		fmt.Println(err)
-		api.R(ctx, 403, "鉴权失败:-3", nil)
-		ctx.Abort()
-		return
+		return 0, errors.New("鉴权失败:-3")
 	}
 }
