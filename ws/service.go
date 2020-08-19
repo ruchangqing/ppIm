@@ -45,3 +45,13 @@ func Status(ctx *gin.Context) {
 		"onlines":     Onlines,
 	})
 }
+
+// 发送消息给客户端规范
+func WsMsg(router string, code int, msg string, data interface{}) gin.H {
+	return gin.H{
+		"route": router,
+		"code":  code,
+		"msg":   msg,
+		"data":  data,
+	}
+}

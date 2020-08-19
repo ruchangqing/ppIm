@@ -59,21 +59,17 @@ func WebsocketEntry(ctx *gin.Context) {
 		if err := json.Unmarshal(msg, &message); err != nil {
 			// 接收到非json数据
 			fmt.Println("[Websocket]Message json.Unmarshal fail: " + string(msg))
-			conn.WriteJSON(gin.H{
-				"route": "error",
-				"msg":   "Message is not json,failed!",
-				"data":  nil,
-			})
+			conn.WriteJSON(WsMsg("error", 500, "Message is not json,failed!", nil))
 			continue
 		}
 		switch message.Route {
-		// 绑定认证
+		// 绑定认证wq
 		case "bind":
 			if isBind {
 				continue
 			}
 			jwtToken := message.Data["token"]
-			id, _ := middleware.ParseToken(ctx, jwtToken.(string))
+			id, err := middleware.ParseToken(ctx, jwtToken.(string))
 			if err != nil {
 				fmt.Println(err)
 			}
@@ -83,11 +79,7 @@ func WebsocketEntry(ctx *gin.Context) {
 			c.Conn = conn
 			Connections[c.Uid] = c
 			isBind = true
-			conn.WriteJSON(gin.H{
-				"route": "bind.success",
-				"msg":   "success",
-				"data":  nil,
-			})
+			conn.WriteJSON(WsMsg("bind", 200, "success", nil))
 			break
 		default:
 			break
