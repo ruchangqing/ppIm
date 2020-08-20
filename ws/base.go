@@ -62,27 +62,29 @@ func WebsocketEntry(ctx *gin.Context) {
 			conn.WriteJSON(WsMsg("error", 500, "Message is not json,failed!", nil))
 			continue
 		}
-		switch message.Route {
-		// 绑定认证wq
-		case "bind":
+
+		// bind绑定uid和client_id，这是必须绑定的才能通信的
+		if message.Route == "bind" {
+			if !isBind {
+				jwtToken := message.Data["token"]
+				id, err := middleware.ParseToken(ctx, jwtToken.(string))
+				if err != nil {
+					fmt.Println(err)
+				}
+				var c Connection
+				c.ClientId = GenClientId()
+				c.Uid = id
+				c.Conn = conn
+				Connections[c.Uid] = c
+				isBind = true
+				conn.WriteJSON(WsMsg("bind", 200, "success", nil))
+			}
+		} else {
 			if isBind {
-				continue
+				Receive(conn, message)
+			} else {
+				conn.WriteJSON(WsMsg("error", 500, "You are not bind!", nil))
 			}
-			jwtToken := message.Data["token"]
-			id, err := middleware.ParseToken(ctx, jwtToken.(string))
-			if err != nil {
-				fmt.Println(err)
-			}
-			var c Connection
-			c.ClientId = GenClientId()
-			c.Uid = id
-			c.Conn = conn
-			Connections[c.Uid] = c
-			isBind = true
-			conn.WriteJSON(WsMsg("bind", 200, "success", nil))
-			break
-		default:
-			break
 		}
 	}
 	// 退出循环，连接关闭，连接数-1

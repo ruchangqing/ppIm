@@ -12,6 +12,9 @@ func SetRouter(r *gin.Engine) {
 	// 全局跨域中间件
 	r.Use(middleware.Cors)
 
+	// 测试接口
+	r.GET("/test", v1.Test)
+
 	// websocket连接
 	r.GET("/ws", ws.WebsocketEntry)
 	// websocket服务状态
@@ -48,6 +51,16 @@ func SetRouter(r *gin.Engine) {
 	{
 		// 附近的人
 		geo.POST("/users", v1.GeoUsers)
+	}
+
+	// 聊天相关接口
+	im := r.Group("/api/v1/im")
+	im.Use(middleware.ValidateJwtToken)
+	{
+		// 添加好友
+		im.POST("/addf", v1.AddFriend)
+		// 删除好友
+		im.POST("/delf", v1.DelFriend)
 	}
 
 }

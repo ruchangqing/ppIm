@@ -30,7 +30,7 @@ func ValidateJwtToken(ctx *gin.Context) {
 		return
 	}
 
-	// 首先redis查询token是否有效
+	// redis查询token是否有效
 	cacheKey := fmt.Sprintf("user:token:%s", jwtToken)
 	_, err = global.Redis.Get(context.Background(), cacheKey).Result()
 	if err == redis.Nil {

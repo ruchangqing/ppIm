@@ -12,7 +12,8 @@ require (
 	github.com/gorilla/websocket v1.4.2
 	github.com/jinzhu/gorm v1.9.16
 	github.com/json-iterator/go v1.1.10 // indirect
-	github.com/mailru/easyjson v0.7.3 // indirect
+	github.com/lestrrat-go/strftime v1.0.3 // indirect
+	github.com/mailru/easyjson v0.7.6 // indirect
 	github.com/mitchellh/mapstructure v1.3.3 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect
@@ -24,7 +25,8 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/spf13/viper v1.7.1
 	go.opentelemetry.io/otel v0.10.0 // indirect
-	golang.org/x/sys v0.0.0-20200814200057-3d37ad5750ed // indirect
+	golang.org/x/exp v0.0.0-20200819202907-27b6b2ade93b // indirect
+	golang.org/x/sys v0.0.0-20200819171115-d785dc25833f // indirect
 	google.golang.org/grpc v1.31.0 // indirect
 	google.golang.org/protobuf v1.25.0 // indirect
 	gopkg.in/ini.v1 v1.60.0 // indirect
