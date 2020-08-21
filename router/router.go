@@ -57,10 +57,20 @@ func SetRouter(r *gin.Engine) {
 	im := r.Group("/api/v1/im")
 	im.Use(middleware.ValidateJwtToken)
 	{
+
+		// 好友系统
+		friend := im.Group("/friend")
+		//好友列表
+		friend.POST("/list", v1.FriendList)
 		// 添加好友
-		im.POST("/addf", v1.AddFriend)
+		friend.POST("/add/request", v1.AddFriend)
+		// 收到的添加请求列表
+		friend.POST("/add/list", v1.AddList)
+		// 处理好友请求
+		friend.POST("/add/confirm", v1.AddConfirm)
 		// 删除好友
-		im.POST("/delf", v1.DelFriend)
+		friend.POST("/del", v1.DelFriend)
+
 	}
 
 }

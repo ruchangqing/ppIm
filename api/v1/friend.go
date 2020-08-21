@@ -9,6 +9,11 @@ import (
 	"time"
 )
 
+// 好友列表
+func FriendList(ctx *gin.Context) {
+
+}
+
 // 添加好友
 func AddFriend(ctx *gin.Context) {
 	uid := int(ctx.MustGet("id").(float64))
@@ -53,6 +58,15 @@ func AddFriend(ctx *gin.Context) {
 	}
 
 	api.Rt(ctx, 200, "成功发送添加请求", gin.H{})
+}
+
+// 收到的好友请求列表
+func AddList(ctx *gin.Context) {
+
+}
+
+// 处理收到的好友请求
+func AddConfirm(ctx *gin.Context) {
 }
 
 // 删除好友
