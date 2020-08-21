@@ -8,6 +8,7 @@ func Receive(conn *websocket.Conn, message Message) {
 	case "test":
 		conn.WriteJSON(WsMsg("error", 200, "test okay!", nil))
 		break
+	case "":
 	default:
 		conn.WriteJSON(WsMsg("error", 500, "UnKnow message struct!", nil))
 		break

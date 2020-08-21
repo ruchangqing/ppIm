@@ -24,7 +24,7 @@ func UpdateNickname(ctx *gin.Context) {
 	}
 
 	// jwt参数
-	id := uint(ctx.MustGet("id").(float64))
+	id := int(ctx.MustGet("id").(float64))
 	// 更新用户昵称
 	user := &model.User{Id: id}
 	result := global.Mysql.Model(&user).Update("nickname", nickname).RowsAffected
@@ -49,7 +49,7 @@ func UpdateAvatar(ctx *gin.Context) {
 		api.R(ctx, 500, "图片格式不受支持", nil)
 		return
 	}
-	id := uint(ctx.MustGet("id").(float64))
+	id := int(ctx.MustGet("id").(float64))
 	now := time.Now().Unix()
 	filePath := fmt.Sprintf("public/avatar/%d_%d%s", id, now, fileExt)
 	if err := ctx.SaveUploadedFile(file, filePath); err != nil {
@@ -90,7 +90,7 @@ func RealNameVerify(ctx *gin.Context) {
 	}
 
 	// jwt参数
-	id := uint(ctx.MustGet("id").(float64))
+	id := int(ctx.MustGet("id").(float64))
 	// 更新实名信息
 	user := &model.User{Id: id}
 	result := global.Mysql.Model(&user).Updates(map[string]interface{}{"real_name": realName, "id_card": idCard, "sex": uSex}).RowsAffected
@@ -111,7 +111,7 @@ func UpdateLocation(ctx *gin.Context) {
 	   	}
 	*/
 
-	id := uint(ctx.MustGet("id").(float64))
+	id := int(ctx.MustGet("id").(float64))
 	user := &model.User{Id: id}
 	result := global.Mysql.Model(&user).Updates(map[string]interface{}{"longitude": longitude, "latitude": latitude, "last_ip": ctx.ClientIP()}).RowsAffected
 	api.Rt(ctx, 200, "更新位置成功", gin.H{"result": result})

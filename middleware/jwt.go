@@ -42,7 +42,7 @@ func ValidateJwtToken(ctx *gin.Context) {
 }
 
 // 解析token
-func ParseToken(ctx *gin.Context, jwtToken string) (uint, error) {
+func ParseToken(ctx *gin.Context, jwtToken string) (int, error) {
 	token, _ := jwt.Parse(jwtToken, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
@@ -55,7 +55,7 @@ func ParseToken(ctx *gin.Context, jwtToken string) (uint, error) {
 		ctx.Set("id", claims["id"])
 		ctx.Set("at", claims["at"])
 		at := int64(ctx.MustGet("at").(float64)) // token生成时间戳
-		id := uint(ctx.MustGet("id").(float64))
+		id := int(ctx.MustGet("id").(float64))
 		nowAt := time.Now().Unix() // 当前时间戳
 		expireAt := at + 7*24*3600 // 过期时间戳，一周后
 		if nowAt > expireAt {

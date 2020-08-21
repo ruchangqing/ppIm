@@ -1,7 +1,7 @@
 package ws
 
 // 发送消息给uid
-func SendToUser(uid uint, router string, code int, msg string, data interface{}) {
+func SendToUser(uid int, router string, code int, msg string, data interface{}) {
 	if isOnline(uid) {
 		client := Connections[uid]
 		client.Conn.WriteJSON(WsMsg(router, code, msg, data))
@@ -9,7 +9,7 @@ func SendToUser(uid uint, router string, code int, msg string, data interface{})
 }
 
 // 判断用户是否在线
-func isOnline(uid uint)bool {
+func isOnline(uid int)bool {
 	if _, ok := Connections[uid]; ok {
 		return true
 	} else {

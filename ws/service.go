@@ -10,12 +10,12 @@ import (
 // 连接结构体
 type Connection struct {
 	ClientId int
-	Uid      uint
+	Uid      int
 	Conn     *websocket.Conn
 }
 
 // 所有已认证连接结构体，key为用户id
-var Connections = make(map[uint]Connection)
+var Connections = make(map[int]Connection)
 
 // 接收消息结构规范
 type Message struct {

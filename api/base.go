@@ -37,7 +37,7 @@ func Rt(ctx *gin.Context, code int, msg string, data gin.H) {
 	// 为实现7天内活跃用户无需重新登陆，且生成的的token只能使用一次：请求成功响应后删掉老token，生成新token
 	jwtToken := ctx.GetHeader("Login-Token")
 	cacheKey := fmt.Sprintf("user:token:%s", jwtToken)
-	id := uint(ctx.MustGet("id").(float64))
+	id := int(ctx.MustGet("id").(float64))
 	global.Redis.Del(context.Background(), cacheKey)
 	data["t"] = MakeJwtToken(id)
 
@@ -54,7 +54,7 @@ func Rt(ctx *gin.Context, code int, msg string, data gin.H) {
 }
 
 // 生成用户token
-func MakeJwtToken(id uint) string {
+func MakeJwtToken(id int) string {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"id": id,
 		"at": time.Now().Unix(), // token有效期：一天
