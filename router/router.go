@@ -67,7 +67,7 @@ func SetRouter(r *gin.Engine) {
 		// 收到的添加请求列表
 		friend.POST("/add/list", v1.AddList)
 		// 处理好友请求
-		friend.POST("/add/confirm", v1.AddConfirm)
+		friend.POST("/add/confirm", v1.AddPass)
 		// 删除好友
 		friend.POST("/del", v1.DelFriend)
 

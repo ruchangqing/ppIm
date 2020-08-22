@@ -11,7 +11,7 @@
  Target Server Version : 50728
  File Encoding         : 65001
 
- Date: 21/08/2020 16:13:15
+ Date: 22/08/2020 15:07:36
 */
 
 SET NAMES utf8mb4;
@@ -25,7 +25,7 @@ CREATE TABLE `friend_add`  (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `uid` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '用户id',
   `f_uid` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '好友uid',
-  `channel` tinyint(1) NOT NULL DEFAULT 0 COMMENT '加好友途径，0未知，1搜索用户名，2附近的人',
+  `channel` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '0' COMMENT '加好友途径，搜索、附近的人',
   `reason` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '添加原因',
   `status` tinyint(1) NOT NULL DEFAULT 0 COMMENT '状态，1同意，0等待，-1拒绝',
   `request_at` datetime(0) NULL DEFAULT NULL COMMENT '添加好友请求时间',
@@ -41,10 +41,12 @@ CREATE TABLE `friend_list`  (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `uid` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '用户id',
   `f_uid` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '好友uid',
-  `channel` tinyint(1) NOT NULL DEFAULT 0 COMMENT '加好友途径，0未知，1搜索用户名，2附近的人',
+  `channel` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '0' COMMENT '加好友途径，搜索、附近的人',
   `reason` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '添加原因',
+  `role` tinyint(1) NOT NULL DEFAULT 0 COMMENT '1加的那一方，2被加的那一方',
   `created_at` datetime(0) NULL DEFAULT NULL COMMENT '添加时间',
-  PRIMARY KEY (`id`) USING BTREE
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE INDEX `unique`(`uid`, `f_uid`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '好友表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------

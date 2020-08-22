@@ -16,7 +16,6 @@ func httpServer() {
 	port := viper.GetString("http.port")
 	gin.SetMode(viper.GetString("app.mode"))
 	server := gin.Default()
-
 	/*	gin.DisableConsoleColor()
 			// 日志使用文件
 			file, _ := os.Create("./runtime/access.log")
@@ -34,9 +33,8 @@ func httpServer() {
 					param.Request.UserAgent(),
 					param.ErrorMessage)
 			}))
-			// 防止日志中间件报错终止程序运行
-			server.Use(gin.Recovery())
 	*/
+	server.Use(gin.Recovery())
 	router.SetRouter(server)
 	panic(server.Run(fmt.Sprintf("%s:%s", host, port)))
 }
