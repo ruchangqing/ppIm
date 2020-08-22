@@ -5,6 +5,7 @@ import (
 	"ppIm/api"
 	"ppIm/global"
 	"ppIm/model"
+	"ppIm/ws"
 	"strconv"
 	"time"
 )
@@ -76,6 +77,20 @@ func AddFriend(ctx *gin.Context) {
 	if err := global.Mysql.Create(&friendAdd).Error; err != nil {
 		api.R(ctx, 500, "添加失败："+err.Error(), nil)
 		return
+	}
+
+	// 实时通知用户添加请求
+	if ws.IsOnline(user.Id) {
+		var me model.User
+		global.Mysql.Where("id = ?", uid).First(&me)
+		ws.Connections[user.Id].Conn.WriteJSON(ws.WsMsg("addFriendRequest", 200, me.Nickname+"请求添加您为好友", gin.H{
+			"uid":      uid,
+			"nickname": me.Nickname,
+			"avatar":   me.Avatar,
+			"username": me.Username,
+			"reason":   reason,
+			"channel":  channel,
+		}))
 	}
 
 	api.Rt(ctx, 200, "成功发送添加请求", gin.H{})
@@ -150,6 +165,25 @@ func AddPass(ctx *gin.Context) {
 	if err1 != nil || err2 != nil {
 		api.R(ctx, 500, "未知错误", nil)
 		return
+	}
+
+	// 实时通知用户我是否同意
+	if ws.IsOnline(fUid) {
+		var me model.User
+		global.Mysql.Where("id = ?", uid).First(&me)
+		var msg string
+		if status == 1 {
+			msg = "同意您添加为好友"
+		} else if status == -1 {
+			msg = "拒绝您添加为好友"
+		}
+		ws.Connections[fUid].Conn.WriteJSON(ws.WsMsg("addFriendPass", 200, me.Nickname+msg, gin.H{
+			"uid":         uid,
+			"pass_status": status,
+			"nickname":    me.Nickname,
+			"avatar":      me.Avatar,
+			"username":    me.Username,
+		}))
 	}
 
 	api.Rt(ctx, 200, "成功", gin.H{})
