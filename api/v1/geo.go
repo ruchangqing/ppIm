@@ -44,20 +44,42 @@ func GeoUsers(ctx *gin.Context) {
 	var data []Data
 
 	// 循环es结果
+	uid := int(ctx.MustGet("id").(float64))
 	for _, hit := range res.Hits.Hits {
 		var userLocation model.UserLocation
 		err := json.Unmarshal(hit.Source, &userLocation) // json解析结果
 		if err != nil {
 			fmt.Println(err)
 		}
+		var user model.User
+		global.Mysql.Where("id = ?", userLocation.Uid).First(&user)
+		// 列表中排除自己
+		if user.Id == uid {
+			continue
+		}
 		temp := make(Data)
-		temp["uid"] = userLocation.Uid
-		temp["location"] = userLocation.Location
-		temp["distance"] = hit.Sort
+
+		// 距离换算公里/米
+		distance, _ := strconv.ParseFloat(fmt.Sprintf("%.2f", hit.Sort[0]), 64)
+		var distanceEcho string
+		if distance < 1 {
+			distanceEcho = fmt.Sprintf("%dm", int(distance*1000))
+		} else {
+			distanceEcho = fmt.Sprintf("%.2fkm", distance)
+		}
+
+		temp = Data{
+			"id":       user.Id,
+			"username": user.Username,
+			"nickname": user.Nickname,
+			"avatar":   user.Avatar,
+			"sex":      user.Sex,
+			"distance": distanceEcho,
+		}
 		data = append(data, temp)
 	}
 
 	api.Rt(ctx, 200, "ok", gin.H{
-		"users": data,
+		"list": data,
 	})
 }

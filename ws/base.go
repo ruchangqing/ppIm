@@ -68,7 +68,7 @@ func WebsocketEntry(ctx *gin.Context) {
 			if !isBind {
 				jwtToken := message.Data["token"]
 				id, err := middleware.ParseToken(ctx, jwtToken.(string))
-				if err != nil {
+				if err != "" {
 					fmt.Println(err)
 				}
 				var c Connection
