@@ -28,10 +28,18 @@ func GeoUsers(ctx *gin.Context) {
 	if distance == "" {
 		distance = "100"
 	}
+	// 分页
+	page := ctx.PostForm("page")
+	if page == "" {
+		page = "1"
+	}
+	pageInt, _ := strconv.Atoi(page)
+	size := 20
+	from := (pageInt - 1) * size
 
 	query := elastic.NewGeoDistanceQuery("location").Distance(distance + "km").Lat(latitude).Lon(longitude)
 	sort := elastic.NewGeoDistanceSort("location").Point(latitude, longitude).Asc().DistanceType("arc").Unit("km")
-	res, err3 := global.Elasticsearch.Search().Index("user_location").Query(query).SortBy(sort).Do(context.Background())
+	res, err3 := global.Elasticsearch.Search().Index("user_location").Query(query).SortBy(sort).From(from).Size(size).Do(context.Background())
 	if err3 != nil {
 		fmt.Println(err3)
 		api.R(ctx, 500, "数据非法", nil)
