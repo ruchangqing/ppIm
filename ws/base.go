@@ -40,6 +40,7 @@ func WebsocketEntry(ctx *gin.Context) {
 
 	// 是否认证绑定
 	isBind := false
+	var c Connection
 	// 15秒内没收到token绑定成功的断开连接
 	time.AfterFunc(15*time.Second, func() {
 		if !isBind {
@@ -59,31 +60,30 @@ func WebsocketEntry(ctx *gin.Context) {
 		if err := json.Unmarshal(msg, &message); err != nil {
 			// 接收到非json数据
 			fmt.Println("[Websocket]Message json.Unmarshal fail: " + string(msg))
-			conn.WriteJSON(WsMsg("error", 500, "Message is not json,failed!", nil))
+			conn.WriteJSON(WsMsg(-1, 0, "非json格式数据", nil))
 			continue
 		}
 
 		// bind绑定uid和client_id，这是必须绑定的才能通信的
-		if message.Route == "bind" {
+		if message.Cmd == 1 {
 			if !isBind {
 				jwtToken := message.Data["token"]
 				id, err := middleware.ParseToken(ctx, jwtToken.(string))
 				if err != "" {
 					fmt.Println(err)
 				}
-				var c Connection
 				c.ClientId = GenClientId()
 				c.Uid = id
 				c.Conn = conn
 				Connections[c.Uid] = c
 				isBind = true
-				conn.WriteJSON(WsMsg("bind", 200, "success", nil))
+				conn.WriteJSON(WsMsg(1, 1, "ok", nil))
 			}
 		} else {
 			if isBind {
-				Receive(conn, message)
+				Receive(&c, message)
 			} else {
-				conn.WriteJSON(WsMsg("error", 500, "You are not bind!", nil))
+				conn.WriteJSON(WsMsg(-1, 0, "Not bind!", nil))
 			}
 		}
 	}

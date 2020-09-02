@@ -19,8 +19,8 @@ var Connections = make(map[int]Connection)
 
 // 接收消息结构规范
 type Message struct {
-	Route string
-	Data  map[string]interface{}
+	Cmd  int
+	Data map[string]interface{}
 }
 
 var Onlines = 0                 // 连接数
@@ -47,10 +47,10 @@ func Status(ctx *gin.Context) {
 }
 
 // 发送消息给客户端规范
-func WsMsg(router string, code int, msg string, data interface{}) gin.H {
+func WsMsg(cmd int, success int, msg string, data interface{}) gin.H {
 	return gin.H{
-		"route": router,
-		"code":  code,
+		"cmd": cmd,
+		"code":  success,
 		"msg":   msg,
 		"data":  data,
 	}

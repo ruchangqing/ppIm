@@ -1,10 +1,10 @@
 package ws
 
 // 发送消息给uid
-func SendToUser(uid int, router string, code int, msg string, data interface{}) {
+func SendToUser(uid int, cmd int, success int, msg string, data interface{}) {
 	if IsOnline(uid) {
 		client := Connections[uid]
-		client.Conn.WriteJSON(WsMsg(router, code, msg, data))
+		client.Conn.WriteJSON(WsMsg(cmd, success, msg, data))
 	}
 }
 
