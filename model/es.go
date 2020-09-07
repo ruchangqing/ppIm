@@ -1,6 +1,6 @@
 package model
 
-// 用户位置index，用来创建index
+// elasticsearch：用户位置index，用来创建index
 var CreateUserLocationIndex = `
 {
 	"settings":{

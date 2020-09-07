@@ -1,5 +1,6 @@
 package model
 
+// 用户表
 type User struct {
 	Id           int
 	Username     string

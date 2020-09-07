@@ -11,11 +11,26 @@
  Target Server Version : 50728
  File Encoding         : 65001
 
- Date: 22/08/2020 15:07:36
+ Date: 07/09/2020 17:19:11
 */
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
+
+-- ----------------------------
+-- Table structure for chat_user
+-- ----------------------------
+DROP TABLE IF EXISTS `chat_user`;
+CREATE TABLE `chat_user`  (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `send_uid` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '发送用户id',
+  `recv_uid` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '接收用户id',
+  `message_type` tinyint(1) UNSIGNED NOT NULL DEFAULT 1 COMMENT '消息类型，1文字',
+  `content` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '消息内容',
+  `created_at` datetime(0) NULL DEFAULT NULL COMMENT '发送时间',
+  `status` tinyint(1) NOT NULL DEFAULT 0 COMMENT '状态，0未读，1已读，-1撤回',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '私聊聊天记录表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for friend_add

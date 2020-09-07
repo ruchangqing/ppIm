@@ -12,9 +12,6 @@ func SetRouter(r *gin.Engine) {
 	// 全局跨域中间件
 	r.Use(middleware.Cors)
 
-	// 测试接口
-	r.GET("/test", v1.Test)
-
 	// websocket连接
 	r.GET("/ws", ws.WebsocketEntry)
 	// websocket服务状态

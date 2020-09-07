@@ -1,5 +1,6 @@
 package model
 
+// 已添加的好友列表表
 type FriendList struct {
 	Id        int
 	Uid       int
