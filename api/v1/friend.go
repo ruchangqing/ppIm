@@ -83,7 +83,7 @@ func AddFriend(ctx *gin.Context) {
 	if ws.IsOnline(user.Id) {
 		var me model.User
 		global.Mysql.Where("id = ?", uid).First(&me)
-		ws.Connections[user.Id].Conn.WriteJSON(ws.WsMsg("addFriendRequest", 200, me.Nickname+"请求添加您为好友", gin.H{
+		ws.Connections[user.Id].Conn.WriteJSON(ws.WsMsg(3, 200, me.Nickname+"请求添加您为好友", gin.H{
 			"uid":      uid,
 			"nickname": me.Nickname,
 			"avatar":   me.Avatar,
@@ -177,7 +177,7 @@ func AddPass(ctx *gin.Context) {
 		} else if status == -1 {
 			msg = "拒绝您添加为好友"
 		}
-		ws.Connections[fUid].Conn.WriteJSON(ws.WsMsg("addFriendPass", 200, me.Nickname+msg, gin.H{
+		ws.Connections[fUid].Conn.WriteJSON(ws.WsMsg(4, 200, me.Nickname+msg, gin.H{
 			"uid":         uid,
 			"pass_status": status,
 			"nickname":    me.Nickname,

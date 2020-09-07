@@ -71,6 +71,11 @@ func SetRouter(r *gin.Engine) {
 		// 删除好友
 		friend.POST("/del", v1.DelFriend)
 
+		// 聊天系统
+		chat := im.Group("/chat")
+		// 发送消息给用户
+		chat.POST("/send/user", v1.SendMessageToUser)
+
 	}
 
 }
