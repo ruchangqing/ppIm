@@ -72,6 +72,7 @@ func WithdrawMessageFromUser(ctx *gin.Context) {
 	global.Mysql.Model(&chatUser).Updates(map[string]interface{}{"status": -1})
 	// 通过对方撤回消息
 	ws.SendToUser(chatUser.RecvUid, 3, 1, "有新撤回消息", gin.H{
+		"f_uid":     uid,
 		"messageId": chatUser.Id,
 	})
 	api.Rt(ctx, 200, "撤回成功", gin.H{})

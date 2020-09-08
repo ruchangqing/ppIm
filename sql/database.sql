@@ -11,7 +11,7 @@
  Target Server Version : 50728
  File Encoding         : 65001
 
- Date: 07/09/2020 17:19:11
+ Date: 08/09/2020 14:04:36
 */
 
 SET NAMES utf8mb4;
@@ -27,10 +27,10 @@ CREATE TABLE `chat_user`  (
   `recv_uid` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '接收用户id',
   `message_type` tinyint(1) UNSIGNED NOT NULL DEFAULT 1 COMMENT '消息类型，1文字',
   `content` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '消息内容',
-  `created_at` datetime(0) NULL DEFAULT NULL COMMENT '发送时间',
+  `created_at` int(10) NULL DEFAULT NULL COMMENT '发送时间',
   `status` tinyint(1) NOT NULL DEFAULT 0 COMMENT '状态，0未读，1已读，-1撤回',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '私聊聊天记录表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '私聊聊天记录表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for friend_add
@@ -46,7 +46,7 @@ CREATE TABLE `friend_add`  (
   `request_at` datetime(0) NULL DEFAULT NULL COMMENT '添加好友请求时间',
   `pass_at` datetime(0) NULL DEFAULT NULL COMMENT '通过好友时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '添加好友表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '添加好友表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for friend_list
@@ -62,7 +62,7 @@ CREATE TABLE `friend_list`  (
   `created_at` datetime(0) NULL DEFAULT NULL COMMENT '添加时间',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `unique`(`uid`, `f_uid`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '好友表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '好友表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for user
@@ -89,6 +89,6 @@ CREATE TABLE `user`  (
   `login_at` datetime(0) NULL DEFAULT NULL COMMENT '最后登录时间',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `username`(`username`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 SET FOREIGN_KEY_CHECKS = 1;
