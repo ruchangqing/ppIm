@@ -8,5 +8,5 @@ type ChatUser struct {
 	MessageType int
 	Content     string
 	Status      int
-	CreatedAt   string `gorm:"default:''"`
+	CreatedAt   int64
 }

@@ -72,7 +72,8 @@ func SetRouter(r *gin.Engine) {
 		chat := im.Group("/chat")
 		// 发送消息给用户
 		chat.POST("/send/user", v1.SendMessageToUser)
-
+		// 撤回消息
+		chat.POST("/withdraw/user", v1.WithdrawMessageFromUser)
 	}
 
 }
