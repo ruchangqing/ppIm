@@ -8,6 +8,6 @@ type FriendAdd struct {
 	Channel   string
 	Reason    string
 	Status    int
-	RequestAt string `gorm:"default:''"`
-	PassAt    string `gorm:"default:''"`
+	RequestAt int64
+	PassAt    int64
 }

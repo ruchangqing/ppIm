@@ -8,5 +8,5 @@ type FriendList struct {
 	Channel   string
 	Reason    string
 	Role      int
-	CreatedAt string `gorm:"default:''"`
+	CreatedAt int64
 }

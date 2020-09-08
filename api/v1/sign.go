@@ -80,8 +80,9 @@ func Register(ctx *gin.Context) {
 		Username:     username,
 		Password:     password,
 		PasswordSalt: passwordSalt,
-		RegisterAt:   time.Now().Format("2006-01-02 15:04:05"),
-		LoginAt:      time.Now().Format("2006-01-02 15:04:05"),
+		RegisterAt:   time.Now().Unix(),
+		//LoginAt:      time.Now().Format("2006-01-02 15:04:05"),
+		LoginAt:      time.Now().Unix(),
 		LastIp:       ctx.ClientIP(),
 	}
 	if err := global.Mysql.Create(&user).Error; err != nil {

@@ -73,7 +73,7 @@ func AddFriend(ctx *gin.Context) {
 	friendAdd.FUid = user.Id
 	friendAdd.Reason = reason
 	friendAdd.Channel = channel
-	friendAdd.RequestAt = time.Now().Format("2006-01-02 15:04:05")
+	friendAdd.RequestAt = time.Now().Unix()
 	if err := global.Mysql.Create(&friendAdd).Error; err != nil {
 		api.R(ctx, 500, "添加失败："+err.Error(), nil)
 		return
@@ -140,7 +140,7 @@ func AddPass(ctx *gin.Context) {
 		api.R(ctx, 500, "添加好友请求不存在", nil)
 		return
 	}
-	now := time.Now().Format("2006-01-02 15:04:05")
+	now := time.Now().Unix()
 	global.Mysql.Model(&friendAdd).Updates(map[string]interface{}{"status": status, "pass_at": now})
 
 	// 通过验证后进行好友数据写入

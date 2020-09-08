@@ -17,6 +17,6 @@ type User struct {
 	Longitude    string
 	Latitude     string
 	LastIp       string
-	RegisterAt   string `gorm:"default:''"`
-	LoginAt      string `gorm:"default:''"`
+	RegisterAt   int64
+	LoginAt      int64
 }

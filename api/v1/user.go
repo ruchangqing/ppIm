@@ -33,6 +33,7 @@ func UpdateNickname(ctx *gin.Context) {
 
 // 用户更新头像
 func UpdateAvatar(ctx *gin.Context) {
+
 	file, err := ctx.FormFile("avatar")
 	if err != nil {
 		api.R(ctx, 500, "请选择图片", nil)
@@ -45,7 +46,7 @@ func UpdateAvatar(ctx *gin.Context) {
 
 	// 保存头像文件，格式为id
 	fileExt := strings.ToLower(path.Ext(file.Filename))
-	if fileExt != ".jpg" && fileExt != ".jpeg" && fileExt != ".bmp" && fileExt != ".png" && fileExt != ".gif" && fileExt != ".tif" && fileExt != ".bmp" {
+	if fileExt != ".jpg" && fileExt != ".jpeg" && fileExt != ".bmp" && fileExt != ".png" && fileExt != ".gif" && fileExt != ".tif" {
 		api.R(ctx, 500, "图片格式不受支持", nil)
 		return
 	}
