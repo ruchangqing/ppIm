@@ -2,6 +2,7 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
+	"net/http"
 	"ppIm/api"
 	v1 "ppIm/api/v1"
 	"ppIm/middleware"
@@ -11,6 +12,9 @@ import (
 func SetRouter(r *gin.Engine) {
 	// 全局跨域中间件
 	r.Use(middleware.Cors)
+
+	// 公开访问目录
+	r.StaticFS("/public", http.Dir("./public"))
 
 	// websocket连接
 	r.GET("/ws", ws.WebsocketEntry)
