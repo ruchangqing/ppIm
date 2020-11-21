@@ -54,13 +54,13 @@ func UpdateAvatar(ctx *gin.Context) {
 	now := time.Now().Unix()
 	filePath := fmt.Sprintf("public/avatar/%d_%d%s", id, now, fileExt)
 	if err := ctx.SaveUploadedFile(file, filePath); err != nil {
-		api.R(ctx, 500, "上传失败", nil)
+		api.R(ctx, 500, "上传失败："+err.Error(), nil)
 		return
 	}
 
 	// 更新头像地址到数据库
 	user := &model.User{Id: id}
-	result := global.Mysql.Model(&user).Update("avatar", filePath).RowsAffected
+	result := global.Mysql.Model(&user).Update("avatar", "/"+filePath).RowsAffected
 
 	api.Rt(ctx, 200, "设置成功", gin.H{"result": result})
 }

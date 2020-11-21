@@ -2,6 +2,7 @@ package v1
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 	"ppIm/api"
 	"ppIm/global"
 	"ppIm/model"
@@ -86,7 +87,7 @@ func AddFriend(ctx *gin.Context) {
 		ws.Connections[user.Id].Conn.WriteJSON(ws.WsMsg(3, 200, me.Nickname+"请求添加您为好友", gin.H{
 			"uid":      uid,
 			"nickname": me.Nickname,
-			"avatar":   me.Avatar,
+			"avatar":   viper.GetString("app.domain") + me.Avatar,
 			"username": me.Username,
 			"reason":   reason,
 			"channel":  channel,
@@ -181,7 +182,7 @@ func AddPass(ctx *gin.Context) {
 			"uid":         uid,
 			"pass_status": status,
 			"nickname":    me.Nickname,
-			"avatar":      me.Avatar,
+			"avatar":      viper.GetString("app.domain") + me.Avatar,
 			"username":    me.Username,
 		}))
 	}

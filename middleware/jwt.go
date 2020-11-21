@@ -1,11 +1,9 @@
 package middleware
 
 import (
-	"context"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
-	"github.com/go-redis/redis/v8"
 	"ppIm/api"
 	"ppIm/global"
 	"time"
@@ -16,7 +14,7 @@ func ValidateJwtToken(ctx *gin.Context) {
 	// 校验header中token值格式是否合法
 	jwtToken := ctx.GetHeader("Login-Token")
 	if len(jwtToken) < 16 {
-		api.R(ctx, 401, "鉴权失败:-1", nil)
+		api.R(ctx, 500, "鉴权失败", nil)
 		ctx.Abort()
 		return
 	}
@@ -24,20 +22,20 @@ func ValidateJwtToken(ctx *gin.Context) {
 	_, err := ParseToken(ctx, jwtToken)
 	if err != "" {
 		// 解析失败，响应结束
-		api.R(ctx, 403, err, nil)
+		api.R(ctx, 500, err, nil)
 		ctx.Abort()
 		return
 	}
 
 	// redis查询token是否有效
-	cacheKey := fmt.Sprintf("user:token:%s", jwtToken)
-	_, err2 := global.Redis.Get(context.Background(), cacheKey).Result()
-	if err2 == redis.Nil {
-		api.R(ctx, 401, "鉴权失败:-2", nil)
-		ctx.Abort()
-		return
-	}
-
+	/*	cacheKey := fmt.Sprintf("user:token:%s", jwtToken)
+		_, err2 := global.Redis.Get(context.Background(), cacheKey).Result()
+		if err2 == redis.Nil {
+			api.R(ctx, 401, "鉴权失败", nil)
+			ctx.Abort()
+			return
+		}
+	*/
 }
 
 // 解析token
@@ -63,6 +61,6 @@ func ParseToken(ctx *gin.Context, jwtToken string) (int, string) {
 			return id, ""
 		}
 	} else {
-		return 0, "鉴权失败:-3"
+		return 0, "鉴权失败"
 	}
 }

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/olivere/elastic/v7"
+	"github.com/spf13/viper"
 	"ppIm/api"
 	"ppIm/global"
 	"ppIm/model"
@@ -80,7 +81,7 @@ func GeoUsers(ctx *gin.Context) {
 			"id":       user.Id,
 			"username": user.Username,
 			"nickname": user.Nickname,
-			"avatar":   user.Avatar,
+			"avatar":   viper.GetString("app.domain") + user.Avatar,
 			"sex":      user.Sex,
 			"distance": distanceEcho,
 		}

@@ -2,6 +2,7 @@ package v1
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 	"ppIm/api"
 	"ppIm/global"
 	"ppIm/model"
@@ -47,7 +48,7 @@ func Login(ctx *gin.Context) {
 		"user": gin.H{
 			"username": username,
 			"nickname": user.Nickname,
-			"avatar":   user.Avatar,
+			"avatar":   viper.GetString("app.domain") + user.Avatar,
 			"status":   user.Status,
 		},
 	})
@@ -76,12 +77,14 @@ func Register(ctx *gin.Context) {
 	// 新增用户数据，注册逻辑
 	passwordSalt := utils.RandStr(6)
 	password = utils.Md5(utils.Md5(password) + passwordSalt)
+
 	user = model.User{
 		Username:     username,
 		Password:     password,
+		Nickname:     "新用户" + username,
 		PasswordSalt: passwordSalt,
 		RegisterAt:   time.Now().Unix(),
-		//LoginAt:      time.Now().Format("2006-01-02 15:04:05"),
+		Avatar:       "/public/avatar/default.png",
 		LoginAt:      time.Now().Unix(),
 		LastIp:       ctx.ClientIP(),
 	}
@@ -97,7 +100,7 @@ func Register(ctx *gin.Context) {
 		"user": gin.H{
 			"username": username,
 			"nickname": user.Nickname,
-			"avatar":   user.Avatar,
+			"avatar":   viper.GetString("app.domain") + user.Avatar,
 			"status":   user.Status,
 		},
 	})

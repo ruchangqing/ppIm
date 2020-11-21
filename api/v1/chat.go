@@ -2,6 +2,7 @@ package v1
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 	"ppIm/api"
 	"ppIm/global"
 	"ppIm/model"
@@ -38,7 +39,7 @@ func SendMessageToUser(ctx *gin.Context) {
 			"sender": gin.H{
 				"uid":      uid,
 				"nickname": user.Nickname,
-				"avatar":   user.Avatar,
+				"avatar":   viper.GetString("app.domain") + user.Avatar,
 			},
 			"message": gin.H{
 				"id":          chatUser.Id,
