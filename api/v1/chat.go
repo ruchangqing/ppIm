@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 	"ppIm/api"
+	"ppIm/framework"
 	"ppIm/global"
 	"ppIm/model"
 	"ppIm/ws"
@@ -16,7 +17,7 @@ func SendMessageToUser(ctx *gin.Context) {
 	toUid, _ := strconv.Atoi(ctx.PostForm("to_uid"))
 	content := ctx.PostForm("content")
 	if content == "" {
-		api.R(ctx, 500, "请输入内容", gin.H{})
+		api.R(ctx, framework.FAIL, "请输入内容", gin.H{})
 		return
 	}
 	messageType := 1 // 目前只支持消息类型文字1
@@ -26,7 +27,7 @@ func SendMessageToUser(ctx *gin.Context) {
 	var count int
 	global.Mysql.Where("uid = ? and f_uid = ?", uid, toUid).Select("id,uid,f_uid").First(&friendList).Count(&count)
 	if count == 0 {
-		api.R(ctx, 500, "对方不是你的好友", gin.H{})
+		api.R(ctx, framework.FAIL, "对方不是你的好友", gin.H{})
 		return
 	} else {
 		var user model.User
@@ -48,7 +49,7 @@ func SendMessageToUser(ctx *gin.Context) {
 				"created_at":  now,
 			},
 		})
-		api.Rt(ctx, 200, "发送成功", gin.H{})
+		api.Rt(ctx, framework.SUCCESS, "发送成功", gin.H{})
 	}
 }
 
@@ -60,13 +61,13 @@ func WithdrawMessageFromUser(ctx *gin.Context) {
 	var chatUser model.ChatUser
 	global.Mysql.Where("id = ? and send_uid = ? and status <> ?", messageId, uid, -1).First(&chatUser)
 	if chatUser.Id == 0 {
-		api.R(ctx, 500, "消息不存在", gin.H{})
+		api.R(ctx, framework.FAIL, "消息不存在", gin.H{})
 		return
 	}
 	now := time.Now().Unix()
 	// 判断消息发送是否超过2分钟
 	if now > chatUser.CreatedAt+120 {
-		api.R(ctx, 500, "消息超过2分钟无法撤回", gin.H{})
+		api.R(ctx, framework.FAIL, "消息超过2分钟无法撤回", gin.H{})
 		return
 	}
 	// 把消息状态改为已撤回
@@ -76,5 +77,5 @@ func WithdrawMessageFromUser(ctx *gin.Context) {
 		"f_uid":     uid,
 		"messageId": chatUser.Id,
 	})
-	api.Rt(ctx, 200, "撤回成功", gin.H{})
+	api.Rt(ctx, framework.SUCCESS, "撤回成功", gin.H{})
 }

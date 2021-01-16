@@ -8,6 +8,7 @@ import (
 	"github.com/olivere/elastic/v7"
 	"github.com/spf13/viper"
 	"ppIm/api"
+	"ppIm/framework"
 	"ppIm/global"
 	"ppIm/model"
 	"strconv"
@@ -21,7 +22,7 @@ func GeoUsers(ctx *gin.Context) {
 	if err1 != nil || err2 != nil {
 		fmt.Println(err1)
 		fmt.Println(err2)
-		api.R(ctx, 500, "数据非法", nil)
+		api.R(ctx, framework.FAIL, "数据非法", nil)
 		return
 	}
 	// 距离范围，默认100
@@ -43,7 +44,7 @@ func GeoUsers(ctx *gin.Context) {
 	res, err3 := global.Elasticsearch.Search().Index("user_location").Query(query).SortBy(sort).From(from).Size(size).Do(context.Background())
 	if err3 != nil {
 		fmt.Println(err3)
-		api.R(ctx, 500, "数据非法", nil)
+		api.R(ctx, framework.FAIL, "数据非法", nil)
 		return
 	}
 
@@ -88,7 +89,7 @@ func GeoUsers(ctx *gin.Context) {
 		data = append(data, temp)
 	}
 
-	api.Rt(ctx, 200, "ok", gin.H{
+	api.Rt(ctx, framework.SUCCESS, "ok", gin.H{
 		"list": data,
 	})
 }

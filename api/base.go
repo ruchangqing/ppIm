@@ -4,6 +4,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
+	"net/http"
 	"ppIm/global"
 	"time"
 )
@@ -22,11 +23,11 @@ func R(ctx *gin.Context, code int, msg string, data gin.H) {
 	data = gin.H{"code": code, "msg": msg, "data": data}
 	switch responseType {
 	case "json":
-		ctx.JSON(code, data)
+		ctx.JSON(http.StatusOK, data)
 	case "xml":
-		ctx.XML(code, data)
+		ctx.XML(http.StatusOK, data)
 	default:
-		ctx.JSON(code, data)
+		ctx.JSON(http.StatusOK, data)
 	}
 }
 
@@ -46,11 +47,11 @@ func Rt(ctx *gin.Context, code int, msg string, data gin.H) {
 	data = gin.H{"code": code, "msg": msg, "data": data}
 	switch responseType {
 	case "json":
-		ctx.JSON(code, data)
+		ctx.JSON(http.StatusOK, data)
 	case "xml":
-		ctx.XML(code, data)
+		ctx.XML(http.StatusOK, data)
 	default:
-		ctx.JSON(code, data)
+		ctx.JSON(http.StatusOK, data)
 	}
 }
 
