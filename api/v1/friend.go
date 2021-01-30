@@ -4,7 +4,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 	"ppIm/api"
-	"ppIm/framework"
 	"ppIm/global"
 	"ppIm/model"
 	"ppIm/ws"
@@ -27,7 +26,7 @@ func FriendList(ctx *gin.Context) {
 	rows, err := global.Mysql.Raw("select u.id,u.nickname,u.username,u.avatar,u.sex from friend_list as f join user as u on f.f_uid = u.id where f.uid = ?", uid).Rows()
 	if err != nil {
 		print(err)
-		api.R(ctx, framework.FAIL, "未知错误", nil)
+		api.R(ctx, global.FAIL, "未知错误", nil)
 		return
 	}
 	defer rows.Close()
@@ -35,7 +34,7 @@ func FriendList(ctx *gin.Context) {
 		err = rows.Scan(&result.Id, &result.Nickname, &result.Username, &result.Avatar, &result.Sex)
 		results = append(results, result)
 	}
-	api.Rt(ctx, framework.SUCCESS, "请求成功", gin.H{"lists": results})
+	api.Rt(ctx, global.SUCCESS, "请求成功", gin.H{"lists": results})
 }
 
 // 添加好友
@@ -49,25 +48,25 @@ func AddFriend(ctx *gin.Context) {
 	var count int
 	global.Mysql.Where("username = ?", username).Select("id,username").First(&user).Count(&count)
 	if count < 1 {
-		api.R(ctx, framework.FAIL, "用户未找到", nil)
+		api.R(ctx, global.FAIL, "用户未找到", nil)
 		return
 	}
 	if user.Id == uid {
-		api.R(ctx, framework.FAIL, "不能添加自己", nil)
+		api.R(ctx, global.FAIL, "不能添加自己", nil)
 		return
 	}
 
 	var friendList model.FriendList
 	global.Mysql.Where("uid = ? and f_uid = ?", uid, user.Id).Select("id,uid,f_uid").First(&friendList).Count(&count)
 	if count > 0 {
-		api.R(ctx, framework.FAIL, "对方已经是好友", nil)
+		api.R(ctx, global.FAIL, "对方已经是好友", nil)
 		return
 	}
 
 	var friendAdd model.FriendAdd
 	global.Mysql.Where("uid = ? and f_uid = ? and status = 0", uid, user.Id).Select("id,uid,f_uid").First(&friendAdd).Count(&count)
 	if count > 0 {
-		api.R(ctx, framework.FAIL, "请等待好友同意", nil)
+		api.R(ctx, global.FAIL, "请等待好友同意", nil)
 		return
 	}
 
@@ -77,7 +76,7 @@ func AddFriend(ctx *gin.Context) {
 	friendAdd.Channel = channel
 	friendAdd.RequestAt = time.Now().Unix()
 	if err := global.Mysql.Create(&friendAdd).Error; err != nil {
-		api.R(ctx, framework.FAIL, "添加失败："+err.Error(), nil)
+		api.R(ctx, global.FAIL, "添加失败："+err.Error(), nil)
 		return
 	}
 
@@ -95,7 +94,7 @@ func AddFriend(ctx *gin.Context) {
 		}))
 	}
 
-	api.Rt(ctx, framework.SUCCESS, "成功发送添加请求", gin.H{})
+	api.Rt(ctx, global.SUCCESS, "成功发送添加请求", gin.H{})
 }
 
 // 收到的好友请求列表
@@ -115,7 +114,7 @@ func AddList(ctx *gin.Context) {
 	rows, err := global.Mysql.Raw("select u.id,u.nickname,u.username,u.avatar,f.channel,f.reason,f.request_at from friend_add as f join user as u on f.uid = u.id  where f.f_uid = ? and f.status = 0 order by request_at desc", uid).Rows()
 	if err != nil {
 		print(err)
-		api.R(ctx, framework.FAIL, "未知错误", nil)
+		api.R(ctx, global.FAIL, "未知错误", nil)
 		return
 	}
 	defer rows.Close()
@@ -123,7 +122,7 @@ func AddList(ctx *gin.Context) {
 		err = rows.Scan(&result.Id, &result.Nickname, &result.Username, &result.Avatar, &result.Channel, &result.Reason, &result.RequestAt)
 		results = append(results, result)
 	}
-	api.Rt(ctx, framework.SUCCESS, "请求成功", gin.H{"list": results})
+	api.Rt(ctx, global.SUCCESS, "请求成功", gin.H{"list": results})
 }
 
 // 处理收到的好友请求
@@ -132,14 +131,14 @@ func AddPass(ctx *gin.Context) {
 	fUid, _ := strconv.Atoi(ctx.PostForm("f_uid"))
 	status, _ := strconv.Atoi(ctx.PostForm("status"))
 	if status != 1 && status != -1 {
-		api.R(ctx, framework.FAIL, "非法参数", nil)
+		api.R(ctx, global.FAIL, "非法参数", nil)
 		return
 	}
 	uid := int(ctx.MustGet("id").(float64))
 	var friendAdd model.FriendAdd
 	global.Mysql.Where("uid = ? and f_uid = ? and status = ?", fUid, uid, 0).First(&friendAdd)
 	if friendAdd.Id == 0 {
-		api.R(ctx, framework.FAIL, "添加好友请求不存在", nil)
+		api.R(ctx, global.FAIL, "添加好友请求不存在", nil)
 		return
 	}
 	now := time.Now().Unix()
@@ -165,7 +164,7 @@ func AddPass(ctx *gin.Context) {
 	err1 := global.Mysql.Create(&friendList1).Error
 	err2 := global.Mysql.Create(&friendList2).Error
 	if err1 != nil || err2 != nil {
-		api.R(ctx, framework.FAIL, "未知错误", nil)
+		api.R(ctx, global.FAIL, "未知错误", nil)
 		return
 	}
 
@@ -188,7 +187,7 @@ func AddPass(ctx *gin.Context) {
 		}))
 	}
 
-	api.Rt(ctx, framework.SUCCESS, "成功", gin.H{})
+	api.Rt(ctx, global.SUCCESS, "成功", gin.H{})
 }
 
 // 删除好友
@@ -198,14 +197,14 @@ func DelFriend(ctx *gin.Context) {
 	var friendList model.FriendList
 	global.Mysql.Where("uid = ? and f_uid = ?", uid, fUid).First(&friendList)
 	if friendList.Id == 0 {
-		api.R(ctx, framework.FAIL, "对方不是你的好友", nil)
+		api.R(ctx, global.FAIL, "对方不是你的好友", nil)
 		return
 	}
 	err := global.Mysql.Delete(&friendList).Error
 	if err != nil {
 		print(err)
-		api.R(ctx, framework.FAIL, "删除失败", nil)
+		api.R(ctx, global.FAIL, "删除失败", nil)
 		return
 	}
-	api.Rt(ctx, framework.SUCCESS, "删除成功", gin.H{})
+	api.Rt(ctx, global.SUCCESS, "删除成功", gin.H{})
 }

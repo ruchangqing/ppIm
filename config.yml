@@ -1,24 +1,24 @@
 app:
   mode: "debug"
-  domain: "http://127.0.0.1:8081"
+  domain: ":8081"
 http:
   host: "0.0.0.0"
-  port: "8081"
-  responseType: "json"  # json or xml
+  port: "8080"
+  responseType: "json"
 db:
   dbType: "mysql"
-  host: "192.168.125.137"
+  host: "127.0.0.1"
   port: "3306"
   user: "root"
   pass: "0825"
   dbname: "ppf"
   charset: "utf8mb4"
 redis:
-  host: "192.168.125.137"
+  host: "127.0.0.1"
   port: "6379"
   pass: "0825"
 elasticsearch:
-  host: "192.168.125.137"
+  host: "127.0.0.1"
   port: "9200"
   user: "elastic"
   pass: ""
