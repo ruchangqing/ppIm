@@ -11,7 +11,7 @@
  Target Server Version : 50728
  File Encoding         : 65001
 
- Date: 08/09/2020 16:14:48
+ Date: 30/01/2021 15:06:06
 */
 
 SET NAMES utf8mb4;
@@ -30,7 +30,7 @@ CREATE TABLE `chat_user`  (
   `created_at` int(10) NULL DEFAULT NULL COMMENT '发送时间',
   `status` tinyint(1) NOT NULL DEFAULT 0 COMMENT '状态，0未读，1已读，-1撤回',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '私聊聊天记录表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '私聊聊天记录表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for friend_add
@@ -46,7 +46,7 @@ CREATE TABLE `friend_add`  (
   `request_at` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '添加好友请求时间戳',
   `pass_at` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '通过好友时间戳',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '添加好友表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '添加好友表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for friend_list
@@ -62,7 +62,7 @@ CREATE TABLE `friend_list`  (
   `created_at` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '添加时间戳',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `unique`(`uid`, `f_uid`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '好友表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '好友表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for user
@@ -85,10 +85,12 @@ CREATE TABLE `user`  (
   `longitude` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '经度',
   `latitude` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '纬度',
   `last_ip` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '最后登录/注册ip',
-  `register_at` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '注册时间戳',
-  `login_at` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '最后登录时间戳',
+  `register_time` timestamp(0) NULL DEFAULT NULL COMMENT '注册时间戳',
+  `login_time` timestamp(0) NULL DEFAULT NULL COMMENT '最后登录时间戳',
+  `created_at` timestamp(0) NULL DEFAULT CURRENT_TIMESTAMP(0),
+  `updated_at` timestamp(0) NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP(0),
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `username`(`username`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 SET FOREIGN_KEY_CHECKS = 1;

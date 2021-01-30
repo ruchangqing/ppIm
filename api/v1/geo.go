@@ -19,8 +19,6 @@ func GeoUsers(ctx *gin.Context) {
 	longitude, err1 := strconv.ParseFloat(ctx.PostForm("longitude"), 64)
 	latitude, err2 := strconv.ParseFloat(ctx.PostForm("latitude"), 64)
 	if err1 != nil || err2 != nil {
-		fmt.Println(err1)
-		fmt.Println(err2)
 		api.R(ctx, global.FAIL, "数据非法", nil)
 		return
 	}
@@ -42,7 +40,6 @@ func GeoUsers(ctx *gin.Context) {
 	sort := elastic.NewGeoDistanceSort("location").Point(latitude, longitude).Asc().DistanceType("arc").Unit("km")
 	res, err3 := global.Elasticsearch.Search().Index("user_location").Query(query).SortBy(sort).From(from).Size(size).Do(context.Background())
 	if err3 != nil {
-		fmt.Println(err3)
 		api.R(ctx, global.FAIL, "数据非法", nil)
 		return
 	}

@@ -17,6 +17,6 @@ type User struct {
 	Longitude    string
 	Latitude     string
 	LastIp       string
-	RegisterAt   int64
-	LoginAt      int64
+	RegisterTime   string
+	LoginTime      string
 }

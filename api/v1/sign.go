@@ -38,8 +38,8 @@ func Login(ctx *gin.Context) {
 	}
 
 	// 密码正确，更新登陆时间
-	loginAt := time.Now().Format("2006-01-02 15:04:05")
-	global.Mysql.Model(&user).Updates(map[string]interface{}{"login_at": loginAt, "last_ip": ctx.ClientIP()})
+	loginTime := time.Now().Format("2006-01-02 15:04:05")
+	global.Mysql.Model(&user).Updates(map[string]interface{}{"login_time": loginTime, "last_ip": ctx.ClientIP()})
 
 	// 生成jwt token和用户信息给用户
 	tokenString := api.MakeJwtToken(user.Id)
@@ -83,9 +83,9 @@ func Register(ctx *gin.Context) {
 		Password:     password,
 		Nickname:     "新用户" + username,
 		PasswordSalt: passwordSalt,
-		RegisterAt:   time.Now().Unix(),
+		RegisterTime: time.Now().Format("2006-01-02 15:04:05"),
+		LoginTime:    time.Now().Format("2006-01-02 15:04:05"),
 		Avatar:       "/public/avatar/default.png",
-		LoginAt:      time.Now().Unix(),
 		LastIp:       ctx.ClientIP(),
 	}
 	if err := global.Mysql.Create(&user).Error; err != nil {
