@@ -11,7 +11,7 @@
  Target Server Version : 50728
  File Encoding         : 65001
 
- Date: 30/01/2021 15:06:06
+ Date: 08/03/2021 20:33:55
 */
 
 SET NAMES utf8mb4;
@@ -63,6 +63,43 @@ CREATE TABLE `friend_list`  (
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `unique`(`uid`, `f_uid`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '好友表' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Table structure for group
+-- ----------------------------
+DROP TABLE IF EXISTS `group`;
+CREATE TABLE `group`  (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '群组名称',
+  `owner_uid` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '群主uid',
+  `created_at` int(10) UNSIGNED NULL DEFAULT 0 COMMENT '创建时间',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Table structure for group_join
+-- ----------------------------
+DROP TABLE IF EXISTS `group_join`;
+CREATE TABLE `group_join`  (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `group_id` int(10) UNSIGNED NOT NULL DEFAULT 10,
+  `user_id` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  `join_at` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Table structure for group_user
+-- ----------------------------
+DROP TABLE IF EXISTS `group_user`;
+CREATE TABLE `group_user`  (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `group_id` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '群组id',
+  `user_id` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '用户id',
+  `role` tinyint(3) UNSIGNED NOT NULL DEFAULT 0 COMMENT '角色，0普通成员，1管理员，2群主',
+  `join_at` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '进群时间',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for user

@@ -72,6 +72,21 @@ func SetRouter(r *gin.Engine) {
 		// 删除好友
 		friend.POST("/del", v1.DelFriend)
 
+		// 群组系统
+		group := im.Group("/group")
+		// 创建群组
+		group.POST("/create", v1.CreateGroup)
+		// 群组列表
+		group.POST("/list", v1.GroupList)
+		// 请求加入群组
+		group.POST("/join/request", v1.JoinGroup)
+		// 加入群组请求处理
+		group.POST("/join/confirm", v1.JoinPass)
+		// 离开群组
+		group.POST("/level", v1.LeaveGroup)
+		// 设置群成员
+		group.POST("/set/member", v1.SetMember)
+
 		// 聊天系统
 		chat := im.Group("/chat")
 		// 发送消息给用户
