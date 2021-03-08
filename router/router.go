@@ -19,10 +19,10 @@ func SetRouter(r *gin.Engine) {
 	// websocket连接
 	r.GET("/ws", ws.WebsocketEntry)
 	// websocket服务状态
-	r.Any("/ws/status", ws.Status)
+	r.GET("/ws/status", ws.Status)
 
 	// 首页
-	r.Any("/", api.Welcome)
+	r.GET("/", api.Welcome)
 	// 未定义路由
 	r.NoRoute(api.NotFound)
 	r.NoMethod(api.NotFound)

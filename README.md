@@ -4,17 +4,36 @@ PPIM社交项目服务器
 
 语言：Golang
 
-版本：开源版
-
-协议：http/websocket
+框架：Gin
 
 环境要求：
 Mysql5.6+ |
 Redis3.2+ |
 ElasticSearch7.0+
 
-运行：
-go run main.go
+版本：开源v1
+
+运行：<br>
+1、部署elasticsearch、redis、mysql<br>
+2、修改配置文件config.yml<br>
+3、go run main.go
+
+接口安全：JWT<br>
+接口列表：<br>
+1、用户登录<br>
+2、用户注册<br>
+3、设置昵称<br>
+4、设置头像<br>
+5、实名认证<br>
+6、上传用户位置(经纬度)<br>
+7、附近的人<br>
+8、好友列表<br>
+9、添加好友<br>
+10、添加好友请求<br>
+11、同意/拒绝好友请求<br>
+12、删除好友<br>
+13、发送消息<br>
+14、撤回消息<br>
 
 
 
