@@ -8,7 +8,7 @@ require (
 	github.com/gin-gonic/gin v1.6.3
 	github.com/go-playground/validator/v10 v10.3.0 // indirect
 	github.com/go-redis/redis/v8 v8.0.0-beta.7
-	github.com/golang/protobuf v1.4.2 // indirect
+	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/gorilla/websocket v1.4.2
 	github.com/jinzhu/gorm v1.9.16
 	github.com/json-iterator/go v1.1.10 // indirect
@@ -27,8 +27,9 @@ require (
 	go.opentelemetry.io/otel v0.10.0 // indirect
 	golang.org/x/exp v0.0.0-20200819202907-27b6b2ade93b // indirect
 	golang.org/x/sys v0.0.0-20200819171115-d785dc25833f // indirect
-	google.golang.org/grpc v1.31.0 // indirect
-	google.golang.org/protobuf v1.25.0 // indirect
+	google.golang.org/genproto v0.0.0-20200526211855-cb27e3aa2013 // indirect
+	google.golang.org/grpc v1.37.0 // indirect
+	google.golang.org/protobuf v1.26.0 // indirect
 	gopkg.in/ini.v1 v1.60.0 // indirect
 	gopkg.in/yaml.v2 v2.3.0 // indirect
 )
