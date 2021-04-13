@@ -5,9 +5,21 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 	"ppIm/router"
+	"ppIm/rpc"
+	"time"
 )
 
 func StartServer() {
+	// 测试rpc
+	go rpc.Server()
+	go func() {
+		timer := time.NewTicker(3 * time.Second)
+		for  {
+			<-timer.C
+			rpc.DialRpc()
+		}
+	}()
+
 	httpServer()
 }
 

@@ -1,4 +1,4 @@
-package main
+package rpc
 
 import (
 	"fmt"
@@ -23,10 +23,10 @@ func (h helloService) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.He
 	return resp, nil
 }
 
-func main() {
+func Server() {
 	listen, err := net.Listen("tcp", "127.0.0.1:50052")
 	if err != nil {
-		fmt.Println("Failed to listen: %v", err)
+		panic(err)
 	}
 
 	// 实例化grpc Server
@@ -35,6 +35,6 @@ func main() {
 	// 注册HelloService
 	pb.RegisterHelloServer(s, HelloService)
 
-	fmt.Println("Listen on 127.0.0.1:50052")
-	s.Serve(listen)
+	fmt.Println("[RPC-debug] Listen on 127.0.0.1:50052")
+	panic(s.Serve(listen))
 }

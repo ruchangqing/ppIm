@@ -1,4 +1,4 @@
-package main
+package rpc
 
 import (
 	"fmt"
@@ -7,11 +7,12 @@ import (
 	pb "ppIm/rpc/proto" // 引入编译生成的包
 )
 
-func main() {
+func DialRpc() {
 	// 连接
 	conn, err := grpc.Dial("127.0.0.1:50052", grpc.WithInsecure())
 	if err != nil {
 		fmt.Println(err)
+		return
 	}
 	defer conn.Close()
 
@@ -24,6 +25,7 @@ func main() {
 
 	if err != nil {
 		fmt.Println(err)
+		return
 	}
 
 	fmt.Println(res.Message)

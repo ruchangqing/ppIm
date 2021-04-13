@@ -15,7 +15,7 @@ import (
 func LoadService() {
 	connectDb()
 	connectRedis()
-	ConnectElasticsearch()
+	connectElasticsearch()
 }
 
 func connectDb() {
@@ -51,7 +51,7 @@ func connectRedis() {
 	}
 }
 
-func ConnectElasticsearch() {
+func connectElasticsearch() {
 	host := viper.GetString("elasticsearch.host")
 	port := viper.GetString("elasticsearch.port")
 	user := viper.GetString("elasticsearch.user")
