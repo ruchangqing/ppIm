@@ -9,11 +9,6 @@ import (
 	pb "ppIm/rpc/proto" // 引入编译生成的包
 )
 
-const (
-	// Address gRPC服务地址
-	AddressS = "127.0.0.1:50052"
-)
-
 // 定义helloService并实现约定的接口
 type helloService struct{}
 
@@ -29,7 +24,7 @@ func (h helloService) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.He
 }
 
 func main() {
-	listen, err := net.Listen("tcp", AddressS)
+	listen, err := net.Listen("tcp", "127.0.0.1:50052")
 	if err != nil {
 		fmt.Println("Failed to listen: %v", err)
 	}
@@ -40,6 +35,6 @@ func main() {
 	// 注册HelloService
 	pb.RegisterHelloServer(s, HelloService)
 
-	fmt.Println("Listen on " + AddressS)
+	fmt.Println("Listen on 127.0.0.1:50052")
 	s.Serve(listen)
 }

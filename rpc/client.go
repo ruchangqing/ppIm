@@ -7,14 +7,9 @@ import (
 	pb "ppIm/rpc/proto" // 引入编译生成的包
 )
 
-const (
-	// Address gRPC服务地址
-	AddressC = "127.0.0.1:50052"
-)
-
 func main() {
 	// 连接
-	conn, err := grpc.Dial(AddressC, grpc.WithInsecure())
+	conn, err := grpc.Dial("127.0.0.1:50052", grpc.WithInsecure())
 	if err != nil {
 		fmt.Println(err)
 	}
