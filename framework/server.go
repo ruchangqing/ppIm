@@ -15,6 +15,17 @@ func StartServer() {
 	if global.IsCluster {
 		go rpc.Server()
 	}
+	//ch := make(chan int, 1) //创建一个缓冲大小为1的通道测试grpc服务
+	//timer := time.Tick(1 * time.Second)
+	//for {
+	//	select {
+	//	case <-timer:
+	//		fmt.Print(1)
+	//		ch <- 2
+	//	case x := <-ch:
+	//		fmt.Println(x)
+	//	}
+	//}
 	httpServer()
 }
 

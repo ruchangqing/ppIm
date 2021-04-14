@@ -7,6 +7,7 @@ import (
 	"github.com/gorilla/websocket"
 	"net/http"
 	"ppIm/middleware"
+	"ppIm/utils"
 	"time"
 )
 
@@ -72,7 +73,7 @@ func WebsocketEntry(ctx *gin.Context) {
 				if err != "" {
 					fmt.Println(err)
 				}
-				c.ClientId = GenClientId()
+				c.ClientId = utils.GenUuid()
 				c.Uid = id
 				c.Conn = conn
 				Connections[c.Uid] = c
