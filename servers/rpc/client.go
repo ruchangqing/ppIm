@@ -2,14 +2,16 @@ package rpc
 
 import (
 	"fmt"
+	"github.com/spf13/viper"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
-	pb "ppIm/rpc/proto" // 引入编译生成的包
+	pb "ppIm/servers/rpc/proto" // 引入编译生成的包
 )
 
 func DialRpc() {
+	rpcAddress := viper.GetString("cluster.rpc_address")
 	// 连接
-	conn, err := grpc.Dial("127.0.0.1:50052", grpc.WithInsecure())
+	conn, err := grpc.Dial(rpcAddress, grpc.WithInsecure())
 	if err != nil {
 		fmt.Println(err)
 		return

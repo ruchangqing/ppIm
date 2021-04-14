@@ -2,6 +2,7 @@ package framework
 
 import (
 	"github.com/spf13/viper"
+	"ppIm/global"
 )
 
 func LoadConfig() {
@@ -12,4 +13,5 @@ func LoadConfig() {
 	if err != nil {
 		panic(err)
 	}
+	global.IsCluster = viper.GetBool("cluster.open")
 }

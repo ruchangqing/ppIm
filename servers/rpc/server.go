@@ -2,11 +2,12 @@ package rpc
 
 import (
 	"fmt"
+	"github.com/spf13/viper"
 	"net"
 
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
-	pb "ppIm/rpc/proto" // 引入编译生成的包
+	pb "ppIm/servers/rpc/proto" // 引入编译生成的包
 )
 
 // 定义helloService并实现约定的接口
@@ -24,7 +25,8 @@ func (h helloService) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.He
 }
 
 func Server() {
-	listen, err := net.Listen("tcp", "127.0.0.1:50052")
+	rpcAddress := viper.GetString("cluster.rpc_address")
+	listen, err := net.Listen("tcp", rpcAddress)
 	if err != nil {
 		panic(err)
 	}
@@ -35,6 +37,6 @@ func Server() {
 	// 注册HelloService
 	pb.RegisterHelloServer(s, HelloService)
 
-	fmt.Println("[RPC-debug] Listen on 127.0.0.1:50052")
+	fmt.Println("[RPC-debug] Listen on " + rpcAddress)
 	panic(s.Serve(listen))
 }

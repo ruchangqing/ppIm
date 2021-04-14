@@ -25,7 +25,7 @@ type Message struct {
 
 var Onlines = 0                 // 连接数
 var OnlinesMutex sync.Mutex     // 连接数锁
-var MaxClientId = 8880000000    // 目前最大生成的client_id
+var MaxClientId = 1    			// 目前最大生成的client_id
 var GenClientIdMutex sync.Mutex // 生成client_id锁
 
 // 给已认证用户生成client_id

@@ -10,5 +10,6 @@ var (
 	Mysql               *gorm.DB
 	Redis               *redis.Client
 	Elasticsearch		*elastic.Client
-	JwtHmacSampleSecret = []byte("pancoiscool!") // jwt加密密钥
+	JwtHmacSampleSecret = []byte("pancoiscool!") //jwt加密密钥
+	IsCluster			bool 					 //是否开启集群模式
 )
