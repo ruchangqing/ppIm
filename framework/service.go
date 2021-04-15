@@ -8,14 +8,18 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"github.com/olivere/elastic/v7"
 	"github.com/spf13/viper"
+	clientv3 "go.etcd.io/etcd/client/v3"
 	"ppIm/global"
 	"ppIm/model"
+	"ppIm/servers"
+	"time"
 )
 
 func LoadService() {
 	connectDb()
 	connectRedis()
 	connectElasticsearch()
+	connectEtcd()
 }
 
 func connectDb() {
@@ -67,4 +71,16 @@ func connectElasticsearch() {
 
 	// 创建用户位置索引
 	_, _ = global.Elasticsearch.CreateIndex("user_location").BodyString(model.CreateUserLocationIndex).Do(context.Background())
+}
+
+func connectEtcd() {
+	var err error
+	servers.EtcdClient, err = clientv3.New(clientv3.Config{
+		Endpoints:   []string{viper.GetString("cluster.etcd")},
+		DialTimeout: 5 * time.Second,
+	})
+	if err != nil {
+		panic(err)
+	}
+	//defer EtcdClient.Close()
 }

@@ -22,10 +22,10 @@ require (
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/spf13/viper v1.7.1
+	go.etcd.io/etcd/client/v3 v3.5.0-alpha.0 // indirect
 	go.opentelemetry.io/otel v0.10.0 // indirect
 	golang.org/x/exp v0.0.0-20200819202907-27b6b2ade93b // indirect
 	golang.org/x/net v0.0.0-20200324143707-d3edc9973b7e
-	golang.org/x/sys v0.0.0-20200819171115-d785dc25833f // indirect
 	google.golang.org/grpc v1.37.0
 	google.golang.org/protobuf v1.26.0
 	gopkg.in/ini.v1 v1.60.0 // indirect
