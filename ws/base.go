@@ -22,8 +22,11 @@ type Connection struct {
 	Conn     *websocket.Conn
 }
 
-// 所有连接map
+// 本机连接表
 var Connections = make(map[int]*Connection)
+
+// 已认证连接表
+var UidToClientId = make(map[int]string)
 
 // 连接计数器&&并发锁
 var ClientCounter = 0
@@ -108,6 +111,7 @@ func WebsocketEntry(ctx *gin.Context) {
 					fmt.Println(err)
 				}
 				c.Uid = id
+				UidToClientId[c.Uid] = c.ClientId // 认证成功后注册到已认证连接表，方便查询对应clientId
 				conn.WriteJSON(WsMsg(1, 1, "ok", nil))
 			}
 		} else {
