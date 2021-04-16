@@ -23,6 +23,6 @@ elasticsearch:
   user: "elastic"                 #es用户名
   pass: ""                        #es密码
 cluster:
-  etcd: "127.0.0.1:2379"          #etcd服务地址
   open: true                      #是否开启集群模式
-  rpc_address: "127.0.0.1:9901"   #gRPC服务监听地址
+  etcd: "127.0.0.1:2379"          #etcd服务地址
+  rpc_port: "9901"                #gRPC服务监听端口

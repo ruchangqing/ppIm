@@ -25,7 +25,7 @@ func (h helloService) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.He
 }
 
 func Server() {
-	rpcAddress := viper.GetString("cluster.rpc_address")
+	rpcAddress := "127.0.0.1:" + viper.GetString("cluster.rpc_port")
 	listen, err := net.Listen("tcp", rpcAddress)
 	if err != nil {
 		panic(err)

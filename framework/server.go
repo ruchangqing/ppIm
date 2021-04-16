@@ -16,8 +16,8 @@ func StartServer() {
 	if global.IsCluster {
 		go rpc.Server()
 		servers.RegisterServer()
+		go servers.WatchServers()
 	}
-	servers.GetServers()
 	httpServer()
 }
 

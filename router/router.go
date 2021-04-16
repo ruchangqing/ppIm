@@ -6,6 +6,7 @@ import (
 	"ppIm/api"
 	v1 "ppIm/api/v1"
 	"ppIm/middleware"
+	"ppIm/servers"
 	"ppIm/ws"
 )
 
@@ -20,6 +21,9 @@ func SetRouter(r *gin.Engine) {
 	r.GET("/ws", ws.WebsocketEntry)
 	// websocket服务状态
 	r.GET("/ws/status", ws.Status)
+
+	// 集群服务器列表
+	r.GET("/cluster/servers", servers.ApiQuery)
 
 	// 首页
 	r.GET("/", api.Welcome)

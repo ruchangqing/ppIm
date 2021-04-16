@@ -9,7 +9,7 @@ import (
 )
 
 func DialRpc() {
-	rpcAddress := viper.GetString("cluster.rpc_address")
+	rpcAddress := "127.0.0.1:" + viper.GetString("cluster.rpc_port")
 	// 连接
 	conn, err := grpc.Dial(rpcAddress, grpc.WithInsecure())
 	if err != nil {
