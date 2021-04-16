@@ -8,11 +8,29 @@ import (
 	"log"
 	"ppIm/utils"
 	"strings"
+	"time"
 )
 
 var EtcdClient *clientv3.Client
 
-//注册本机地址到etcd服务
+//获取当前所有集群
+func GetAllServers() []string {
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	resp, err := EtcdClient.Get(ctx, "server_", clientv3.WithPrefix())
+	cancel()
+	if err != nil {
+		log.Fatal(err)
+	}
+	var servers []string
+	for _, ev := range resp.Kvs {
+		arr := strings.Split(string(ev.Key), "server_")
+		serverAddr := arr[1]
+		servers = append(servers, serverAddr)
+	}
+	return servers
+}
+
+//注册集群
 func RegisterServer() {
 	serverIp := utils.GetIntranetIp()
 	serverAddress := serverIp + ":" + viper.GetString("cluster.rpc_port")
@@ -43,7 +61,7 @@ func RegisterServer() {
 	}()
 }
 
-//获取所有注册到哦哦哦哦哦etcd的服务器
+//发现集群
 func WatchServers() {
 	rch := EtcdClient.Watch(context.Background(), "server_", clientv3.WithPrefix())
 	for wresp := range rch {

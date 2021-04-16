@@ -15,6 +15,7 @@ import (
 func StartServer() {
 	if global.IsCluster {
 		go rpc.Server()
+		servers.Servers = servers.GetAllServers()
 		servers.RegisterServer()
 		go servers.WatchServers()
 	}
