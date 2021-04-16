@@ -9,14 +9,16 @@ PPIM社交项目服务器
 环境要求：
 Mysql5.6+ |
 Redis3.2+ |
-ElasticSearch7.0+
+ElasticSearch7.0+ |
+Etcd3+
 
 版本：开源v1
 
 运行：<br>
-1、部署elasticsearch、redis、mysql<br>
+1、部署elasticsearch、redis、mysql、etcd<br>
 2、修改配置文件config.yml<br>
 3、go run main.go
+
 
 接口安全：JWT<br>
 接口列表：<br>

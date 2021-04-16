@@ -5,11 +5,42 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
+	"github.com/spf13/viper"
+	"log"
 	"net/http"
 	"ppIm/middleware"
 	"ppIm/utils"
+	"strconv"
+	"sync"
 	"time"
 )
+
+// 连接结构体
+type Connection struct {
+	ClientId string
+	Uid      int
+	Conn     *websocket.Conn
+}
+
+// 所有连接map
+var Connections = make(map[int]*Connection)
+
+// 连接计数器&&并发锁
+var ClientCounter = 0
+var ClientCounterLocker sync.RWMutex
+
+//生成clientId
+func GenClientId(clientCounter int) string {
+	serverAddress := utils.GetIntranetIp() + ":" + viper.GetString("cluster.rpc_port")
+	str := serverAddress + "@@" + strconv.Itoa(clientCounter)
+	//clientId, err := utils.AesEncrypt([]byte(str))
+	//if err != nil {
+	//	log.Fatal("生成clientId出错：" + err.Error())
+	//}
+	clientId := str
+	fmt.Println(clientId)
+	return clientId
+}
 
 // 升级http为websocket服务
 var WebsocketUpgrade = websocket.Upgrader{
@@ -34,18 +65,21 @@ func WebsocketEntry(ctx *gin.Context) {
 		return
 	}
 
-	// 连接数+1
-	OnlinesMutex.Lock()
-	Onlines++
-	OnlinesMutex.Unlock()
-
-	// 是否认证绑定
-	isBind := false
 	var c Connection
+	var counter int
+
+	ClientCounterLocker.Lock()
+	ClientCounter++
+	counter = ClientCounter
+	Connections[counter] = &c
+	ClientCounterLocker.Unlock()
+
+	c.ClientId = GenClientId(counter)
+
 	// 15秒内没收到token绑定成功的断开连接
 	time.AfterFunc(15*time.Second, func() {
-		if !isBind {
-			conn.Close()
+		if c.Uid == 0 {
+			log.Fatal(conn.Close())
 		}
 	})
 
@@ -67,29 +101,25 @@ func WebsocketEntry(ctx *gin.Context) {
 
 		// bind绑定uid和client_id，这是必须绑定的才能通信的
 		if message.Cmd == 1 {
-			if !isBind {
+			if c.Uid == 0 {
 				jwtToken := message.Data["token"]
 				id, err := middleware.ParseToken(ctx, jwtToken.(string))
 				if err != "" {
 					fmt.Println(err)
 				}
-				c.ClientId = utils.GenUuid()
 				c.Uid = id
-				c.Conn = conn
-				Connections[c.Uid] = c
-				isBind = true
 				conn.WriteJSON(WsMsg(1, 1, "ok", nil))
 			}
 		} else {
-			if isBind {
+			if c.Uid > 0 {
 				Receive(&c, message)
 			} else {
 				conn.WriteJSON(WsMsg(-1, 0, "Not bind!", nil))
 			}
 		}
 	}
-	// 退出循环，连接关闭，连接数-1
-	OnlinesMutex.Lock()
-	Onlines--
-	OnlinesMutex.Unlock()
+
+	ClientCounterLocker.Lock()
+	delete(Connections, counter)
+	ClientCounterLocker.Unlock()
 }
