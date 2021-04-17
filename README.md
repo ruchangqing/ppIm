@@ -1,18 +1,15 @@
 #ppIm
 
-PPIM社交项目服务器
+分布式社交服务<br>
+自动注册集群、发现集群、分布式websocket长连接服务<br>
 
 语言：Golang
 
-框架：Gin
-
-环境要求：
-Mysql5.6+ |
-Redis3.2+ |
-ElasticSearch7.0+ |
-Etcd3+
-
-版本：开源v1
+环境要求：<br>
+Mysql5.6+<br>
+Redis3.2+<br>
+ElasticSearch7.0+<br>
+Etcd3+<br>
 
 运行：<br>
 1、部署elasticsearch、redis、mysql、etcd<br>

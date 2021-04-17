@@ -21,7 +21,7 @@ func SetRouter(r *gin.Engine) {
 	r.GET("/ws", ws.WebsocketEntry)
 	// websocket服务状态
 	r.GET("/ws/status", ws.StatusApi)
-	//
+	// 查询某用户是否在线
 	r.GET("/ws/isOnline", ws.IsOnlineApi)
 
 	// 集群服务器列表
