@@ -30,12 +30,6 @@ var UidToClientId = make(map[int]string)
 var ClientCounter = 0
 var ClientCounterLocker sync.RWMutex
 
-// 接收消息结构规范
-type Message struct {
-	Cmd  int
-	Data map[string]interface{}
-}
-
 //生成clientId
 func GenClientId(clientCounter int) string {
 	str := global.ServerAddress + "@@" + strconv.Itoa(clientCounter)

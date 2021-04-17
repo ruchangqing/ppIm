@@ -1,27 +1,38 @@
 package ws
 
 import (
-	"github.com/gin-gonic/gin"
 	"ppIm/global"
 	"ppIm/servers"
+	"strconv"
+	"strings"
 )
 
-// 发送消息给客户端规范
-func WsMsg(cmd int, success int, msg string, data interface{}) gin.H {
-	return gin.H{
-		"cmd":  cmd,
-		"code": success,
-		"msg":  msg,
-		"data": data,
-	}
+type Message struct {
+	MsgType    int
+	MsgContent string
 }
 
 // 发送消息给uid
-func SendToUser(uid int, cmd int, success int, msg string, data interface{}) {
-	//if IsOnline(uid) {
-	//	client := Connections[uid]
-	//	client.Conn.WriteJSON(WsMsg(cmd, success, msg, data))
-	//}
+func SendToUser(uid int, msgType int, msgContent string) {
+	message := Message{msgType, msgContent}
+	for _, serverAddress := range servers.Servers {
+		if serverAddress == global.ServerAddress {
+			//调用本机方法查询uid在线
+			if IsOnline(uid) {
+				clientId := UidToClientId[uid]
+				arr := strings.Split(string(clientId), "@@")
+				number, _ := strconv.Atoi(arr[2])
+				Connections[number].Conn.WriteJSON(message)
+				break
+			}
+		} else {
+			//通过RPC调用其他集群查询uid在线
+			if RpcIsOnline(serverAddress, uid) {
+				RpcSendToUser(serverAddress, uid, msgType, msgContent)
+				break
+			}
+		}
+	}
 }
 
 // 判断用户是否在线(本机)
