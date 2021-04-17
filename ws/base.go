@@ -5,10 +5,9 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
-	"github.com/spf13/viper"
 	"net/http"
+	"ppIm/global"
 	"ppIm/middleware"
-	"ppIm/utils"
 	"strconv"
 	"sync"
 	"time"
@@ -33,8 +32,7 @@ var ClientCounterLocker sync.RWMutex
 
 //生成clientId
 func GenClientId(clientCounter int) string {
-	serverAddress := utils.GetIntranetIp() + ":" + viper.GetString("cluster.rpc_port")
-	str := serverAddress + "@@" + strconv.Itoa(clientCounter)
+	str := global.ServerAddress + "@@" + strconv.Itoa(clientCounter)
 	//clientId, err := utils.AesEncrypt([]byte(str))
 	//if err != nil {
 	//	fmt.Println("生成clientId出错：" + err.Error())
@@ -83,6 +81,8 @@ func WebsocketEntry(ctx *gin.Context) {
 			conn.Close()
 		}
 	})
+
+	IsOnline(1)
 
 	// 必须死循环，gin通过协程调用该handler函数，一旦退出函数，ws会被主动销毁
 	for {

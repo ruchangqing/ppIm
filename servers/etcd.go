@@ -3,9 +3,8 @@ package servers
 import (
 	"context"
 	"fmt"
-	"github.com/spf13/viper"
 	clientv3 "go.etcd.io/etcd/client/v3"
-	"ppIm/utils"
+	"ppIm/global"
 	"strings"
 	"time"
 )
@@ -31,16 +30,14 @@ func GetAllServers() []string {
 
 //注册集群
 func RegisterServer() {
-	serverIp := utils.GetIntranetIp()
-	serverAddress := serverIp + ":" + viper.GetString("cluster.rpc_port")
-	AddServer(serverAddress)
+	AddServer(global.ServerAddress)
 	//新建租约
 	resp, err := EtcdClient.Grant(context.TODO(), 5)
 	if err != nil {
 		fmt.Println(err)
 	}
 	//授予租约
-	key := "server_" + serverAddress
+	key := "server_" + global.ServerAddress
 	_, err = EtcdClient.Put(context.TODO(), key, "1", clientv3.WithLease(resp.ID))
 	if err != nil {
 		fmt.Println(err)

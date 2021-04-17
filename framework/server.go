@@ -8,13 +8,15 @@ import (
 	"ppIm/global"
 	"ppIm/router"
 	"ppIm/servers"
-	"ppIm/servers/rpc"
+	"ppIm/servers/rpc/im"
+	"ppIm/utils"
 	"time"
 )
 
 func StartServer() {
+	global.ServerAddress = utils.GetIntranetIp() + ":" + viper.GetString("cluster.rpc_port")
 	if global.IsCluster {
-		go rpc.Server()
+		go im.Server()
 		servers.Servers = servers.GetAllServers()
 		servers.RegisterServer()
 		go servers.WatchServers()

@@ -12,4 +12,5 @@ var (
 	Elasticsearch		*elastic.Client
 	JwtHmacSampleSecret = []byte("pancoiscool!") //jwt加密密钥
 	IsCluster			bool 					 //是否开启集群模式
+	ServerAddress		string					 //本机集群rpc地址
 )

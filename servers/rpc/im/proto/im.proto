@@ -1,0 +1,31 @@
+syntax = "proto3"; // 指定proto版本
+package im;        // 指定包名
+
+// 指定golang包名
+option go_package = "/im";
+
+// 定义服务
+service Im {
+  // 查询用户是否在线方法
+  rpc IsOnline(IsOnlineRequest) returns (IsOnlineResponse) {}
+  // 发送实时消息给用户
+  rpc SendToUser(SendToUserRequest) returns (SendToUserResponse) {}
+}
+
+message IsOnlineRequest {
+  int64 uid = 1;
+}
+
+message IsOnlineResponse {
+  bool isOnline = 1;
+}
+
+message SendToUserRequest {
+  int64  targetUid  = 1;     //接收消息方
+  int64  msgType    = 2;     //消息类型
+  string msgContent = 3;     //消息内容
+}
+
+message SendToUserResponse {
+  bool result = 1;           // 发送结果
+}
