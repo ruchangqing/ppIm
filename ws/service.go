@@ -14,8 +14,9 @@ type Message struct {
 // websocket状态接口
 func Status(ctx *gin.Context) {
 	api.R(ctx, 200, "status", gin.H{
-		"connections": Connections,
-		"online": len(Connections),
+		"connections":   Connections,
+		"uidToClientId": UidToClientId,
+		"online":        len(Connections),
 	})
 }
 

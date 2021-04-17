@@ -34,7 +34,7 @@ func connectDb() {
 	args := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s&parseTime=True&loc=Local", user, pass, host, port, dbname, charset)
 	global.Mysql, err = gorm.Open(dbType, args)
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
 	}
 	// 全局禁用表名复数
 	global.Mysql.SingularTable(true)
@@ -51,7 +51,7 @@ func connectRedis() {
 	})
 	_, err := global.Redis.Ping(context.Background()).Result()
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
 	}
 }
 
@@ -66,7 +66,7 @@ func connectElasticsearch() {
 		elastic.SetBasicAuth(user, pass),
 	)
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
 	}
 
 	// 创建用户位置索引
@@ -80,7 +80,7 @@ func connectEtcd() {
 		DialTimeout: 5 * time.Second,
 	})
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
 	}
 	//defer EtcdClient.Close()
 }

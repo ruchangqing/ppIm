@@ -3,6 +3,7 @@ package utils
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -17,7 +18,7 @@ func Get(url string) string {
 	client := &http.Client{Timeout: 5 * time.Second}
 	resp, err := client.Get(url)
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
 	}
 	defer resp.Body.Close()
 	var buffer [512]byte
@@ -28,7 +29,7 @@ func Get(url string) string {
 		if err != nil && err == io.EOF {
 			break
 		} else if err != nil {
-			panic(err)
+			fmt.Println(err)
 		}
 	}
 
@@ -46,7 +47,7 @@ func Post(url string, data interface{}, contentType string) string {
 	jsonStr, _ := json.Marshal(data)
 	resp, err := client.Post(url, contentType, bytes.NewBuffer(jsonStr))
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
 	}
 	defer resp.Body.Close()
 

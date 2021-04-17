@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/spf13/viper"
 	clientv3 "go.etcd.io/etcd/client/v3"
-	"log"
 	"ppIm/utils"
 	"strings"
 	"time"
@@ -19,7 +18,7 @@ func GetAllServers() []string {
 	resp, err := EtcdClient.Get(ctx, "server_", clientv3.WithPrefix())
 	cancel()
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
 	}
 	var servers []string
 	for _, ev := range resp.Kvs {
@@ -38,18 +37,18 @@ func RegisterServer() {
 	//新建租约
 	resp, err := EtcdClient.Grant(context.TODO(), 5)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
 	}
 	//授予租约
 	key := "server_" + serverAddress
 	_, err = EtcdClient.Put(context.TODO(), key, "1", clientv3.WithLease(resp.ID))
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
 	}
 	//keep-alive
 	ch, kaerr := EtcdClient.KeepAlive(context.TODO(), resp.ID)
 	if kaerr != nil {
-		log.Fatal(kaerr)
+		fmt.Println(kaerr)
 	}
 	go func() {
 		for {

@@ -28,7 +28,7 @@ func Server() {
 	rpcAddress := "127.0.0.1:" + viper.GetString("cluster.rpc_port")
 	listen, err := net.Listen("tcp", rpcAddress)
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
 	}
 
 	// 实例化grpc Server
@@ -38,5 +38,5 @@ func Server() {
 	pb.RegisterHelloServer(s, HelloService)
 
 	fmt.Println("[RPC-debug] Listen on " + rpcAddress)
-	panic(s.Serve(listen))
+	fmt.Println(s.Serve(listen))
 }

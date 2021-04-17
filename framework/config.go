@@ -1,6 +1,7 @@
 package framework
 
 import (
+	"fmt"
 	"github.com/spf13/viper"
 	"ppIm/global"
 )
@@ -11,7 +12,7 @@ func LoadConfig() {
 	viper.SetConfigFile(filePath)
 	err := viper.ReadInConfig()
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
 	}
 	global.IsCluster = viper.GetBool("cluster.open")
 }

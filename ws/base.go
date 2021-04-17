@@ -6,7 +6,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"github.com/spf13/viper"
-	"log"
 	"net/http"
 	"ppIm/middleware"
 	"ppIm/utils"
@@ -38,10 +37,9 @@ func GenClientId(clientCounter int) string {
 	str := serverAddress + "@@" + strconv.Itoa(clientCounter)
 	//clientId, err := utils.AesEncrypt([]byte(str))
 	//if err != nil {
-	//	log.Fatal("生成clientId出错：" + err.Error())
+	//	fmt.Println("生成clientId出错：" + err.Error())
 	//}
 	clientId := str
-	fmt.Println(clientId)
 	return clientId
 }
 
@@ -82,7 +80,7 @@ func WebsocketEntry(ctx *gin.Context) {
 	// 15秒内没收到token绑定成功的断开连接
 	time.AfterFunc(15*time.Second, func() {
 		if c.Uid == 0 {
-			log.Fatal(conn.Close())
+			conn.Close()
 		}
 	})
 
@@ -125,5 +123,8 @@ func WebsocketEntry(ctx *gin.Context) {
 
 	ClientCounterLocker.Lock()
 	delete(Connections, counter)
+	if c.Uid > 0 {
+		delete(UidToClientId, c.Uid)
+	}
 	ClientCounterLocker.Unlock()
 }

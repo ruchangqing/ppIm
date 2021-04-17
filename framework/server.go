@@ -53,5 +53,5 @@ func httpServer() {
 	router.SetRouter(server)
 	listenAddress := fmt.Sprintf("%s:%s", host, port)
 	fmt.Println("[GIN-debug] Listen on " + listenAddress)
-	panic(server.Run(listenAddress))
+	fmt.Println(server.Run(listenAddress))
 }
