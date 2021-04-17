@@ -3,7 +3,7 @@ app:
   domain: "http://127.0.0.1:8080" #域名
 http:
   host: "0.0.0.0"                 #http服务监听
-  port: "8080"                    #http服务端口
+  port: "8081"                    #http服务端口
   responseType: "json"            #http接口响应格式
 db:
   dbType: "mysql"                 #数据库类型
@@ -25,4 +25,4 @@ elasticsearch:
 cluster:
   open: true                      #是否开启集群模式
   etcd: "127.0.0.1:2379"          #etcd服务地址
-  rpc_port: "9901"                #gRPC服务监听端口
+  rpc_port: "9902"                #gRPC服务监听端口

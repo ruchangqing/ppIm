@@ -1,8 +1,6 @@
 package utils
 
-import (
-	"net"
-)
+import "net"
 
 //获取本机内网IP
 func GetIntranetIp() string {
@@ -17,4 +15,5 @@ func GetIntranetIp() string {
 		}
 	}
 	return ""
+	//return "127.0.0.1"
 }

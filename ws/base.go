@@ -30,6 +30,12 @@ var UidToClientId = make(map[int]string)
 var ClientCounter = 0
 var ClientCounterLocker sync.RWMutex
 
+// 接收消息结构规范
+type Message struct {
+	Cmd  int
+	Data map[string]interface{}
+}
+
 //生成clientId
 func GenClientId(clientCounter int) string {
 	str := global.ServerAddress + "@@" + strconv.Itoa(clientCounter)
@@ -81,8 +87,6 @@ func WebsocketEntry(ctx *gin.Context) {
 			conn.Close()
 		}
 	})
-
-	IsOnline(1)
 
 	// 必须死循环，gin通过协程调用该handler函数，一旦退出函数，ws会被主动销毁
 	for {

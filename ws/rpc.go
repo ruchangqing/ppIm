@@ -1,14 +1,14 @@
-package im
+package ws
 
 import (
 	"fmt"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
-	pb "ppIm/servers/rpc/im/proto"
+	pb "ppIm/servers/rpc/proto"
 )
 
 // RPC远程调用查询是否在线
-func IsOnline(rpcAddress string, uid int) bool {
+func RpcIsOnline(rpcAddress string, uid int) bool {
 	conn, err := grpc.Dial(rpcAddress, grpc.WithInsecure())
 	if err != nil {
 		fmt.Println("连接rpc服务器" + rpcAddress + " 发生错误：" + err.Error())
@@ -30,7 +30,7 @@ func IsOnline(rpcAddress string, uid int) bool {
 }
 
 // RPC远程调用发送给用户消息
-func SendToUser(rpcAddress string, targetUid int, msgType int, msgContent string) bool {
+func RpcSendToUser(rpcAddress string, targetUid int, msgType int, msgContent string) bool {
 	conn, err := grpc.Dial(rpcAddress, grpc.WithInsecure())
 	if err != nil {
 		fmt.Println("连接rpc服务器" + rpcAddress + " 发生错误：" + err.Error())

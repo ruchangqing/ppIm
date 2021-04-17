@@ -4,11 +4,14 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
+	"google.golang.org/grpc"
+	"net"
 	"os"
 	"ppIm/global"
 	"ppIm/router"
 	"ppIm/servers"
-	"ppIm/servers/rpc/im"
+	"ppIm/servers/rpc"
+	pb "ppIm/servers/rpc/proto"
 	"ppIm/utils"
 	"time"
 )
@@ -16,12 +19,26 @@ import (
 func StartServer() {
 	global.ServerAddress = utils.GetIntranetIp() + ":" + viper.GetString("cluster.rpc_port")
 	if global.IsCluster {
-		go im.Server()
+		go rpcServer()
 		servers.Servers = servers.GetAllServers()
 		servers.RegisterServer()
 		go servers.WatchServers()
 	}
 	httpServer()
+}
+
+func rpcServer() {
+	listenAddress := "127.0.0.1:" + viper.GetString("cluster.rpc_port")
+	listen, err := net.Listen("tcp", listenAddress)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	s := grpc.NewServer()
+	pb.RegisterImServer(s, rpc.ImService)
+
+	fmt.Println("[RPC-debug] Listen on " + listenAddress)
+	fmt.Println(s.Serve(listen))
 }
 
 func httpServer() {
