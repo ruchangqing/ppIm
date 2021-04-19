@@ -18,12 +18,10 @@ import (
 
 func StartServer() {
 	global.ServerAddress = utils.GetIntranetIp() + ":" + viper.GetString("cluster.rpc_port")
-	if global.IsCluster {
-		go rpcServer()
-		servers.Servers = servers.GetAllServers()
-		servers.RegisterServer()
-		go servers.WatchServers()
-	}
+	go rpcServer()
+	servers.Servers = servers.GetAllServers()
+	servers.RegisterServer()
+	go servers.WatchServers()
 	httpServer()
 }
 

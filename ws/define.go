@@ -32,10 +32,11 @@ var ClientCounterLocker sync.RWMutex
 
 // 消息类型定义
 const (
+	OK                   = 90001
+	Fail                 = 90002
 	Sign                 = 10000
 	SignSuccess          = 10001
 	SignFail             = 10002
-	Fail                 = 90000
 	ReceiveFriendMessage = 20001
 	RecallFriendMessage  = 20002
 	ReceiveFriendAdd     = 30001

@@ -83,7 +83,7 @@ func WebsocketEntry(ctx *gin.Context) {
 			}
 		} else {
 			if c.Uid > 0 {
-				Receive(&c, message)
+				conn.WriteJSON(Message{OK, "发送成功"})
 			} else {
 				conn.WriteJSON(Message{Fail, "您还未认证"})
 			}
