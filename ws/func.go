@@ -16,7 +16,7 @@ func SendToUser(uid int, msgType int, msgContent string) {
 			if IsOnline(uid) {
 				clientId := UidToClientId[uid]
 				arr := strings.Split(string(clientId), "@@")
-				number, _ := strconv.Atoi(arr[2])
+				number, _ := strconv.Atoi(arr[1])
 				Connections[number].Conn.WriteJSON(message)
 				break
 			}

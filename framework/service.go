@@ -12,6 +12,7 @@ import (
 	"ppIm/global"
 	"ppIm/model"
 	"ppIm/servers"
+	"strings"
 	"time"
 )
 
@@ -74,9 +75,11 @@ func connectElasticsearch() {
 }
 
 func connectEtcd() {
+	etcdString := viper.GetString("cluster.etcd")
+	etcdArr := strings.Split(etcdString,"|")
 	var err error
 	servers.EtcdClient, err = clientv3.New(clientv3.Config{
-		Endpoints:   []string{viper.GetString("cluster.etcd")},
+		Endpoints:   etcdArr,
 		DialTimeout: 5 * time.Second,
 	})
 	if err != nil {
