@@ -4,6 +4,8 @@ import (
 	"golang.org/x/net/context"
 	pb "ppIm/servers/rpc/proto"
 	"ppIm/ws"
+	"strconv"
+	"strings"
 )
 
 type imService struct{}
@@ -24,6 +26,11 @@ func (h imService) IsOnline(ctx context.Context, in *pb.IsOnlineRequest) (*pb.Is
 func (h imService) SendToUser(ctx context.Context, in *pb.SendToUserRequest) (*pb.SendToUserResponse, error) {
 	resp := new(pb.SendToUserResponse)
 	resp.Result = false
+
+	clientId := ws.UidToClientId[int(in.TargetUid)]
+	arr := strings.Split(string(clientId), "@@")
+	number, _ := strconv.Atoi(arr[2])
+	ws.Connections[number].Conn.WriteJSON(ws.Message{int(in.MsgType), in.MsgContent})
 
 	return resp, nil
 }

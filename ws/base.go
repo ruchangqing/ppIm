@@ -6,40 +6,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"net/http"
-	"ppIm/global"
 	"ppIm/middleware"
-	"strconv"
-	"sync"
 	"time"
 )
-
-// 连接结构体
-type Connection struct {
-	ClientId string
-	Uid      int
-	Conn     *websocket.Conn
-}
-
-// 本机连接表
-var Connections = make(map[int]*Connection)
-
-// 已认证连接表
-var UidToClientId = make(map[int]string)
-
-// 连接计数器&&并发锁
-var ClientCounter = 0
-var ClientCounterLocker sync.RWMutex
-
-//生成clientId
-func GenClientId(clientCounter int) string {
-	str := global.ServerAddress + "@@" + strconv.Itoa(clientCounter)
-	//clientId, err := utils.AesEncrypt([]byte(str))
-	//if err != nil {
-	//	fmt.Println("生成clientId出错：" + err.Error())
-	//}
-	clientId := str
-	return clientId
-}
 
 // 升级http为websocket服务
 var WebsocketUpgrade = websocket.Upgrader{
@@ -93,28 +62,30 @@ func WebsocketEntry(ctx *gin.Context) {
 		var message Message
 		if err := json.Unmarshal(msg, &message); err != nil {
 			// 接收到非json数据
-			fmt.Println("[Websocket]Message json.Unmarshal fail: " + string(msg))
-			conn.WriteJSON(WsMsg(-1, 0, "非json格式数据", nil))
+			fmt.Println("[Websocket]消息解析失败: " + string(msg))
+			conn.WriteJSON(Message{-1, "消息格式错误"})
 			continue
 		}
 
 		// bind绑定uid和client_id，这是必须绑定的才能通信的
-		if message.Cmd == 1 {
+		if message.MsgType == Sign {
 			if c.Uid == 0 {
-				jwtToken := message.Data["token"]
-				id, err := middleware.ParseToken(ctx, jwtToken.(string))
+				jwtToken := message.MsgContent
+				id, err := middleware.ParseToken(ctx, jwtToken)
 				if err != "" {
 					fmt.Println(err)
+					conn.WriteJSON(Message{SignFail, "认证失败"})
+					continue
 				}
 				c.Uid = id
 				UidToClientId[c.Uid] = c.ClientId // 认证成功后注册到已认证连接表，方便查询对应clientId
-				conn.WriteJSON(WsMsg(1, 1, "ok", nil))
+				conn.WriteJSON(Message{SignSuccess, "认证成功"})
 			}
 		} else {
 			if c.Uid > 0 {
 				Receive(&c, message)
 			} else {
-				conn.WriteJSON(WsMsg(-1, 0, "Not bind!", nil))
+				conn.WriteJSON(Message{Fail, "您还未认证"})
 			}
 		}
 	}

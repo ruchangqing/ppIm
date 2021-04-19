@@ -7,11 +7,6 @@ import (
 	"strings"
 )
 
-type Message struct {
-	MsgType    int
-	MsgContent string
-}
-
 // 发送消息给uid
 func SendToUser(uid int, msgType int, msgContent string) {
 	message := Message{msgType, msgContent}

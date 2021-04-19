@@ -2,7 +2,6 @@ package v1
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/spf13/viper"
 	"ppIm/api"
 	"ppIm/global"
 	"ppIm/model"
@@ -81,18 +80,9 @@ func AddFriend(ctx *gin.Context) {
 	}
 
 	// 实时通知用户添加请求
-	if ws.IsOnline(user.Id) {
-		var me model.User
-		global.Mysql.Where("id = ?", uid).First(&me)
-		ws.Connections[user.Id].Conn.WriteJSON(ws.WsMsg(3, 200, me.Nickname+"请求添加您为好友", gin.H{
-			"uid":      uid,
-			"nickname": me.Nickname,
-			"avatar":   viper.GetString("app.domain") + me.Avatar,
-			"username": me.Username,
-			"reason":   reason,
-			"channel":  channel,
-		}))
-	}
+	var me model.User
+	global.Mysql.Where("id = ?", uid).First(&me)
+	ws.SendToUser(user.Id, ws.ReceiveFriendAdd, strconv.Itoa(uid))
 
 	api.Rt(ctx, global.SUCCESS, "成功发送添加请求", gin.H{})
 }
@@ -169,23 +159,9 @@ func AddPass(ctx *gin.Context) {
 	}
 
 	// 实时通知用户我是否同意
-	if ws.IsOnline(fUid) {
-		var me model.User
-		global.Mysql.Where("id = ?", uid).First(&me)
-		var msg string
-		if status == 1 {
-			msg = "同意您添加为好友"
-		} else if status == -1 {
-			msg = "拒绝您添加为好友"
-		}
-		ws.Connections[fUid].Conn.WriteJSON(ws.WsMsg(4, 200, me.Nickname+msg, gin.H{
-			"uid":         uid,
-			"pass_status": status,
-			"nickname":    me.Nickname,
-			"avatar":      viper.GetString("app.domain") + me.Avatar,
-			"username":    me.Username,
-		}))
-	}
+	var me model.User
+	global.Mysql.Where("id = ?", uid).First(&me)
+	ws.SendToUser(fUid, ws.ReceiveFriendMessage, strconv.Itoa(uid))
 
 	api.Rt(ctx, global.SUCCESS, "成功", gin.H{})
 }

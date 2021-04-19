@@ -2,7 +2,6 @@ package v1
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/spf13/viper"
 	"ppIm/api"
 	"ppIm/global"
 	"ppIm/model"
@@ -35,19 +34,7 @@ func SendMessageToUser(ctx *gin.Context) {
 		// 持久化消息记录
 		chatUser := model.ChatUser{SendUid: uid, RecvUid: toUid, MessageType: messageType, Content: content, Status: 0, CreatedAt: now}
 		global.Mysql.Create(&chatUser)
-		ws.SendToUser(toUid, 2, 1, "有新消息", gin.H{
-			"sender": gin.H{
-				"uid":      uid,
-				"nickname": user.Nickname,
-				"avatar":   viper.GetString("app.domain") + user.Avatar,
-			},
-			"message": gin.H{
-				"id":          chatUser.Id,
-				"messageType": messageType,
-				"content":     content,
-				"created_at":  now,
-			},
-		})
+		ws.SendToUser(toUid, ws.ReceiveFriendMessage, content)
 		api.Rt(ctx, global.SUCCESS, "发送成功", gin.H{})
 	}
 }
@@ -71,10 +58,9 @@ func WithdrawMessageFromUser(ctx *gin.Context) {
 	}
 	// 把消息状态改为已撤回
 	global.Mysql.Model(&chatUser).Updates(map[string]interface{}{"status": -1})
-	// 通过对方撤回消息
-	ws.SendToUser(chatUser.RecvUid, 3, 1, "有新撤回消息", gin.H{
-		"f_uid":     uid,
-		"messageId": chatUser.Id,
-	})
+	// 通知对方撤回消息
+	id := strconv.Itoa(chatUser.Id)
+	ws.SendToUser(chatUser.RecvUid, ws.RecallFriendMessage, id)
+
 	api.Rt(ctx, global.SUCCESS, "撤回成功", gin.H{})
 }
