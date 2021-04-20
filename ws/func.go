@@ -15,7 +15,7 @@ func SendToUser(uid int, msgType int, msgContent string) {
 			//调用本机方法查询uid在线
 			if IsOnline(uid) {
 				clientId := UidToClientId[uid]
-				arr := strings.Split(string(clientId), "@@")
+				arr := strings.Split(clientId, "@@")
 				number, _ := strconv.Atoi(arr[1])
 				Connections[number].Conn.WriteJSON(message)
 				break

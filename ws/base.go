@@ -37,6 +37,7 @@ func WebsocketEntry(ctx *gin.Context) {
 	var counter int
 
 	ClientCounterLocker.Lock()
+	c.Conn = conn
 	ClientCounter++
 	counter = ClientCounter
 	Connections[counter] = &c

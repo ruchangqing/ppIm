@@ -32,14 +32,15 @@ var ClientCounterLocker sync.RWMutex
 
 // 消息类型定义
 const (
-	OK                   = 90001
-	Fail                 = 90002
-	Sign                 = 10000
-	SignSuccess          = 10001
-	SignFail             = 10002
-	ReceiveFriendMessage = 20001
-	RecallFriendMessage  = 20002
-	ReceiveFriendAdd     = 30001
+	OK                     = 90001 //成功
+	Fail                   = 90002 //失败
+	Sign                   = 10000 //登录
+	SignSuccess            = 10001 //登录成功
+	SignFail               = 10002 //等失败
+	ReceiveFriendMessage   = 20001 //收到好友消息
+	RecallFriendMessage    = 20002 //撤回私聊消息
+	ReceiveFriendAdd       = 30001 //收到好友添加请求
+	ReceiveFriendAddResult = 30002 //收到好友请求结果
 )
 
 //生成clientId

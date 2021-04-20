@@ -161,7 +161,7 @@ func AddPass(ctx *gin.Context) {
 	// 实时通知用户我是否同意
 	var me model.User
 	global.Mysql.Where("id = ?", uid).First(&me)
-	ws.SendToUser(fUid, ws.ReceiveFriendMessage, strconv.Itoa(uid))
+	ws.SendToUser(fUid, ws.ReceiveFriendAddResult, strconv.Itoa(uid))
 
 	api.Rt(ctx, global.SUCCESS, "成功", gin.H{})
 }

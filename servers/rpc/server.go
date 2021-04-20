@@ -30,7 +30,8 @@ func (h imService) SendToUser(ctx context.Context, in *pb.SendToUserRequest) (*p
 	clientId := ws.UidToClientId[int(in.TargetUid)]
 	arr := strings.Split(clientId, "@@")
 	number, _ := strconv.Atoi(arr[1])
-	ws.Connections[number].Conn.WriteJSON(ws.Message{int(in.MsgType), in.MsgContent})
+	message := ws.Message{int(in.MsgType), in.MsgContent}
+	ws.Connections[number].Conn.WriteJSON(message)
 
 	return resp, nil
 }
