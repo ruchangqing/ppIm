@@ -15,7 +15,7 @@
 
 **运行：**<br>
 1、部署elasticsearch、redis、mysql、etcd<br>
-2、导入 sql/database.sql 到mysql
+2、导入 sql/database.sql 到mysql<br>
 3、修改配置文件config.yml<br>
 4、go run main.go<br>
 
