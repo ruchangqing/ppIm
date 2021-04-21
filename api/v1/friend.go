@@ -10,8 +10,12 @@ import (
 	"time"
 )
 
+type friend struct{}
+
+var Friend friend
+
 // 好友列表
-func FriendList(ctx *gin.Context) {
+func (friend) List(ctx *gin.Context) {
 	uid := int(ctx.MustGet("id").(float64))
 	type Result struct {
 		Id       int
@@ -37,7 +41,7 @@ func FriendList(ctx *gin.Context) {
 }
 
 // 添加好友
-func AddFriend(ctx *gin.Context) {
+func (friend) Add(ctx *gin.Context) {
 	uid := int(ctx.MustGet("id").(float64))
 	username := ctx.PostForm("username")
 	channel := ctx.PostForm("channel")
@@ -88,7 +92,7 @@ func AddFriend(ctx *gin.Context) {
 }
 
 // 收到的好友请求列表
-func AddList(ctx *gin.Context) {
+func (friend) AddReqs(ctx *gin.Context) {
 	uid := int(ctx.MustGet("id").(float64))
 	type Result struct {
 		Id        int
@@ -116,7 +120,7 @@ func AddList(ctx *gin.Context) {
 }
 
 // 处理收到的好友请求
-func AddPass(ctx *gin.Context) {
+func (friend) AddHandle(ctx *gin.Context) {
 	// 添加好友请求验证与数据写入
 	fUid, _ := strconv.Atoi(ctx.PostForm("f_uid"))
 	status, _ := strconv.Atoi(ctx.PostForm("status"))
@@ -167,7 +171,7 @@ func AddPass(ctx *gin.Context) {
 }
 
 // 删除好友
-func DelFriend(ctx *gin.Context) {
+func (friend) Del(ctx *gin.Context) {
 	uid := int(ctx.MustGet("id").(float64))
 	fUid, _ := strconv.Atoi(ctx.PostForm("f_uid"))
 	var friendList model.FriendList

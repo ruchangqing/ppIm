@@ -13,8 +13,12 @@ import (
 	"strconv"
 )
 
+type geo struct{}
+
+var Geo geo
+
 // 附近的人
-func GeoUsers(ctx *gin.Context) {
+func (geo) Users(ctx *gin.Context) {
 	// 经纬度校验
 	longitude, err1 := strconv.ParseFloat(ctx.PostForm("longitude"), 64)
 	latitude, err2 := strconv.ParseFloat(ctx.PostForm("latitude"), 64)

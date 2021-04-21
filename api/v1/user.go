@@ -14,8 +14,12 @@ import (
 	"time"
 )
 
+type user struct{}
+
+var User user
+
 // 用户更新昵称
-func UpdateNickname(ctx *gin.Context) {
+func (user) UpdateNickname(ctx *gin.Context) {
 	// 校验昵称参数
 	nickname := ctx.PostForm("nickname")
 	if len(nickname) < 4 || len(nickname) > 20 {
@@ -32,7 +36,7 @@ func UpdateNickname(ctx *gin.Context) {
 }
 
 // 用户更新头像
-func UpdateAvatar(ctx *gin.Context) {
+func (user) UpdateAvatar(ctx *gin.Context) {
 
 	file, err := ctx.FormFile("avatar")
 	if err != nil {
@@ -66,7 +70,7 @@ func UpdateAvatar(ctx *gin.Context) {
 }
 
 // 实名认证
-func RealNameVerify(ctx *gin.Context) {
+func (user) RealNameVerify(ctx *gin.Context) {
 	// 校验参数
 	realName := ctx.PostForm("real_name")
 	idCard := ctx.PostForm("id_card")
@@ -99,7 +103,7 @@ func RealNameVerify(ctx *gin.Context) {
 }
 
 //  更新最新地理位置及IP
-func UpdateLocation(ctx *gin.Context) {
+func (user) UpdateLocation(ctx *gin.Context) {
 	longitude := ctx.PostForm("longitude")
 	latitude := ctx.PostForm("latitude")
 

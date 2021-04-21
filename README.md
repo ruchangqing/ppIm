@@ -13,17 +13,17 @@
 3、Redis<br>
 4、ElasticSearch7.0+<br>
 
+**运行：**<br>
+1、部署elasticsearch、redis、mysql、etcd<br>
+2、导入 sql/database.sql 到mysql
+3、修改配置文件config.yml<br>
+4、go run main.go<br>
+
 **分布式部署：**<br>
 1、启动多个节点服务<br>
 2、nginx负载均衡
 
-
-**运行：**<br>
-1、部署elasticsearch、redis、mysql、etcd<br>
-2、修改配置文件config.yml<br>
-3、go run main.go<br>
-
- [文档说明](doc.md)
+ [说明文档](doc.md)
 
 **API接口列表：**<br>
 1、用户登录<br>

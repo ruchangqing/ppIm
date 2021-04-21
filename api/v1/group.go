@@ -8,8 +8,12 @@ import (
 	"time"
 )
 
+type group struct{}
+
+var Group group
+
 // 创建群组
-func CreateGroup(ctx *gin.Context) {
+func (group) Create(ctx *gin.Context) {
 	name := ctx.PostForm("name")
 	if name == "" {
 		api.R(ctx, global.FAIL, "请输入群名称", gin.H{})
@@ -27,26 +31,26 @@ func CreateGroup(ctx *gin.Context) {
 }
 
 // 群组列表
-func GroupList(ctx *gin.Context) {
+func (group) List(ctx *gin.Context) {
 
 }
 
 // 加入群组
-func JoinGroup(ctx *gin.Context) {
+func (group) Join(ctx *gin.Context) {
 
 }
 
 // 加入群组请求处理
-func JoinPass(ctx *gin.Context) {
+func (group) JoinHandle(ctx *gin.Context) {
 
 }
 
 // 退出群组
-func LeaveGroup(ctx *gin.Context) {
+func (group) Leave(ctx *gin.Context) {
 
 }
 
 // 设置成员
-func SetMember(ctx *gin.Context) {
+func (group) SetMember(ctx *gin.Context) {
 
 }

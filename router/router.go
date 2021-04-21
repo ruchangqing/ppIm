@@ -34,22 +34,22 @@ func SetRouter(r *gin.Engine) {
 	r.NoMethod(api.NotFound)
 
 	// 用户登录
-	r.POST("/api/v1/login", v1.Login)
+	r.POST("/api/v1/login", v1.Sign.Login)
 	// 用户注册
-	r.POST("/api/v1/register", v1.Register)
+	r.POST("/api/v1/register", v1.Sign.Register)
 
 	// 用户相关接口
 	user := r.Group("/api/v1/user")
 	user.Use(middleware.ValidateJwtToken)
 	{
 		// 设置昵称
-		user.POST("/update/nickname", v1.UpdateNickname)
+		user.POST("/update/nickname", v1.User.UpdateNickname)
 		// 设置头像
-		user.POST("/update/avatar", v1.UpdateAvatar)
+		user.POST("/update/avatar", v1.User.UpdateAvatar)
 		// 实名认证
-		user.POST("/update/realname", v1.RealNameVerify)
+		user.POST("/update/realname", v1.User.RealNameVerify)
 		// 更新用户位置（经纬度）
-		user.POST("/update/location", v1.UpdateLocation)
+		user.POST("/update/location", v1.User.UpdateLocation)
 	}
 
 	// 位置相关接口
@@ -57,7 +57,7 @@ func SetRouter(r *gin.Engine) {
 	geo.Use(middleware.ValidateJwtToken)
 	{
 		// 附近的人
-		geo.POST("/users", v1.GeoUsers)
+		geo.POST("/users", v1.Geo.Users)
 	}
 
 	// 聊天相关接口
@@ -68,37 +68,37 @@ func SetRouter(r *gin.Engine) {
 		// 好友系统
 		friend := im.Group("/friend")
 		//好友列表
-		friend.POST("/list", v1.FriendList)
+		friend.POST("/list", v1.Friend.List)
 		// 添加好友
-		friend.POST("/add/request", v1.AddFriend)
+		friend.POST("/add/request", v1.Friend.Add)
 		// 收到的添加请求列表
-		friend.POST("/add/list", v1.AddList)
+		friend.POST("/add/reqs", v1.Friend.AddReqs)
 		// 处理好友请求
-		friend.POST("/add/confirm", v1.AddPass)
+		friend.POST("/add/handle", v1.Friend.AddHandle)
 		// 删除好友
-		friend.POST("/del", v1.DelFriend)
+		friend.POST("/del", v1.Friend.Del)
 
 		// 群组系统
 		group := im.Group("/group")
 		// 创建群组
-		group.POST("/create", v1.CreateGroup)
+		group.POST("/create", v1.Group.Create)
 		// 群组列表
-		group.POST("/list", v1.GroupList)
+		group.POST("/list", v1.Group.List)
 		// 请求加入群组
-		group.POST("/join/request", v1.JoinGroup)
+		group.POST("/join/request", v1.Group.Join)
 		// 加入群组请求处理
-		group.POST("/join/confirm", v1.JoinPass)
+		group.POST("/join/confirm", v1.Group.JoinHandle)
 		// 离开群组
-		group.POST("/level", v1.LeaveGroup)
+		group.POST("/leave", v1.Group.Leave)
 		// 设置群成员
-		group.POST("/set/member", v1.SetMember)
+		group.POST("/set/member", v1.Group.SetMember)
 
 		// 聊天系统
 		chat := im.Group("/chat")
 		// 发送消息给用户
-		chat.POST("/send/user", v1.SendMessageToUser)
+		chat.POST("/send/user", v1.Chat.SendToUser)
 		// 撤回消息
-		chat.POST("/withdraw/user", v1.WithdrawMessageFromUser)
+		chat.POST("/withdraw/user", v1.Chat.WithdrawFromUser)
 	}
 
 }

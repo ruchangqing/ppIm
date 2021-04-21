@@ -10,8 +10,12 @@ import (
 	"time"
 )
 
+type sign struct {}
+
+var Sign sign
+
 // 用户登录接口
-func Login(ctx *gin.Context) {
+func (sign) Login(ctx *gin.Context) {
 	// 参数获取与验证
 	username := ctx.PostForm("username")
 	password := ctx.PostForm("password")
@@ -55,7 +59,7 @@ func Login(ctx *gin.Context) {
 }
 
 //用户注册接口
-func Register(ctx *gin.Context) {
+func (sign) Register(ctx *gin.Context) {
 	// 参数获取与验证
 	username := ctx.PostForm("username")
 	password := ctx.PostForm("password")

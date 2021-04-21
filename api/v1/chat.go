@@ -10,8 +10,12 @@ import (
 	"time"
 )
 
+type chat struct{}
+
+var Chat chat
+
 // 发送私信给好友
-func SendMessageToUser(ctx *gin.Context) {
+func (chat) SendToUser(ctx *gin.Context) {
 	toUid, _ := strconv.Atoi(ctx.PostForm("to_uid"))
 	content := ctx.PostForm("content")
 	if content == "" {
@@ -40,7 +44,7 @@ func SendMessageToUser(ctx *gin.Context) {
 }
 
 // 撤回私聊消息
-func WithdrawMessageFromUser(ctx *gin.Context) {
+func (chat) WithdrawFromUser(ctx *gin.Context) {
 	messageId, _ := strconv.Atoi(ctx.PostForm("message_id"))
 	uid := int(ctx.MustGet("id").(float64))
 	//查询消息记录
