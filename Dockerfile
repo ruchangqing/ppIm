@@ -1,5 +1,6 @@
-FROM golang:latest
-WORKDIR /data/ppim
+FROM golang:1.16.3
+WORKDIR /go/src/ppim
 COPY . .
 RUN go env -w GOPROXY=https://goproxy.cn,direct \
- && go run main.go
+ && go get -d -v \
+ && go install -v \

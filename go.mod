@@ -17,13 +17,13 @@ require (
 	github.com/mitchellh/mapstructure v1.3.3 // indirect
 	github.com/olivere/elastic/v7 v7.0.19
 	github.com/pelletier/go-toml v1.8.0 // indirect
-	github.com/satori/go.uuid v1.2.0 // indirect
+	github.com/satori/go.uuid v1.2.0
 	github.com/spf13/afero v1.3.4 // indirect
 	github.com/spf13/cast v1.3.1 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/spf13/viper v1.7.1
-	go.etcd.io/etcd/client/v3 v3.5.0-alpha.0 // indirect
+	go.etcd.io/etcd/client/v3 v3.5.0-alpha.0
 	go.opentelemetry.io/otel v0.10.0 // indirect
 	golang.org/x/exp v0.0.0-20200819202907-27b6b2ade93b // indirect
 	golang.org/x/net v0.0.0-20200324143707-d3edc9973b7e
