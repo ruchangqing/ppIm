@@ -14,6 +14,20 @@ type friend struct{}
 
 var Friend friend
 
+// 搜索好友
+func (friend) Search(ctx *gin.Context) {
+	uid := int(ctx.MustGet("id").(float64))
+	word := ctx.PostForm("word")
+	type APIUser struct {Username string
+		Nickname string
+		Avatar   string
+		Sex      int
+	}
+	var users []APIUser
+	global.Mysql.Model(&model.User{}).Where("(username LIKE ? or nickname LIKE ?) and id <> ?", "%"+word+"%", "%"+word+"%", uid).Scan(&users)
+	api.Rt(ctx, global.SUCCESS, "请求成功", gin.H{"list": users})
+}
+
 // 好友列表
 func (friend) List(ctx *gin.Context) {
 	uid := int(ctx.MustGet("id").(float64))

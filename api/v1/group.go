@@ -35,6 +35,11 @@ func (group) List(ctx *gin.Context) {
 
 }
 
+// 我的群组
+func (group) My(ctx *gin.Context) {
+
+}
+
 // 加入群组
 func (group) Join(ctx *gin.Context) {
 

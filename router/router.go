@@ -67,7 +67,9 @@ func SetRouter(r *gin.Engine) {
 
 		// 好友系统
 		friend := im.Group("/friend")
-		//好友列表
+		// 搜索好友
+		friend.POST("/search", v1.Friend.Search)
+		// 好友列表
 		friend.POST("/list", v1.Friend.List)
 		// 添加好友
 		friend.POST("/add/request", v1.Friend.Add)
@@ -80,10 +82,12 @@ func SetRouter(r *gin.Engine) {
 
 		// 群组系统
 		group := im.Group("/group")
+		// 群组搜索
+		group.POST("/search", v1.Group.List)
 		// 创建群组
 		group.POST("/create", v1.Group.Create)
-		// 群组列表
-		group.POST("/list", v1.Group.List)
+		// 我的群组
+		group.POST("/my", v1.Group.My)
 		// 请求加入群组
 		group.POST("/join/request", v1.Group.Join)
 		// 加入群组请求处理
