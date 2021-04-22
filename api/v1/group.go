@@ -5,6 +5,7 @@ import (
 	"ppIm/api"
 	"ppIm/global"
 	"ppIm/model"
+	"strconv"
 	"time"
 )
 
@@ -55,9 +56,41 @@ func (group) My(ctx *gin.Context) {
 
 }
 
-// 加入群组
+// 申请加入群组
 func (group) Join(ctx *gin.Context) {
-
+	uid := int(ctx.MustGet("id").(float64))
+	groupId, _ := strconv.Atoi(ctx.PostForm("group_id"))
+	var group model.Group
+	global.Mysql.Where("id = ?", groupId).First(&group)
+	if group.Id == 0 {
+		api.R(ctx, global.FAIL, "群组不存在", gin.H{})
+		return
+	}
+	if group.OUid == uid {
+		api.R(ctx, global.FAIL, "你已经是群主", gin.H{})
+		return
+	}
+	var groupUser model.GroupUser
+	global.Mysql.Where("group_id = ? and user_id = ?", groupId, uid).First(&groupUser)
+	if groupUser.Id > 0 {
+		api.R(ctx, global.FAIL, "你已经在群组里", gin.H{})
+		return
+	}
+	var groupJoin model.GroupJoin
+	global.Mysql.Where("group_id = ? and user_id = ?", groupId, uid).First(&groupJoin)
+	if groupJoin.Id > 0 {
+		api.R(ctx, global.FAIL, "你的申请加入群组请求已经在处理中", gin.H{})
+		return
+	}
+	groupJoin.GroupId = groupId
+	groupJoin.UserId = uid
+	groupJoin.JoinAt = time.Now().Unix()
+	global.Mysql.Create(&groupJoin)
+	if groupJoin.Id > 0 {
+		api.Rt(ctx, global.SUCCESS, "申请成功", gin.H{})
+	} else {
+		api.R(ctx, global.FAIL, "申请失败", gin.H{})
+	}
 }
 
 // 加入群组请求处理

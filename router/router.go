@@ -88,7 +88,7 @@ func SetRouter(r *gin.Engine) {
 		group.POST("/search", v1.Group.Search)
 		// 我的群组
 		group.POST("/my", v1.Group.My)
-		// 请求加入群组
+		// 申请加入群组
 		group.POST("/join/request", v1.Group.Join)
 		// 加入群组请求处理
 		group.POST("/join/confirm", v1.Group.JoinHandle)
