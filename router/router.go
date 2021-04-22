@@ -82,10 +82,10 @@ func SetRouter(r *gin.Engine) {
 
 		// 群组系统
 		group := im.Group("/group")
-		// 群组搜索
-		group.POST("/search", v1.Group.List)
 		// 创建群组
 		group.POST("/create", v1.Group.Create)
+		// 群组搜索
+		group.POST("/search", v1.Group.Search)
 		// 我的群组
 		group.POST("/my", v1.Group.My)
 		// 请求加入群组

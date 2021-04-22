@@ -14,6 +14,7 @@ var Group group
 
 // 创建群组
 func (group) Create(ctx *gin.Context) {
+	uid := int(ctx.MustGet("id").(float64))
 	name := ctx.PostForm("name")
 	if name == "" {
 		api.R(ctx, global.FAIL, "请输入群名称", gin.H{})
@@ -26,13 +27,27 @@ func (group) Create(ctx *gin.Context) {
 		api.R(ctx, global.FAIL, "群组已存在", gin.H{})
 		return
 	}
-	global.Mysql.Create(&model.Group{Name: name, CreatedAt: time.Now().Unix()})
-	api.Rt(ctx, global.SUCCESS, "创建成功", gin.H{})
+	group.OUid = uid
+	group.Name = name
+	group.CreatedAt = time.Now().Unix()
+	global.Mysql.Create(&group)
+	if group.Id > 0 {
+		api.Rt(ctx, global.SUCCESS, "创建成功", gin.H{})
+	} else {
+		api.R(ctx, global.FAIL, "创建失败", gin.H{})
+	}
 }
 
-// 群组列表
-func (group) List(ctx *gin.Context) {
-
+// 搜索群组
+func (group) Search(ctx *gin.Context) {
+	word := ctx.PostForm("word")
+	if word == "" {
+		api.R(ctx, global.FAIL, "请输入群组名称", gin.H{})
+		return
+	}
+	var groups []model.Group
+	global.Mysql.Model(&model.Group{}).Where("name LIKE ?", "%"+word+"%").Find(&groups)
+	api.R(ctx, global.SUCCESS, "查询成功", gin.H{"list": groups})
 }
 
 // 我的群组
