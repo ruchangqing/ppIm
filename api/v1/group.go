@@ -204,5 +204,39 @@ func (group) JoinHandle(ctx *gin.Context) {
 
 // 退出群组
 func (group) Leave(ctx *gin.Context) {
+	uid := int(ctx.MustGet("id").(float64))
+	groupId, _ := strconv.Atoi(ctx.PostForm("group_id"))
+	var groupUser model.GroupUser
+	global.Mysql.Where("uid = ? AND group_id = ?", uid, groupId).First(&groupUser)
+	if groupUser.Id == 0 {
+		api.R(ctx, global.FAIL, "你不在群里", gin.H{})
+		return
+	}
+	global.Mysql.Delete(&groupUser)
+	api.Rt(ctx, global.SUCCESS, "退出群成功", gin.H{})
+}
 
+// 踢出群组
+func (group) Shot(ctx *gin.Context) {
+	uid := int(ctx.MustGet("id").(float64))
+	userId, _ := strconv.Atoi(ctx.PostForm("user_id"))
+	groupId, _ := strconv.Atoi(ctx.PostForm("group_id"))
+	var group model.Group
+	global.Mysql.Where("id = ?", groupId).First(&group)
+	if group.Id == 0 {
+		api.R(ctx, global.FAIL, "群组不存在", gin.H{})
+		return
+	}
+	if group.OUid != uid {
+		api.R(ctx, global.FAIL, "你不是群主", gin.H{})
+		return
+	}
+	var groupUser model.GroupUser
+	global.Mysql.Where("user_id = ? AND group_id = ?", userId, groupId).First(&groupUser)
+	if groupUser.Id == 0 {
+		api.R(ctx, global.FAIL, "用户不在群里", gin.H{})
+		return
+	}
+	global.Mysql.Delete(&groupUser)
+	api.Rt(ctx, global.SUCCESS, "踢出群成功", gin.H{})
 }

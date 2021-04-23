@@ -96,6 +96,8 @@ func SetRouter(r *gin.Engine) {
 		group.POST("/join/handle", v1.Group.JoinHandle)
 		// 离开群组
 		group.POST("/leave", v1.Group.Leave)
+		// 踢出群组
+		group.POST("/shot", v1.Group.Shot)
 
 		// 聊天系统
 		chat := im.Group("/chat")
