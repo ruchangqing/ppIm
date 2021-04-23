@@ -125,17 +125,29 @@ func (group) Join(ctx *gin.Context) {
 	}
 }
 
-// 加入群组请求处理
-func (group) JoinHandle(ctx *gin.Context) {
+// 申请加群列表
+func (group) JoinList(ctx *gin.Context) {
+	uid := int(ctx.MustGet("id").(float64))
+	type Result struct {
+		JoinId    int
+		UserId    int
+		GroupId   int
+		Username  string
+		Nickname  string
+		Avatar    string
+		GroupName string
+		JoinAt    int
+	}
+	var result []Result
+	global.Mysql.Raw("SELECT j.id AS join_id,j.user_id,j.group_id,j.join_at,g.name AS group_name,u.username,u.nickname,u.avatar FROM `group` AS g INNER JOIN `group_join` AS j INNER JOIN `user` AS u ON g.id = j.group_id AND j.user_id = u.id WHERE g.o_uid = ? ORDER BY j.join_at", uid).Scan(&result)
+	api.R(ctx, global.SUCCESS, "获取成功", gin.H{"list": result})
+}
 
+// 申请加群处理
+func (group) JoinHandle(ctx *gin.Context) {
 }
 
 // 退出群组
 func (group) Leave(ctx *gin.Context) {
-
-}
-
-// 设置成员
-func (group) SetMember(ctx *gin.Context) {
 
 }

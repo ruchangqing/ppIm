@@ -88,14 +88,14 @@ func SetRouter(r *gin.Engine) {
 		group.POST("/search", v1.Group.Search)
 		// 我的群组
 		group.POST("/my", v1.Group.My)
-		// 申请加入群组
+		// 申请加群
 		group.POST("/join/request", v1.Group.Join)
-		// 加入群组请求处理
-		group.POST("/join/confirm", v1.Group.JoinHandle)
+		// 申请加群列表
+		group.POST("/join/list", v1.Group.JoinList)
+		// 申请加群处理
+		group.POST("/join/handle", v1.Group.JoinHandle)
 		// 离开群组
 		group.POST("/leave", v1.Group.Leave)
-		// 设置群成员
-		group.POST("/set/member", v1.Group.SetMember)
 
 		// 聊天系统
 		chat := im.Group("/chat")
