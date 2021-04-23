@@ -22,25 +22,6 @@ func LocalSendToUser(uid int, message Message) {
 	Connections[number].Conn.WriteJSON(message)
 }
 
-// 发送消息给用户
-func SendToUser(uid int, message Message) {
-	for _, serverAddress := range servers.Servers {
-		if serverAddress == global.ServerAddress {
-			//调用本机方法查询uid在线
-			if LocalIsOnline(uid) {
-				LocalSendToUser(uid, message)
-				break
-			}
-		} else {
-			//通过RPC调用其他集群查询uid在线
-			if RpcIsOnline(serverAddress, uid) {
-				RpcSendToUser(serverAddress, message)
-				break
-			}
-		}
-	}
-}
-
 // 判断用户是否在线
 func IsOnline(uid int) bool {
 	isOnline := false
@@ -60,6 +41,25 @@ func IsOnline(uid int) bool {
 		}
 	}
 	return isOnline
+}
+
+// 发送消息给用户
+func SendToUser(uid int, message Message) {
+	for _, serverAddress := range servers.Servers {
+		if serverAddress == global.ServerAddress {
+			//调用本机方法查询uid在线
+			if LocalIsOnline(uid) {
+				LocalSendToUser(uid, message)
+				break
+			}
+		} else {
+			//通过RPC调用其他集群查询uid在线
+			if RpcIsOnline(serverAddress, uid) {
+				RpcSendToUser(serverAddress, message)
+				break
+			}
+		}
+	}
 }
 
 // 发送消息给群组
