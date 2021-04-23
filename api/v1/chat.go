@@ -27,17 +27,17 @@ func (chat) SendToUser(ctx *gin.Context) {
 
 	var friendList model.FriendList
 	var count int
-	global.Mysql.Where("uid = ? and f_uid = ?", uid, toUid).Select("id,uid,f_uid").First(&friendList).Count(&count)
+	global.Db.Where("uid = ? and f_uid = ?", uid, toUid).Select("id,uid,f_uid").First(&friendList).Count(&count)
 	if count == 0 {
 		api.R(ctx, global.FAIL, "对方不是你的好友", gin.H{})
 		return
 	} else {
 		var user model.User
-		global.Mysql.Where("id = ?", uid).First(&user)
+		global.Db.Where("id = ?", uid).First(&user)
 		now := time.Now().Unix()
 		// 持久化消息记录
 		chatUser := model.ChatUser{SendUid: uid, RecvUid: toUid, MessageType: messageType, Content: content, Status: 0, CreatedAt: now}
-		global.Mysql.Create(&chatUser)
+		global.Db.Create(&chatUser)
 		ws.SendToUser(toUid, ws.ReceiveFriendMessage, content)
 		api.Rt(ctx, global.SUCCESS, "发送成功", gin.H{})
 	}
@@ -49,7 +49,7 @@ func (chat) WithdrawFromUser(ctx *gin.Context) {
 	uid := int(ctx.MustGet("id").(float64))
 	//查询消息记录
 	var chatUser model.ChatUser
-	global.Mysql.Where("id = ? and send_uid = ? and status <> ?", messageId, uid, -1).First(&chatUser)
+	global.Db.Where("id = ? and send_uid = ? and status <> ?", messageId, uid, -1).First(&chatUser)
 	if chatUser.Id == 0 {
 		api.R(ctx, global.FAIL, "消息不存在", gin.H{})
 		return
@@ -61,7 +61,7 @@ func (chat) WithdrawFromUser(ctx *gin.Context) {
 		return
 	}
 	// 把消息状态改为已撤回
-	global.Mysql.Model(&chatUser).Updates(map[string]interface{}{"status": -1})
+	global.Db.Model(&chatUser).Updates(map[string]interface{}{"status": -1})
 	// 通知对方撤回消息
 	id := strconv.Itoa(chatUser.Id)
 	ws.SendToUser(chatUser.RecvUid, ws.RecallFriendMessage, id)

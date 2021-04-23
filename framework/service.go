@@ -33,12 +33,12 @@ func connectDb() {
 	charset := viper.GetString("db.charset")
 	var err error
 	args := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s&parseTime=True&loc=Local", user, pass, host, port, dbname, charset)
-	global.Mysql, err = gorm.Open(dbType, args)
+	global.Db, err = gorm.Open(dbType, args)
 	if err != nil {
 		fmt.Println(err)
 	}
 	// 全局禁用表名复数
-	global.Mysql.SingularTable(true)
+	global.Db.SingularTable(true)
 }
 
 func connectRedis() {

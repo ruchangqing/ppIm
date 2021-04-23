@@ -62,7 +62,7 @@ func (geo) Users(ctx *gin.Context) {
 			fmt.Println(err)
 		}
 		var user model.User
-		global.Mysql.Where("id = ?", userLocation.Uid).First(&user)
+		global.Db.Where("id = ?", userLocation.Uid).First(&user)
 		// 列表中排除自己
 		if user.Id == uid {
 			continue

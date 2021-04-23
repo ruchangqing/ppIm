@@ -7,9 +7,9 @@ import (
 )
 
 var (
-	Mysql               *gorm.DB
+	Db                  *gorm.DB
 	Redis               *redis.Client
-	Elasticsearch		*elastic.Client
+	Elasticsearch       *elastic.Client
 	JwtHmacSampleSecret = []byte("pancoiscool!") //jwt加密密钥
-	ServerAddress		string					 //本机集群rpc地址
+	ServerAddress       string                   //本机集群rpc地址
 )

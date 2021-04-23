@@ -24,7 +24,7 @@ func (group) Create(ctx *gin.Context) {
 	}
 	var group model.Group
 	var count int
-	global.Mysql.Where("name = ?", name).First(&group).Count(&count)
+	global.Db.Where("name = ?", name).First(&group).Count(&count)
 	if count > 0 {
 		api.R(ctx, global.FAIL, "群组已存在", gin.H{})
 		return
@@ -33,7 +33,7 @@ func (group) Create(ctx *gin.Context) {
 	now := time.Now().Unix()
 	trans := true
 	// 事务
-	global.Mysql.Transaction(func(tx *gorm.DB) error {
+	global.Db.Transaction(func(tx *gorm.DB) error {
 		group.OUid = uid
 		group.Name = name
 		group.CreatedAt = now
@@ -69,7 +69,7 @@ func (group) Search(ctx *gin.Context) {
 		return
 	}
 	var groups []model.Group
-	global.Mysql.Model(&model.Group{}).Where("name LIKE ?", "%"+word+"%").Find(&groups)
+	global.Db.Model(&model.Group{}).Where("name LIKE ?", "%"+word+"%").Find(&groups)
 	api.R(ctx, global.SUCCESS, "查询成功", gin.H{"list": groups})
 }
 
@@ -84,7 +84,7 @@ func (group) My(ctx *gin.Context) {
 		JoinAt    int
 	}
 	var result []Result
-	global.Mysql.Raw("SELECT g.id,g.o_uid,g.name,g.created_at,u.join_at FROM `group_user` AS u INNER JOIN `group` AS g ON u.group_id = g.id WHERE user_id = ?", uid).Scan(&result)
+	global.Db.Raw("SELECT g.id,g.o_uid,g.name,g.created_at,u.join_at FROM `group_user` AS u INNER JOIN `group` AS g ON u.group_id = g.id WHERE user_id = ?", uid).Scan(&result)
 	api.R(ctx, global.SUCCESS, "获取成功", gin.H{"list": result})
 }
 
@@ -93,7 +93,7 @@ func (group) Join(ctx *gin.Context) {
 	uid := int(ctx.MustGet("id").(float64))
 	groupId, _ := strconv.Atoi(ctx.PostForm("group_id"))
 	var group model.Group
-	global.Mysql.Where("id = ?", groupId).First(&group)
+	global.Db.Where("id = ?", groupId).First(&group)
 	if group.Id == 0 {
 		api.R(ctx, global.FAIL, "群组不存在", gin.H{})
 		return
@@ -103,13 +103,13 @@ func (group) Join(ctx *gin.Context) {
 		return
 	}
 	var groupUser model.GroupUser
-	global.Mysql.Where("group_id = ? and user_id = ?", groupId, uid).First(&groupUser)
+	global.Db.Where("group_id = ? and user_id = ?", groupId, uid).First(&groupUser)
 	if groupUser.Id > 0 {
 		api.R(ctx, global.FAIL, "你已经在群组里", gin.H{})
 		return
 	}
 	var groupJoin model.GroupJoin
-	global.Mysql.Where("group_id = ? and user_id = ?", groupId, uid).First(&groupJoin)
+	global.Db.Where("group_id = ? and user_id = ?", groupId, uid).First(&groupJoin)
 	if groupJoin.Id > 0 {
 		api.R(ctx, global.FAIL, "你的申请加入群组请求已经在处理中", gin.H{})
 		return
@@ -117,7 +117,7 @@ func (group) Join(ctx *gin.Context) {
 	groupJoin.GroupId = groupId
 	groupJoin.UserId = uid
 	groupJoin.JoinAt = time.Now().Unix()
-	global.Mysql.Create(&groupJoin)
+	global.Db.Create(&groupJoin)
 	if groupJoin.Id > 0 {
 		api.Rt(ctx, global.SUCCESS, "申请成功", gin.H{})
 	} else {
@@ -139,7 +139,7 @@ func (group) JoinList(ctx *gin.Context) {
 		JoinAt    int
 	}
 	var result []Result
-	global.Mysql.Raw("SELECT j.id AS join_id,j.user_id,j.group_id,j.join_at,g.name AS group_name,u.username,u.nickname,u.avatar FROM `group` AS g INNER JOIN `group_join` AS j INNER JOIN `user` AS u ON g.id = j.group_id AND j.user_id = u.id WHERE g.o_uid = ? ORDER BY j.join_at", uid).Scan(&result)
+	global.Db.Raw("SELECT j.id AS join_id,j.user_id,j.group_id,j.join_at,g.name AS group_name,u.username,u.nickname,u.avatar FROM `group` AS g INNER JOIN `group_join` AS j INNER JOIN `user` AS u ON g.id = j.group_id AND j.user_id = u.id WHERE g.o_uid = ? ORDER BY j.join_at", uid).Scan(&result)
 	api.R(ctx, global.SUCCESS, "获取成功", gin.H{"list": result})
 }
 
@@ -153,13 +153,13 @@ func (group) JoinHandle(ctx *gin.Context) {
 		return
 	}
 	var groupJoin model.GroupJoin
-	global.Mysql.Where("id = ?", joinId).First(&groupJoin)
+	global.Db.Where("id = ?", joinId).First(&groupJoin)
 	if groupJoin.Id == 0 {
 		api.R(ctx, global.FAIL, "加群申请不存在", gin.H{})
 		return
 	}
 	var group model.Group
-	global.Mysql.Where("id = ?", groupJoin.GroupId).First(&group)
+	global.Db.Where("id = ?", groupJoin.GroupId).First(&group)
 	if group.Id == 0 {
 		api.R(ctx, global.FAIL, "群组不存在", gin.H{})
 		return
@@ -173,7 +173,7 @@ func (group) JoinHandle(ctx *gin.Context) {
 		// 同意加群
 		trans := true
 		// 事务
-		global.Mysql.Transaction(func(tx *gorm.DB) error {
+		global.Db.Transaction(func(tx *gorm.DB) error {
 			var groupUser model.GroupUser
 			groupUser.GroupId = groupJoin.GroupId
 			groupUser.UserId = groupJoin.UserId
@@ -197,7 +197,7 @@ func (group) JoinHandle(ctx *gin.Context) {
 		}
 	} else if status == 0 {
 		// 拒绝加群
-		global.Mysql.Delete(&groupJoin)
+		global.Db.Delete(&groupJoin)
 		api.Rt(ctx, global.SUCCESS, "处理成功", gin.H{})
 	}
 }
@@ -207,12 +207,12 @@ func (group) Leave(ctx *gin.Context) {
 	uid := int(ctx.MustGet("id").(float64))
 	groupId, _ := strconv.Atoi(ctx.PostForm("group_id"))
 	var groupUser model.GroupUser
-	global.Mysql.Where("uid = ? AND group_id = ?", uid, groupId).First(&groupUser)
+	global.Db.Where("uid = ? AND group_id = ?", uid, groupId).First(&groupUser)
 	if groupUser.Id == 0 {
 		api.R(ctx, global.FAIL, "你不在群里", gin.H{})
 		return
 	}
-	global.Mysql.Delete(&groupUser)
+	global.Db.Delete(&groupUser)
 	api.Rt(ctx, global.SUCCESS, "退出群成功", gin.H{})
 }
 
@@ -222,7 +222,7 @@ func (group) Shot(ctx *gin.Context) {
 	userId, _ := strconv.Atoi(ctx.PostForm("user_id"))
 	groupId, _ := strconv.Atoi(ctx.PostForm("group_id"))
 	var group model.Group
-	global.Mysql.Where("id = ?", groupId).First(&group)
+	global.Db.Where("id = ?", groupId).First(&group)
 	if group.Id == 0 {
 		api.R(ctx, global.FAIL, "群组不存在", gin.H{})
 		return
@@ -232,11 +232,11 @@ func (group) Shot(ctx *gin.Context) {
 		return
 	}
 	var groupUser model.GroupUser
-	global.Mysql.Where("user_id = ? AND group_id = ?", userId, groupId).First(&groupUser)
+	global.Db.Where("user_id = ? AND group_id = ?", userId, groupId).First(&groupUser)
 	if groupUser.Id == 0 {
 		api.R(ctx, global.FAIL, "用户不在群里", gin.H{})
 		return
 	}
-	global.Mysql.Delete(&groupUser)
+	global.Db.Delete(&groupUser)
 	api.Rt(ctx, global.SUCCESS, "踢出群成功", gin.H{})
 }

@@ -28,7 +28,7 @@ func (sign) Login(ctx *gin.Context) {
 	// 检测用户是否存在
 	var user model.User
 	var count int
-	global.Mysql.Where("username = ?", username).Select("id,username,password,password_salt,nickname,avatar,status").First(&user).Count(&count)
+	global.Db.Where("username = ?", username).Select("id,username,password,password_salt,nickname,avatar,status").First(&user).Count(&count)
 	if count < 1 {
 		api.R(ctx, global.FAIL, "用户不存在，请更换用户名后重试", nil)
 		return
@@ -43,7 +43,7 @@ func (sign) Login(ctx *gin.Context) {
 
 	// 密码正确，更新登陆时间
 	loginTime := time.Now().Format("2006-01-02 15:04:05")
-	global.Mysql.Model(&user).Updates(map[string]interface{}{"login_time": loginTime, "last_ip": ctx.ClientIP()})
+	global.Db.Model(&user).Updates(map[string]interface{}{"login_time": loginTime, "last_ip": ctx.ClientIP()})
 
 	// 生成jwt token和用户信息给用户
 	tokenString := api.MakeJwtToken(user.Id)
@@ -72,7 +72,7 @@ func (sign) Register(ctx *gin.Context) {
 	// 检测用户名是否存在
 	var user model.User
 	var count int
-	global.Mysql.Where("username = ?", username).First(&user).Count(&count)
+	global.Db.Where("username = ?", username).First(&user).Count(&count)
 	if count > 0 {
 		api.R(ctx, global.FAIL, "用户已存在，请更换用户名后重试", nil)
 		return
@@ -92,7 +92,7 @@ func (sign) Register(ctx *gin.Context) {
 		Avatar:       "/public/avatar/default.png",
 		LastIp:       ctx.ClientIP(),
 	}
-	if err := global.Mysql.Create(&user).Error; err != nil {
+	if err := global.Db.Create(&user).Error; err != nil {
 		api.R(ctx, global.FAIL, "注册失败："+err.Error(), nil)
 		return
 	}

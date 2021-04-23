@@ -31,7 +31,7 @@ func (user) UpdateNickname(ctx *gin.Context) {
 	id := int(ctx.MustGet("id").(float64))
 	// 更新用户昵称
 	user := &model.User{Id: id}
-	result := global.Mysql.Model(&user).Update("nickname", nickname).RowsAffected
+	result := global.Db.Model(&user).Update("nickname", nickname).RowsAffected
 	api.Rt(ctx, global.SUCCESS, "设置成功", gin.H{"result": result})
 }
 
@@ -64,7 +64,7 @@ func (user) UpdateAvatar(ctx *gin.Context) {
 
 	// 更新头像地址到数据库
 	user := &model.User{Id: id}
-	result := global.Mysql.Model(&user).Update("avatar", "/"+filePath).RowsAffected
+	result := global.Db.Model(&user).Update("avatar", "/"+filePath).RowsAffected
 
 	api.Rt(ctx, global.SUCCESS, "设置成功", gin.H{"result": result})
 }
@@ -98,7 +98,7 @@ func (user) RealNameVerify(ctx *gin.Context) {
 	id := int(ctx.MustGet("id").(float64))
 	// 更新实名信息
 	user := &model.User{Id: id}
-	result := global.Mysql.Model(&user).Updates(map[string]interface{}{"real_name": realName, "id_card": idCard, "sex": uSex}).RowsAffected
+	result := global.Db.Model(&user).Updates(map[string]interface{}{"real_name": realName, "id_card": idCard, "sex": uSex}).RowsAffected
 	api.Rt(ctx, global.SUCCESS, "实名认证成功", gin.H{"result": result})
 }
 
@@ -118,7 +118,7 @@ func (user) UpdateLocation(ctx *gin.Context) {
 
 	id := int(ctx.MustGet("id").(float64))
 	user := &model.User{Id: id}
-	result := global.Mysql.Model(&user).Updates(map[string]interface{}{"longitude": longitude, "latitude": latitude, "last_ip": ctx.ClientIP()}).RowsAffected
+	result := global.Db.Model(&user).Updates(map[string]interface{}{"longitude": longitude, "latitude": latitude, "last_ip": ctx.ClientIP()}).RowsAffected
 	api.Rt(ctx, global.SUCCESS, "更新位置成功", gin.H{"result": result})
 
 	// 更新经纬度到es，用于后期查询
