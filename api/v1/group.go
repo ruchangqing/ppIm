@@ -2,6 +2,7 @@ package v1
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
 	"ppIm/api"
 	"ppIm/global"
 	"ppIm/model"
@@ -28,11 +29,32 @@ func (group) Create(ctx *gin.Context) {
 		api.R(ctx, global.FAIL, "群组已存在", gin.H{})
 		return
 	}
-	group.OUid = uid
-	group.Name = name
-	group.CreatedAt = time.Now().Unix()
-	global.Mysql.Create(&group)
-	if group.Id > 0 {
+
+	now := time.Now().Unix()
+	trans := true
+	// 事务
+	global.Mysql.Transaction(func(tx *gorm.DB) error {
+		group.OUid = uid
+		group.Name = name
+		group.CreatedAt = now
+		if err := tx.Create(&group).Error; err != nil {
+			trans = false
+			return err
+		}
+
+		var groupUser model.GroupUser
+		groupUser.GroupId = group.Id
+		groupUser.UserId = uid
+		groupUser.JoinAt = now
+		if err := tx.Create(&groupUser).Error; err != nil {
+			trans = false
+			return err
+		}
+
+		return nil
+	})
+
+	if trans == true {
 		api.Rt(ctx, global.SUCCESS, "创建成功", gin.H{})
 	} else {
 		api.R(ctx, global.FAIL, "创建失败", gin.H{})
@@ -53,7 +75,17 @@ func (group) Search(ctx *gin.Context) {
 
 // 我的群组
 func (group) My(ctx *gin.Context) {
-
+	uid := int(ctx.MustGet("id").(float64))
+	type Result struct {
+		Id        int
+		OUid      int
+		Name      string
+		CreatedAt int
+		JoinAt    int
+	}
+	var result []Result
+	global.Mysql.Raw("SELECT g.id,g.o_uid,g.name,g.created_at,u.join_at FROM `group_user` AS u INNER JOIN `group` AS g ON u.group_id = g.id WHERE user_id = ?", uid).Scan(&result)
+	api.R(ctx, global.SUCCESS, "获取成功", gin.H{"list": result})
 }
 
 // 申请加入群组

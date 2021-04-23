@@ -5,6 +5,5 @@ type GroupUser struct {
 	Id      int
 	GroupId int
 	UserId  int
-	Role    int
-	joinAt  int
+	JoinAt  int64
 }

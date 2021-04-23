@@ -11,7 +11,7 @@
  Target Server Version : 50728
  File Encoding         : 65001
 
- Date: 08/03/2021 20:33:55
+ Date: 23/04/2021 10:33:37
 */
 
 SET NAMES utf8mb4;
@@ -30,7 +30,7 @@ CREATE TABLE `chat_user`  (
   `created_at` int(10) NULL DEFAULT NULL COMMENT '发送时间',
   `status` tinyint(1) NOT NULL DEFAULT 0 COMMENT '状态，0未读，1已读，-1撤回',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '私聊聊天记录表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '私聊聊天记录表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for friend_add
@@ -46,7 +46,7 @@ CREATE TABLE `friend_add`  (
   `request_at` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '添加好友请求时间戳',
   `pass_at` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '通过好友时间戳',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '添加好友表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 8 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '添加好友表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for friend_list
@@ -62,7 +62,7 @@ CREATE TABLE `friend_list`  (
   `created_at` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '添加时间戳',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `unique`(`uid`, `f_uid`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '好友表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '好友表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for group
@@ -70,11 +70,11 @@ CREATE TABLE `friend_list`  (
 DROP TABLE IF EXISTS `group`;
 CREATE TABLE `group`  (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `o_uid` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '群主id',
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '群组名称',
-  `owner_uid` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '群主uid',
   `created_at` int(10) UNSIGNED NULL DEFAULT 0 COMMENT '创建时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 13 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '群组表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for group_join
@@ -86,7 +86,7 @@ CREATE TABLE `group_join`  (
   `user_id` int(10) UNSIGNED NOT NULL DEFAULT 0,
   `join_at` int(10) UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '群组申请表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for group_user
@@ -96,10 +96,11 @@ CREATE TABLE `group_user`  (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `group_id` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '群组id',
   `user_id` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '用户id',
-  `role` tinyint(3) UNSIGNED NOT NULL DEFAULT 0 COMMENT '角色，0普通成员，1管理员，2群主',
   `join_at` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '进群时间',
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `group_id`(`group_id`) USING BTREE,
+  INDEX `user_id`(`user_id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '群组用户表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for user
@@ -128,6 +129,6 @@ CREATE TABLE `user`  (
   `updated_at` timestamp(0) NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP(0),
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `username`(`username`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '用户表' ROW_FORMAT = Dynamic;
 
 SET FOREIGN_KEY_CHECKS = 1;
