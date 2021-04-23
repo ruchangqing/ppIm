@@ -145,6 +145,61 @@ func (group) JoinList(ctx *gin.Context) {
 
 // 申请加群处理
 func (group) JoinHandle(ctx *gin.Context) {
+	uid := int(ctx.MustGet("id").(float64))
+	joinId, _ := strconv.Atoi(ctx.PostForm("join_id"))
+	status, _ := strconv.Atoi(ctx.PostForm("status")) // 1同意，-拒绝
+	if status != 0 && status != 1 {
+		api.R(ctx, global.FAIL, "非法参数", gin.H{})
+		return
+	}
+	var groupJoin model.GroupJoin
+	global.Mysql.Where("id = ?", joinId).First(&groupJoin)
+	if groupJoin.Id == 0 {
+		api.R(ctx, global.FAIL, "加群申请不存在", gin.H{})
+		return
+	}
+	var group model.Group
+	global.Mysql.Where("id = ?", groupJoin.GroupId).First(&group)
+	if group.Id == 0 {
+		api.R(ctx, global.FAIL, "群组不存在", gin.H{})
+		return
+	}
+	if group.OUid != uid {
+		api.R(ctx, global.FAIL, "您不是群组，无法处理申请", gin.H{})
+		return
+	}
+
+	if status == 1 {
+		// 同意加群
+		trans := true
+		// 事务
+		global.Mysql.Transaction(func(tx *gorm.DB) error {
+			var groupUser model.GroupUser
+			groupUser.GroupId = groupJoin.GroupId
+			groupUser.UserId = groupJoin.UserId
+			groupUser.JoinAt = time.Now().Unix()
+			if err := tx.Create(&groupUser).Error; err != nil {
+				trans = false
+				return err
+			}
+
+			if err := tx.Delete(&groupJoin).Error; err != nil {
+				trans = false
+				return err
+			}
+
+			return nil
+		})
+		if trans == true {
+			api.Rt(ctx, global.SUCCESS, "处理成功", gin.H{})
+		} else {
+			api.R(ctx, global.FAIL, "处理失败", gin.H{})
+		}
+	} else if status == 0 {
+		// 拒绝加群
+		global.Mysql.Delete(&groupJoin)
+		api.Rt(ctx, global.SUCCESS, "处理成功", gin.H{})
+	}
 }
 
 // 退出群组
