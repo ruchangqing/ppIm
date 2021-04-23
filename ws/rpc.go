@@ -30,7 +30,7 @@ func RpcIsOnline(rpcAddress string, uid int) bool {
 }
 
 // RPC远程调用发送给用户消息
-func RpcSendToUser(rpcAddress string, targetUid int, msgType int, msgContent string) bool {
+func RpcSendToUser(rpcAddress string, message Message) bool {
 	conn, err := grpc.Dial(rpcAddress, grpc.WithInsecure())
 	if err != nil {
 		fmt.Println("连接rpc服务器" + rpcAddress + " 发生错误：" + err.Error())
@@ -41,14 +41,17 @@ func RpcSendToUser(rpcAddress string, targetUid int, msgType int, msgContent str
 	c := pb.NewImClient(conn)
 
 	req := &pb.SendToUserRequest{
-		TargetUid:  int64(targetUid),
-		MsgType:    int64(msgType),
-		MsgContent: msgContent,
+		Cmd:    int64(message.Cmd),
+		FromId: int64(message.FromId),
+		ToId:   int64(message.ToId),
+		Ope:    int64(message.Ope),
+		Type:   int64(message.Type),
+		Body:   message.Body,
 	}
 	res, err := c.SendToUser(context.Background(), req)
 
 	if err != nil {
-		fmt.Println("调用rpc服务器 " + rpcAddress + " IsOnline方法发生错误：" + err.Error())
+		fmt.Println("调用rpc服务器 " + rpcAddress + " SendToUser方法发生错误：" + err.Error())
 		return false
 	}
 

@@ -18,7 +18,7 @@ func StatusApi(ctx *gin.Context) {
 func IsOnlineApi(ctx *gin.Context) {
 	uid, _ := strconv.Atoi(ctx.DefaultPostForm("uid", "0"))
 	api.R(ctx, global.SUCCESS, "isOnline", gin.H{
-		"isOnline":        IsOnline(uid),
-		"isOnlineCluster": IsOnlineCluster(uid),
+		"isOnline":        LocalIsOnline(uid),
+		"isOnlineCluster": IsOnline(uid),
 	})
 }

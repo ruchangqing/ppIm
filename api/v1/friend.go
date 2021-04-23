@@ -22,7 +22,8 @@ func (friend) Search(ctx *gin.Context) {
 		api.R(ctx, global.FAIL, "请输入好友昵称", gin.H{})
 		return
 	}
-	type APIUser struct {Username string
+	type APIUser struct {
+		Username string
 		Nickname string
 		Avatar   string
 		Sex      int
@@ -104,7 +105,15 @@ func (friend) Add(ctx *gin.Context) {
 	// 实时通知用户添加请求
 	var me model.User
 	global.Db.Where("id = ?", uid).First(&me)
-	ws.SendToUser(user.Id, ws.ReceiveFriendAdd, strconv.Itoa(uid))
+	message := ws.Message{
+		Cmd:    ws.CmdReceiveFriendAdd,
+		FromId: uid,
+		ToId:   user.Id,
+		Ope:    0,
+		Type:   0,
+		Body:   "您收到一条好友添加请求",
+	}
+	ws.SendToUser(message)
 
 	api.Rt(ctx, global.SUCCESS, "成功发送添加请求", gin.H{})
 }
@@ -123,7 +132,7 @@ func (friend) AddReqs(ctx *gin.Context) {
 	}
 	var result Result
 	var results []Result
-	rows, err := global.Db.Raw("select u.id,u.nickname,u.username,u.avatar,f.channel,f.reason,f.request_at from friend_add as f join user as u on f.uid = u.id  where f.f_uid = ? and f.status = 0 order by request_at desc", uid).Rows()
+	rows, err := global.Db.Raw("select u.id,u.nickname,u.username,u.avatar,f.channel,f.reason,f.request_at from friend_add as f join user as u on f.uid = u.id  where f.f_uid = ? order by request_at desc", uid).Rows()
 	if err != nil {
 		print(err)
 		api.R(ctx, global.FAIL, "未知错误", nil)
@@ -155,6 +164,10 @@ func (friend) AddHandle(ctx *gin.Context) {
 	}
 	now := time.Now().Unix()
 	global.Db.Model(&friendAdd).Updates(map[string]interface{}{"status": status, "pass_at": now})
+	if status == -1 {
+		api.Rt(ctx, global.SUCCESS, "处理成功", gin.H{})
+		return
+	}
 
 	// 通过验证后进行好友数据写入
 	friendList1 := &model.FriendList{
@@ -180,12 +193,20 @@ func (friend) AddHandle(ctx *gin.Context) {
 		return
 	}
 
-	// 实时通知用户我是否同意
+	// 实时通知对方通过了好友请求
 	var me model.User
 	global.Db.Where("id = ?", uid).First(&me)
-	ws.SendToUser(fUid, ws.ReceiveFriendAddResult, strconv.Itoa(uid))
+	message := ws.Message{
+		Cmd:    ws.CmdReceiveFriendAddResult,
+		FromId: uid,
+		ToId:   fUid,
+		Ope:    0,
+		Type:   0,
+		Body:   "对方通过了你的好友请求",
+	}
+	ws.SendToUser(message)
 
-	api.Rt(ctx, global.SUCCESS, "成功", gin.H{})
+	api.Rt(ctx, global.SUCCESS, "处理成功", gin.H{})
 }
 
 // 删除好友

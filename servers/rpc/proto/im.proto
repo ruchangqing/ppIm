@@ -20,10 +20,13 @@ message IsOnlineResponse {
   bool isOnline = 1;
 }
 
-message SendToUserRequest {
-  int64  targetUid  = 1;     //接收消息方
-  int64  msgType    = 2;     //消息类型
-  string msgContent = 3;     //消息内容
+message SendToUserRequest{
+  int64  cmd = 1;        //指令
+  int64  fromId = 2;     //发送消息方
+  int64  toId = 3;       //接收消息方
+  int64  ope = 4;        //消息渠道：0好友消息，1群组消息
+  int64  type = 5;       //消息类型：0 文本消息，1 图片，2 语音，3 视频，4 地理位置信息，6 文件，10 提示消息
+  string body = 6;       //消息内容
 }
 
 message SendToUserResponse {

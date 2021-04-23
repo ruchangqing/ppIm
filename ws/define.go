@@ -16,8 +16,12 @@ type Connection struct {
 
 // 消息结构体
 type Message struct {
-	MsgType    int
-	MsgContent string
+	Cmd    int    //指令
+	FromId int    //来源id
+	ToId   int    //接收id
+	Ope    int    //消息通道
+	Type   int    //消息类型
+	Body   string //消息内容
 }
 
 // 本机连接表
@@ -30,17 +34,19 @@ var UidToClientId = make(map[int]string)
 var ClientCounter = 0
 var ClientCounterLocker sync.RWMutex
 
-// 消息类型定义
+// 消息指令定义
 const (
-	OK                     = 90001 //成功
-	Fail                   = 90002 //失败
-	Sign                   = 10000 //登录
-	SignSuccess            = 10001 //登录成功
-	SignFail               = 10002 //等失败
-	ReceiveFriendMessage   = 20001 //收到好友消息
-	RecallFriendMessage    = 20002 //撤回私聊消息
-	ReceiveFriendAdd       = 30001 //收到好友添加请求
-	ReceiveFriendAddResult = 30002 //收到好友请求结果
+	CmdSuccess                = 1  //成功
+	CmdFail                   = 2  //失败
+	CmdSign                   = 3  //登录
+	CmdSignSuccess            = 4  //登录成功
+	CmdSignFail               = 5  //等失败
+	CmdReceiveFriendMessage   = 6  //收到好友消息
+	CmdWithdrawFriendMessage  = 7  //撤回好友消息
+	CmdReceiveFriendAdd       = 8  //收到好友添加请求
+	CmdReceiveFriendAddResult = 9  //收到好友请求结果
+	CmdReceiveGroupMessage    = 10 //收到群消息
+	CmdWithdrawGroupMessage   = 11 //撤回群消息
 )
 
 //生成clientId

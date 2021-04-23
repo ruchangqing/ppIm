@@ -64,29 +64,39 @@ func WebsocketEntry(ctx *gin.Context) {
 		if err := json.Unmarshal(msg, &message); err != nil {
 			// 接收到非json数据
 			fmt.Println("[Websocket]消息解析失败: " + string(msg))
-			conn.WriteJSON(Message{-1, "消息格式错误"})
+			message := Message{}
+			message.Cmd = CmdFail
+			message.Body = "消息格式错误"
+			conn.WriteJSON(message)
 			continue
 		}
 
 		// bind绑定uid和client_id，这是必须绑定的才能通信的
-		if message.MsgType == Sign {
+		if message.Cmd == CmdSign {
 			if c.Uid == 0 {
-				jwtToken := message.MsgContent
+				jwtToken := message.Body
 				id, err := middleware.ParseToken(ctx, jwtToken)
 				if err != "" {
 					fmt.Println(err)
-					conn.WriteJSON(Message{SignFail, "认证失败"})
-					continue
+					message := Message{}
+					message.Cmd = CmdFail
+					message.Body = "认证失败"
+					conn.WriteJSON(message)
 				}
 				c.Uid = id
 				UidToClientId[c.Uid] = c.ClientId // 认证成功后注册到已认证连接表，方便查询对应clientId
-				conn.WriteJSON(Message{SignSuccess, "认证成功"})
+				message := Message{}
+				message.Cmd = CmdSignSuccess
+				message.Body = "认证成功"
+				conn.WriteJSON(message)
 			}
 		} else {
 			if c.Uid > 0 {
-				conn.WriteJSON(Message{OK, "发送成功"})
 			} else {
-				conn.WriteJSON(Message{Fail, "您还未认证"})
+				message := Message{}
+				message.Cmd = CmdFail
+				message.Body = "你还未认证"
+				conn.WriteJSON(message)
 			}
 		}
 	}
