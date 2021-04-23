@@ -52,7 +52,7 @@ func (chat) SendToUser(ctx *gin.Context) {
 			Type:   messageType,
 			Body:   body,
 		}
-		ws.SendToUser(message)
+		ws.SendToUser(toUid, message)
 
 		api.Rt(ctx, global.SUCCESS, "发送成功", gin.H{"id": chatMessage.Id})
 	}
@@ -64,7 +64,7 @@ func (chat) WithdrawFromUser(ctx *gin.Context) {
 	uid := int(ctx.MustGet("id").(float64))
 	//查询消息记录
 	var chatMessage model.ChatMessage
-	global.Db.Where("from_id = ? and to_uid = ? and status <> ?", messageId, uid, -1).First(&chatMessage)
+	global.Db.Where("id = ? AND from_id = ? AND status <> ? AND ope = 0", messageId, uid, -1).First(&chatMessage)
 	if chatMessage.Id == 0 {
 		api.R(ctx, global.FAIL, "消息不存在", gin.H{})
 		return
@@ -86,7 +86,7 @@ func (chat) WithdrawFromUser(ctx *gin.Context) {
 		Type:   0,
 		Body:   strconv.Itoa(chatMessage.Id),
 	}
-	ws.SendToUser(message)
+	ws.SendToUser(chatMessage.ToId, message)
 
 	api.Rt(ctx, global.SUCCESS, "撤回成功", gin.H{})
 }
@@ -153,5 +153,44 @@ func (chat) SendToGroup(ctx *gin.Context) {
 
 // 撤回群消息
 func (chat) WithdrawFromGroup(ctx *gin.Context) {
+	uid := int(ctx.MustGet("id").(float64))
+	messageId, _ := strconv.Atoi(ctx.PostForm("message_id"))
+	//查询消息记录
+	var chatMessage model.ChatMessage
+	global.Db.Where("id = ? AND from_id = ? AND status <> ? AND ope = 1", messageId, uid, -1).First(&chatMessage)
+	if chatMessage.Id == 0 {
+		api.R(ctx, global.FAIL, "消息不存在", gin.H{})
+		return
+	}
+	now := time.Now().Unix()
+	// 判断消息发送是否超过2分钟
+	if now > chatMessage.CreatedAt+120 {
+		api.R(ctx, global.FAIL, "消息超过2分钟无法撤回", gin.H{})
+		return
+	}
+	// 把消息状态改为已撤回
+	global.Db.Model(&chatMessage).Updates(map[string]interface{}{"status": -1})
+	// 发送实时消息
+	type result struct {
+		UserId int
+	}
+	var groupUserList []result
+	global.Db.Raw("SELECT user_id FROM `group_user` WHERE group_id = >", chatMessage.ToId).Scan(&groupUserList)
+	if len(groupUserList) > 0 {
+		var userIdList []int
+		for _, groupUser := range groupUserList {
+			userIdList = append(userIdList, groupUser.UserId)
+		}
+		message := ws.Message{
+			Cmd:    ws.CmdWithdrawGroupMessage,
+			FromId: uid,
+			ToId:   chatMessage.ToId,
+			Ope:    1,
+			Type:   0,
+			Body:   strconv.Itoa(chatMessage.Id),
+		}
+		ws.SendToGroup(chatMessage.ToId, userIdList, message)
+	}
 
+	api.Rt(ctx, global.SUCCESS, "撤回成功", gin.H{})
 }

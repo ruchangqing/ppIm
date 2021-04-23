@@ -23,17 +23,17 @@ func LocalSendToUser(uid int, message Message) {
 }
 
 // 发送消息给用户
-func SendToUser(message Message) {
+func SendToUser(uid int, message Message) {
 	for _, serverAddress := range servers.Servers {
 		if serverAddress == global.ServerAddress {
 			//调用本机方法查询uid在线
-			if LocalIsOnline(message.ToId) {
-				LocalSendToUser(message.ToId, message)
+			if LocalIsOnline(uid) {
+				LocalSendToUser(uid, message)
 				break
 			}
 		} else {
 			//通过RPC调用其他集群查询uid在线
-			if RpcIsOnline(serverAddress, message.ToId) {
+			if RpcIsOnline(serverAddress, uid) {
 				RpcSendToUser(serverAddress, message)
 				break
 			}
@@ -64,7 +64,7 @@ func IsOnline(uid int) bool {
 
 // 发送消息给群组
 func SendToGroup(groupId int, userIdList []int, message Message) {
-	//for _, uid := range userIdList {
-	//	SendToUser(message)
-	//}
+	for _, uid := range userIdList {
+		SendToUser(uid, message)
+	}
 }

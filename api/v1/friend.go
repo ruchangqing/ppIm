@@ -113,7 +113,7 @@ func (friend) Add(ctx *gin.Context) {
 		Type:   0,
 		Body:   "您收到一条好友添加请求",
 	}
-	ws.SendToUser(message)
+	ws.SendToUser(user.Id, message)
 
 	api.Rt(ctx, global.SUCCESS, "成功发送添加请求", gin.H{})
 }
@@ -204,7 +204,7 @@ func (friend) AddHandle(ctx *gin.Context) {
 		Type:   0,
 		Body:   "对方通过了你的好友请求",
 	}
-	ws.SendToUser(message)
+	ws.SendToUser(fUid, message)
 
 	api.Rt(ctx, global.SUCCESS, "处理成功", gin.H{})
 }
