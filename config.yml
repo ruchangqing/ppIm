@@ -5,6 +5,7 @@ http:
   host: "0.0.0.0"                       #http服务监听
   port: "8080"                          #http服务端口
   responseType: "json"                  #http接口响应格式
+  pprof: "0.0.0.0:8081"                 #pprof监听
 db:
   dbType: "mysql"                       #数据库类型
   host: "127.0.0.1"                     #数据库地址

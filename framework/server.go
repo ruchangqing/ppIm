@@ -5,7 +5,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
+	"log"
 	"net"
+	"net/http"
+	_ "net/http/pprof"
 	"os"
 	"ppIm/global"
 	"ppIm/router"
@@ -17,6 +20,7 @@ import (
 )
 
 func StartServer() {
+	go pprofServer()
 	global.ServerAddress = utils.GetIntranetIp() + ":" + viper.GetString("cluster.rpc_port")
 	go rpcServer()
 	servers.Servers = servers.GetAllServers()
@@ -25,6 +29,12 @@ func StartServer() {
 	httpServer()
 }
 
+// pprof性能监控服务，路由：/debug/pprof
+func pprofServer() {
+	log.Println(http.ListenAndServe(viper.GetString("http.pprof"), nil))
+}
+
+// rpc服务监听
 func rpcServer() {
 	listenAddress := "127.0.0.1:" + viper.GetString("cluster.rpc_port")
 	listen, err := net.Listen("tcp", listenAddress)
@@ -39,6 +49,7 @@ func rpcServer() {
 	fmt.Println(s.Serve(listen))
 }
 
+// http服务监听
 func httpServer() {
 	host := viper.GetString("http.host")
 	port := viper.GetString("http.port")

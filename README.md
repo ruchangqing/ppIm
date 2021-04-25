@@ -23,6 +23,11 @@
 1、启动多个节点服务<br>
 2、nginx负载均衡<br>
 
+**pprof性能监控访问：**<br>
+1、配置项：http.pprof<br>
+2、web访问：http://ip:port/debug/pprof<br>
+
+
 **API接口列表：**<br>
 用户登录<br>
 用户注册<br>

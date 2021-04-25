@@ -2,6 +2,7 @@ package framework
 
 import (
 	"github.com/spf13/viper"
+	_ "net/http/pprof"
 )
 
 func LoadConfig() {
