@@ -1,7 +1,6 @@
 package framework
 
 import (
-	"fmt"
 	"github.com/spf13/viper"
 )
 
@@ -11,6 +10,6 @@ func LoadConfig() {
 	viper.SetConfigFile(filePath)
 	err := viper.ReadInConfig()
 	if err != nil {
-		fmt.Println(err)
+		panic("读取配置文件出错：" + err.Error())
 	}
 }

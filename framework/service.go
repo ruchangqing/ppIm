@@ -35,7 +35,7 @@ func connectDb() {
 	args := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s&parseTime=True&loc=Local", user, pass, host, port, dbname, charset)
 	global.Db, err = gorm.Open(dbType, args)
 	if err != nil {
-		fmt.Println(err)
+		panic("连接数据库出错：" + err.Error())
 	}
 	// 全局禁用表名复数
 	global.Db.SingularTable(true)
@@ -52,7 +52,7 @@ func connectRedis() {
 	})
 	_, err := global.Redis.Ping(context.Background()).Result()
 	if err != nil {
-		fmt.Println(err)
+		panic("连接Redis出错：" + err.Error())
 	}
 }
 
@@ -67,7 +67,7 @@ func connectElasticsearch() {
 		elastic.SetBasicAuth(user, pass),
 	)
 	if err != nil {
-		fmt.Println(err)
+		panic("连接Elasticsearch出错：" + err.Error())
 	}
 
 	// 创建用户位置索引
@@ -76,14 +76,14 @@ func connectElasticsearch() {
 
 func connectEtcd() {
 	etcdString := viper.GetString("cluster.etcd")
-	etcdArr := strings.Split(etcdString,"|")
+	etcdArr := strings.Split(etcdString, "|")
 	var err error
 	servers.EtcdClient, err = clientv3.New(clientv3.Config{
 		Endpoints:   etcdArr,
 		DialTimeout: 5 * time.Second,
 	})
 	if err != nil {
-		fmt.Println(err)
+		panic("连接Etcd出错：" + err.Error())
 	}
 	//defer EtcdClient.Close()
 }

@@ -29,7 +29,7 @@ func rpcServer() {
 	listenAddress := "127.0.0.1:" + viper.GetString("cluster.rpc_port")
 	listen, err := net.Listen("tcp", listenAddress)
 	if err != nil {
-		fmt.Println(err)
+		panic("开启RPC服务出错：" + err.Error())
 	}
 
 	s := grpc.NewServer()
