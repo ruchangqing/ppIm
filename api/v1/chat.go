@@ -145,7 +145,7 @@ func (chat) SendToGroup(ctx *gin.Context) {
 			Type:   messageType,
 			Body:   body,
 		}
-		ws.SendToGroup(groupId, userIdList, message)
+		ws.SendToGroup(userIdList, message)
 	}
 
 	api.Rt(ctx, global.SUCCESS, "发送成功", gin.H{"messageId": chatGroup.Id})
@@ -189,7 +189,7 @@ func (chat) WithdrawFromGroup(ctx *gin.Context) {
 			Type:   0,
 			Body:   strconv.Itoa(chatMessage.Id),
 		}
-		ws.SendToGroup(chatMessage.ToId, userIdList, message)
+		ws.SendToGroup(userIdList, message)
 	}
 
 	api.Rt(ctx, global.SUCCESS, "撤回成功", gin.H{})
