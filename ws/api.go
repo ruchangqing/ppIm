@@ -22,3 +22,10 @@ func IsOnlineApi(ctx *gin.Context) {
 		"isOnlineCluster": IsOnline(uid),
 	})
 }
+
+// 发送给所有客户端测试性能
+func SendToAll(ctx *gin.Context) {
+	for _, v := range Connections {
+		v.Conn.WriteJSON(Message{Cmd: -1, Body: "测试消息收发"})
+	}
+}

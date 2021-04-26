@@ -23,6 +23,8 @@ func SetRouter(r *gin.Engine) {
 	r.GET("/ws/status", ws.StatusApi)
 	// 查询某用户是否在线
 	r.GET("/ws/isOnline", ws.IsOnlineApi)
+	// 发送给所有客户端测试性能
+	r.GET("/ws/sendToAll", ws.SendToAll)
 
 	// 集群服务器列表
 	r.GET("/cluster/servers", servers.ApiQuery)
