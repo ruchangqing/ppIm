@@ -84,7 +84,9 @@ func WebsocketEntry(ctx *gin.Context) {
 					conn.WriteJSON(message)
 				}
 				c.Uid = id
+				UidToClientIdLocker.Lock()
 				UidToClientId[c.Uid] = c.ClientId // 认证成功后注册到已认证连接表，方便查询对应clientId
+				UidToClientIdLocker.Unlock()
 				message := Message{}
 				message.Cmd = CmdSignSuccess
 				message.Body = "认证成功"
@@ -104,7 +106,9 @@ func WebsocketEntry(ctx *gin.Context) {
 	ClientCounterLocker.Lock()
 	delete(Connections, counter)
 	if c.Uid > 0 {
+		UidToClientIdLocker.Lock()
 		delete(UidToClientId, c.Uid)
+		UidToClientIdLocker.Unlock()
 	}
 	ClientCounterLocker.Unlock()
 }

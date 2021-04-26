@@ -27,6 +27,10 @@
 1、配置项：http.pprof<br>
 2、web访问：http://ip:port/debug/pprof<br>
 
+**websocket并发测试：**<br>
+执行并发测试：go run ./test/ws.client.go；<br>
+建议linux下进行并发测试，默认并发10000个客户端连接websocket并发送认证消息，可手动修改并发客户端数量。<br>
+
 
 **API接口列表：**<br>
 用户登录<br>

@@ -29,6 +29,7 @@ var Connections = make(map[int]*Connection)
 
 // 已认证连接表
 var UidToClientId = make(map[int]string)
+var UidToClientIdLocker sync.RWMutex
 
 // 连接计数器&&并发锁
 var ClientCounter = 0
