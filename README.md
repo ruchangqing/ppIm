@@ -12,6 +12,7 @@
 2、Mysql5.6+<br>
 3、Redis<br>
 4、ElasticSearch7.0+<br>
+5、七牛云对象存储<br>
 
 **运行：**<br>
 1、部署elasticsearch、redis、mysql、etcd<br>

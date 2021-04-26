@@ -4,10 +4,12 @@ import (
 	"context"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"os"
 	"path"
 	"ppIm/api"
 	"ppIm/global"
 	"ppIm/model"
+	"ppIm/services"
 	"ppIm/utils"
 	"strconv"
 	"strings"
@@ -56,15 +58,26 @@ func (user) UpdateAvatar(ctx *gin.Context) {
 	}
 	id := int(ctx.MustGet("id").(float64))
 	now := time.Now().Unix()
-	filePath := fmt.Sprintf("public/avatar/%d_%d%s", id, now, fileExt)
-	if err := ctx.SaveUploadedFile(file, filePath); err != nil {
+	// 本地缓存地址
+	localPath := fmt.Sprintf("runtime/upload/%d_%d%s", id, now, fileExt)
+	if err := ctx.SaveUploadedFile(file, localPath); err != nil {
 		api.R(ctx, global.FAIL, "上传失败："+err.Error(), nil)
+		return
+	}
+	// 七牛云上传地址
+	uploadPath := fmt.Sprintf("avatar/%d_%d%s", id, now, fileExt)
+	err = services.QiNiuClient.Upload(localPath, uploadPath)
+	// 删除本地缓存
+	os.Remove(localPath)
+	if err != nil {
+		api.R(ctx, global.FAIL, "上传失败", nil)
 		return
 	}
 
 	// 更新头像地址到数据库
 	user := &model.User{Id: id}
-	result := global.Db.Model(&user).Update("avatar", "/"+filePath).RowsAffected
+	user.Avatar = uploadPath
+	result := global.Db.Model(&user).Update(user).RowsAffected
 
 	api.Rt(ctx, global.SUCCESS, "设置成功", gin.H{"result": result})
 }

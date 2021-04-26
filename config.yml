@@ -18,6 +18,11 @@ redis:
   host: "127.0.0.1"                     #redis地址
   port: "6379"                          #redis端口
   pass: "0825"                          #redis密码
+qiniu:
+  accessKey: ""                         #七牛云accessKey
+  secretKey: ""                         #七牛云secretKey
+  bucket: ""                            #七牛云bucket
+  domain: ""                            #七牛云域名
 elasticsearch:
   host: "127.0.0.1"                     #es地址
   port: "9200"                          #es端口
@@ -25,5 +30,5 @@ elasticsearch:
   pass: ""                              #es密码
 cluster:
   etcd: "127.0.0.1:2379"                #etcd服务地址
-#etcd: "127.0.0.1:2379|127.0.01:2279"
+  #etcd: "127.0.0.1:2379|127.0.01:2279"
   rpc_port: "9901"                      #gRPC服务监听端口

@@ -12,6 +12,7 @@ import (
 	"ppIm/global"
 	"ppIm/model"
 	"ppIm/servers"
+	"ppIm/services"
 	"strings"
 	"time"
 )
@@ -21,6 +22,7 @@ func LoadService() {
 	connectRedis()
 	connectElasticsearch()
 	connectEtcd()
+	setQiNiu()
 }
 
 func connectDb() {
@@ -86,4 +88,11 @@ func connectEtcd() {
 		panic("连接Etcd出错：" + err.Error())
 	}
 	//defer EtcdClient.Close()
+}
+
+func setQiNiu() {
+	services.QiNiuClient.AccessKey = viper.GetString("qiniu.accessKey")
+	services.QiNiuClient.SecretKey = viper.GetString("qiniu.secretKey")
+	services.QiNiuClient.Bucket = viper.GetString("qiniu.bucket")
+	services.QiNiuClient.Domain = viper.GetString("qiniu.domain")
 }
