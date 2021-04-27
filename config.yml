@@ -29,7 +29,7 @@ db:
   charset: "utf8mb4"
 redis:
   #redis地址
-  host: "192.168.125.169
+  host: "192.168.125.169"
   #redis端口"
   port: "6379"
   #redis密码
