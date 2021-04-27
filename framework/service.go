@@ -65,6 +65,7 @@ func connectElasticsearch() {
 	pass := viper.GetString("elasticsearch.pass")
 	var err error
 	global.Elasticsearch, err = elastic.NewClient(
+		elastic.SetSniff(false),
 		elastic.SetURL("http://"+host+":"+port),
 		elastic.SetBasicAuth(user, pass),
 	)
