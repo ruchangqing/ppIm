@@ -28,7 +28,7 @@
 1、配置项：http.pprof<br>
 2、web访问：http://ip:port/debug/pprof<br>
 
-**websocket并发测试：**<br>
+**websocket并发性能测试：**<br>
 执行并发测试：go run ./test/ws.client.go；<br>
 建议linux下进行并发测试，默认并发10000个客户端连接websocket并发送认证消息，可手动修改并发客户端数量。<br>
 测试环境：<br>
@@ -79,7 +79,7 @@ i5-1035G4，WIN10系统<br>
 参数：password `string`<br>
 
 <br>
-登录/注册成功后会返回token，其他接口和websocket授权都需要带上token；api 接口在header添加 Login-Token 字段，websocket在连接后发送一个token认证信息进行认证，15秒之内没有认证成功会强制断开连接。<br>
+登录/注册成功后会返回token，其他接口和websocket授权都需要带上token；api 接口在header添加 Login-Token 字段，websocket在连接后发送一个token认证信息进行认证，15秒之内没有认证成功会强制断开连接。<br><br>
 
 **二、websocket长连接：**<br>
 连接地址：ws://ip:port/ws（例如`ws://127.0.0.1:8080/ws`）<br>
