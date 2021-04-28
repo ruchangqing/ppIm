@@ -6,11 +6,12 @@ import (
 	"ppIm/api"
 	"ppIm/global"
 	"ppIm/model"
+	"ppIm/services"
 	"ppIm/utils"
 	"time"
 )
 
-type sign struct {}
+type sign struct{}
 
 var Sign sign
 
@@ -52,7 +53,7 @@ func (sign) Login(ctx *gin.Context) {
 		"user": gin.H{
 			"username": username,
 			"nickname": user.Nickname,
-			"avatar":   viper.GetString("app.domain") + user.Avatar,
+			"avatar":   services.QiNiuClient.FullPath(user.Avatar),
 			"status":   user.Status,
 		},
 	})
@@ -89,7 +90,7 @@ func (sign) Register(ctx *gin.Context) {
 		PasswordSalt: passwordSalt,
 		RegisterTime: time.Now().Format("2006-01-02 15:04:05"),
 		LoginTime:    time.Now().Format("2006-01-02 15:04:05"),
-		Avatar:       "/public/avatar/default.png",
+		Avatar:       viper.GetString("qiniu.default_avatar"),
 		LastIp:       ctx.ClientIP(),
 	}
 	if err := global.Db.Create(&user).Error; err != nil {
@@ -104,7 +105,7 @@ func (sign) Register(ctx *gin.Context) {
 		"user": gin.H{
 			"username": username,
 			"nickname": user.Nickname,
-			"avatar":   viper.GetString("app.domain") + user.Avatar,
+			"avatar":   services.QiNiuClient.FullPath(user.Avatar),
 			"status":   user.Status,
 		},
 	})

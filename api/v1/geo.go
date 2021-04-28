@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/olivere/elastic/v7"
-	"github.com/spf13/viper"
 	"ppIm/api"
 	"ppIm/global"
 	"ppIm/model"
+	"ppIm/services"
 	"strconv"
 )
 
@@ -82,7 +82,7 @@ func (geo) Users(ctx *gin.Context) {
 			"id":       user.Id,
 			"username": user.Username,
 			"nickname": user.Nickname,
-			"avatar":   viper.GetString("app.domain") + user.Avatar,
+			"avatar":   services.QiNiuClient.FullPath(user.Avatar),
 			"sex":      user.Sex,
 			"distance": distanceEcho,
 		}

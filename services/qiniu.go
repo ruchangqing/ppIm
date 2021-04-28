@@ -47,3 +47,12 @@ func (q QiNiu) Upload(localFile string, fileName string) error {
 	}
 	return nil
 }
+
+// 补全文件地址
+func (q QiNiu) FullPath(filePath string) string {
+	if filePath[0:4] != "http" {
+		return QiNiuClient.Domain + "/" + filePath
+	} else {
+		return filePath
+	}
+}

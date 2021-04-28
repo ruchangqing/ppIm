@@ -1,8 +1,6 @@
 app:
   #生产环境改为：release
   mode: "debug"
-  #服务器域名
-  domain: "http://127.0.0.1:8080"
 http:
   #http服务监听
   host: "0.0.0.0"
@@ -43,6 +41,8 @@ qiniu:
   bucket: ""
   #七牛云域名
   domain: ""
+  #m用户默认头像地址
+  default_avatar: "https://ss0.baidu.com/94o3dSag_xI4khGko9WTAnF6hhy/zhidao/wh%3D450%2C600/sign=e98512f3b5fd5266a77e34109e28bb1d/8d5494eef01f3a2945bbcbd69a25bc315c607cb2.jpg"
 elasticsearch:
   #es地址
   host: "192.168.125.169"
