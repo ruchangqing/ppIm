@@ -9,7 +9,7 @@ import (
 	"ppIm/api"
 	"ppIm/global"
 	"ppIm/model"
-	"ppIm/services"
+	"ppIm/utils"
 	"strconv"
 )
 
@@ -82,7 +82,7 @@ func (geo) Users(ctx *gin.Context) {
 			"id":       user.Id,
 			"username": user.Username,
 			"nickname": user.Nickname,
-			"avatar":   services.QiNiuClient.FullPath(user.Avatar),
+			"avatar":   utils.QiNiuClient.FullPath(user.Avatar),
 			"sex":      user.Sex,
 			"distance": distanceEcho,
 		}

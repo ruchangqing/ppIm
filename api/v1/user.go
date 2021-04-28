@@ -9,7 +9,6 @@ import (
 	"ppIm/api"
 	"ppIm/global"
 	"ppIm/model"
-	"ppIm/services"
 	"ppIm/utils"
 	"strconv"
 	"strings"
@@ -66,7 +65,7 @@ func (user) UpdateAvatar(ctx *gin.Context) {
 	}
 	// 七牛云上传地址
 	uploadPath := fmt.Sprintf("avatar/%d_%d%s", id, now, fileExt)
-	err = services.QiNiuClient.Upload(localPath, uploadPath)
+	err = utils.QiNiuClient.Upload(localPath, uploadPath)
 	// 删除本地缓存
 	os.Remove(localPath)
 	if err != nil {

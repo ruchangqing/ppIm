@@ -12,7 +12,7 @@ import (
 	"ppIm/global"
 	"ppIm/model"
 	"ppIm/servers"
-	"ppIm/services"
+	"ppIm/utils"
 	"strings"
 	"time"
 )
@@ -92,8 +92,8 @@ func connectEtcd() {
 }
 
 func setQiNiu() {
-	services.QiNiuClient.AccessKey = viper.GetString("qiniu.accessKey")
-	services.QiNiuClient.SecretKey = viper.GetString("qiniu.secretKey")
-	services.QiNiuClient.Bucket = viper.GetString("qiniu.bucket")
-	services.QiNiuClient.Domain = viper.GetString("qiniu.domain")
+	utils.QiNiuClient.AccessKey = viper.GetString("qiniu.accessKey")
+	utils.QiNiuClient.SecretKey = viper.GetString("qiniu.secretKey")
+	utils.QiNiuClient.Bucket = viper.GetString("qiniu.bucket")
+	utils.QiNiuClient.Domain = viper.GetString("qiniu.domain")
 }

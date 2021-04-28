@@ -6,7 +6,6 @@ import (
 	"ppIm/api"
 	"ppIm/global"
 	"ppIm/model"
-	"ppIm/services"
 	"ppIm/utils"
 	"time"
 )
@@ -53,7 +52,7 @@ func (sign) Login(ctx *gin.Context) {
 		"user": gin.H{
 			"username": username,
 			"nickname": user.Nickname,
-			"avatar":   services.QiNiuClient.FullPath(user.Avatar),
+			"avatar":   utils.QiNiuClient.FullPath(user.Avatar),
 			"status":   user.Status,
 		},
 	})
@@ -105,7 +104,7 @@ func (sign) Register(ctx *gin.Context) {
 		"user": gin.H{
 			"username": username,
 			"nickname": user.Nickname,
-			"avatar":   services.QiNiuClient.FullPath(user.Avatar),
+			"avatar":   utils.QiNiuClient.FullPath(user.Avatar),
 			"status":   user.Status,
 		},
 	})
