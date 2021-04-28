@@ -109,7 +109,7 @@ func (friend) Add(ctx *gin.Context) {
 		Cmd:    ws.CmdReceiveFriendAdd,
 		FromId: uid,
 		ToId:   user.Id,
-		Ope:    0,
+		Ope:    2,
 		Type:   0,
 		Body:   "您收到一条好友添加请求",
 	}
@@ -200,7 +200,7 @@ func (friend) AddHandle(ctx *gin.Context) {
 		Cmd:    ws.CmdReceiveFriendAddResult,
 		FromId: uid,
 		ToId:   fUid,
-		Ope:    0,
+		Ope:    2,
 		Type:   0,
 		Body:   "对方通过了你的好友请求",
 	}

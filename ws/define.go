@@ -41,13 +41,15 @@ const (
 	CmdFail                   = 2  //失败
 	CmdSign                   = 3  //登录
 	CmdSignSuccess            = 4  //登录成功
-	CmdSignFail               = 5  //等失败
 	CmdReceiveFriendMessage   = 6  //收到好友消息
 	CmdWithdrawFriendMessage  = 7  //撤回好友消息
 	CmdReceiveFriendAdd       = 8  //收到好友添加请求
 	CmdReceiveFriendAddResult = 9  //收到好友请求结果
 	CmdReceiveGroupMessage    = 10 //收到群消息
 	CmdWithdrawGroupMessage   = 11 //撤回群消息
+	CmdReceiveGroupJoin       = 12 //收到加入群组请求
+	CmdReceiveGroupJoinResult = 13 //收到加入群组结果
+	CmdReceiveGroupShot       = 14 //收到被踢出群组通知
 )
 
 //生成clientId

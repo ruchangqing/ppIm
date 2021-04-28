@@ -6,6 +6,7 @@ import (
 	"ppIm/api"
 	"ppIm/global"
 	"ppIm/model"
+	"ppIm/ws"
 	"strconv"
 	"time"
 )
@@ -119,6 +120,16 @@ func (group) Join(ctx *gin.Context) {
 	groupJoin.JoinAt = time.Now().Unix()
 	global.Db.Create(&groupJoin)
 	if groupJoin.Id > 0 {
+		// 实时通知群组
+		message := ws.Message{
+			Cmd:    ws.CmdReceiveGroupJoin,
+			FromId: uid,
+			ToId:   group.Id,
+			Ope:    2,
+			Type:   0,
+			Body:   "对方申请加入群组",
+		}
+		ws.SendToUser(group.OUid, message)
 		api.Rt(ctx, global.SUCCESS, "申请成功", gin.H{})
 	} else {
 		api.R(ctx, global.FAIL, "申请失败", gin.H{})
@@ -191,6 +202,16 @@ func (group) JoinHandle(ctx *gin.Context) {
 			return nil
 		})
 		if trans == true {
+			// 实时通知加入群组
+			message := ws.Message{
+				Cmd:    ws.CmdReceiveGroupJoinResult,
+				FromId: groupJoin.GroupId,
+				ToId:   groupJoin.UserId,
+				Ope:    2,
+				Type:   0,
+				Body:   "群主同意您加入群组",
+			}
+			ws.SendToUser(groupJoin.UserId, message)
 			api.Rt(ctx, global.SUCCESS, "处理成功", gin.H{})
 		} else {
 			api.R(ctx, global.FAIL, "处理失败", gin.H{})
@@ -238,5 +259,15 @@ func (group) Shot(ctx *gin.Context) {
 		return
 	}
 	global.Db.Delete(&groupUser)
+	// 实时通知用户被踢出群组
+	message := ws.Message{
+		Cmd:    ws.CmdReceiveGroupShot,
+		FromId: groupId,
+		ToId:   userId,
+		Ope:    2,
+		Type:   0,
+		Body:   "你被踢出群组",
+	}
+	ws.SendToUser(userId, message)
 	api.Rt(ctx, global.SUCCESS, "踢出群成功", gin.H{})
 }
