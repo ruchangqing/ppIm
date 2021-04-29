@@ -2,7 +2,6 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
-	"net/http"
 	"ppIm/api"
 	v1 "ppIm/api/v1"
 	"ppIm/middleware"
@@ -14,20 +13,14 @@ func SetRouter(r *gin.Engine) {
 	// 全局跨域中间件
 	r.Use(middleware.Cors)
 
-	// 公开访问目录
-	r.StaticFS("/public", http.Dir("./public"))
-
 	// websocket连接
 	r.GET("/ws", ws.WebsocketEntry)
 	// websocket服务状态
 	r.GET("/ws/status", ws.StatusApi)
-	// 查询某用户是否在线
-	r.GET("/ws/isOnline", ws.IsOnlineApi)
-	// 发送给所有客户端测试性能
+	// 发送给所有客户端测试群发性能
 	r.GET("/ws/sendToAll", ws.SendToAll)
-
 	// 集群服务器列表
-	r.GET("/cluster/servers", servers.ApiQuery)
+	r.GET("/cluster", servers.Api)
 
 	// 首页
 	r.GET("/", api.Welcome)

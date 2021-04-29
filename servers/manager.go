@@ -38,7 +38,7 @@ func DelServer(server string) {
 }
 
 //查询服务器接口
-func ApiQuery(ctx *gin.Context) {
+func Api(ctx *gin.Context) {
 	api.R(ctx, 200, "status", gin.H{
 		"servers": Servers,
 	})
