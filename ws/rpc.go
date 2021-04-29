@@ -1,9 +1,9 @@
 package ws
 
 import (
-	"fmt"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
+	"ppIm/global"
 	pb "ppIm/servers/rpc/proto"
 )
 
@@ -11,7 +11,7 @@ import (
 func RpcIsOnline(rpcAddress string, uid int) bool {
 	conn, err := grpc.Dial(rpcAddress, grpc.WithInsecure())
 	if err != nil {
-		fmt.Println("连接rpc服务器" + rpcAddress + " 发生错误：" + err.Error())
+		global.Logger.Debugf("连接rpc服务器" + rpcAddress + " 发生错误：" + err.Error())
 		return false
 	}
 	defer conn.Close()
@@ -22,7 +22,7 @@ func RpcIsOnline(rpcAddress string, uid int) bool {
 	res, err := c.IsOnline(context.Background(), req)
 
 	if err != nil {
-		fmt.Println("调用rpc服务器 " + rpcAddress + " IsOnline方法发生错误：" + err.Error())
+		global.Logger.Debugf("调用rpc服务器 " + rpcAddress + " IsOnline方法发生错误：" + err.Error())
 		return false
 	}
 
@@ -33,7 +33,7 @@ func RpcIsOnline(rpcAddress string, uid int) bool {
 func RpcSendToUser(rpcAddress string, message Message) bool {
 	conn, err := grpc.Dial(rpcAddress, grpc.WithInsecure())
 	if err != nil {
-		fmt.Println("连接rpc服务器" + rpcAddress + " 发生错误：" + err.Error())
+		global.Logger.Debugf("连接rpc服务器" + rpcAddress + " 发生错误：" + err.Error())
 		return false
 	}
 	defer conn.Close()
@@ -51,7 +51,7 @@ func RpcSendToUser(rpcAddress string, message Message) bool {
 	res, err := c.SendToUser(context.Background(), req)
 
 	if err != nil {
-		fmt.Println("调用rpc服务器 " + rpcAddress + " SendToUser方法发生错误：" + err.Error())
+		global.Logger.Debugf("调用rpc服务器 " + rpcAddress + " SendToUser方法发生错误：" + err.Error())
 		return false
 	}
 

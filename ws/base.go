@@ -2,10 +2,10 @@ package ws
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"net/http"
+	"ppIm/global"
 	"ppIm/middleware"
 	"time"
 )
@@ -29,7 +29,7 @@ func WebsocketEntry(ctx *gin.Context) {
 	var err error
 	conn, err = WebsocketUpgrade.Upgrade(w, r, nil) // 升级为websocket协议
 	if err != nil {
-		fmt.Println("Failed to set websocket upgrade: %+v", err)
+		global.Logger.Debugf(err.Error())
 		return
 	}
 
@@ -56,6 +56,7 @@ func WebsocketEntry(ctx *gin.Context) {
 	for {
 		_, msg, err := conn.ReadMessage()
 		if err != nil {
+			global.Logger.Debugf(err.Error())
 			break
 		}
 
@@ -63,7 +64,7 @@ func WebsocketEntry(ctx *gin.Context) {
 		var message Message
 		if err := json.Unmarshal(msg, &message); err != nil {
 			// 接收到非json数据
-			fmt.Println("[Websocket]消息解析失败: " + string(msg))
+			global.Logger.Debugf(err.Error())
 			message := Message{}
 			message.Cmd = CmdFail
 			message.Body = "消息格式错误"
@@ -77,7 +78,6 @@ func WebsocketEntry(ctx *gin.Context) {
 				jwtToken := message.Body
 				id, err := middleware.ParseToken(ctx, jwtToken)
 				if err != "" {
-					fmt.Println(err)
 					message := Message{}
 					message.Cmd = CmdFail
 					message.Body = "认证失败"

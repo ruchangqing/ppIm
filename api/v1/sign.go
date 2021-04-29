@@ -93,7 +93,8 @@ func (sign) Register(ctx *gin.Context) {
 		LastIp:       ctx.ClientIP(),
 	}
 	if err := global.Db.Create(&user).Error; err != nil {
-		api.R(ctx, global.FAIL, "注册失败："+err.Error(), nil)
+		global.Logger.Debugf(err.Error())
+		api.R(ctx, global.FAIL, "服务器错误", nil)
 		return
 	}
 

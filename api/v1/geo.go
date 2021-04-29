@@ -45,6 +45,7 @@ func (geo) Users(ctx *gin.Context) {
 	res, err3 := global.Elasticsearch.Search().Index("user_location").Query(query).SortBy(sort).From(from).Size(size).Do(context.Background())
 	if err3 != nil {
 		api.R(ctx, global.FAIL, "数据非法", nil)
+		global.Logger.Debugf(err3.Error())
 		return
 	}
 
@@ -59,7 +60,9 @@ func (geo) Users(ctx *gin.Context) {
 		var userLocation model.UserLocation
 		err := json.Unmarshal(hit.Source, &userLocation) // json解析结果
 		if err != nil {
-			fmt.Println(err)
+			api.R(ctx, global.FAIL, "服务器错误", gin.H{})
+			global.Logger.Debugf(err.Error())
+			return
 		}
 		var user model.User
 		global.Db.Where("id = ?", userLocation.Uid).First(&user)

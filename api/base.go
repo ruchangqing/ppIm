@@ -46,7 +46,7 @@ func MakeJwtToken(id int) string {
 	})
 	tokenString, err := token.SignedString(global.JwtHmacSampleSecret)
 	if err != nil {
-		print(err)
+		global.Logger.Debugf(err.Error())
 	}
 
 	// 缓存用户最新token到redis，实现token只能使用一次

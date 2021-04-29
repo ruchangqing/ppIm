@@ -60,7 +60,8 @@ func (user) UpdateAvatar(ctx *gin.Context) {
 	// 本地缓存地址
 	localPath := fmt.Sprintf("runtime/upload/%d_%d%s", id, now, fileExt)
 	if err := ctx.SaveUploadedFile(file, localPath); err != nil {
-		api.R(ctx, global.FAIL, "上传失败："+err.Error(), nil)
+		api.R(ctx, global.FAIL, "服务器错误", nil)
+		global.Logger.Debugf(err.Error())
 		return
 	}
 	// 七牛云上传地址
@@ -69,7 +70,8 @@ func (user) UpdateAvatar(ctx *gin.Context) {
 	// 删除本地缓存
 	os.Remove(localPath)
 	if err != nil {
-		api.R(ctx, global.FAIL, "上传失败", nil)
+		api.R(ctx, global.FAIL, "服务器错误", nil)
+		global.Logger.Debugf(err.Error())
 		return
 	}
 
@@ -140,6 +142,6 @@ func (user) UpdateLocation(ctx *gin.Context) {
     }`, id, latitude, longitude)
 	_, err := global.Elasticsearch.Index().Index("user_location").Id(strconv.Itoa(int(id))).BodyJson(data).Do(context.Background())
 	if err != nil {
-		fmt.Println(err)
+		global.Logger.Debugf(err.Error())
 	}
 }

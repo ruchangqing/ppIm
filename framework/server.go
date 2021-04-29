@@ -58,7 +58,7 @@ func httpServer() {
 	gin.DisableConsoleColor()
 	// 日志使用文件
 	path, _ := os.Getwd()
-	file, err := os.Create(path + "/runtime/gin_" + utils.GetDate() + ".log")
+	file, err := os.Create(path + "/runtime/gin.log")
 	if err != nil {
 		fmt.Println(err)
 	}

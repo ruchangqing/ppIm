@@ -47,8 +47,8 @@ func (friend) List(ctx *gin.Context) {
 	var results []Result
 	rows, err := global.Db.Raw("select u.id,u.nickname,u.username,u.avatar,u.sex from friend_list as f join user as u on f.f_uid = u.id where f.uid = ?", uid).Rows()
 	if err != nil {
-		print(err)
-		api.R(ctx, global.FAIL, "未知错误", nil)
+		global.Logger.Debugf(err.Error())
+		api.R(ctx, global.FAIL, "服务器错误", nil)
 		return
 	}
 	defer rows.Close()
@@ -98,7 +98,8 @@ func (friend) Add(ctx *gin.Context) {
 	friendAdd.Channel = channel
 	friendAdd.RequestAt = time.Now().Unix()
 	if err := global.Db.Create(&friendAdd).Error; err != nil {
-		api.R(ctx, global.FAIL, "添加失败："+err.Error(), nil)
+		api.R(ctx, global.FAIL, "服务器错误", nil)
+		global.Logger.Debugf(err.Error())
 		return
 	}
 
@@ -134,8 +135,8 @@ func (friend) AddReqs(ctx *gin.Context) {
 	var results []Result
 	rows, err := global.Db.Raw("select u.id,u.nickname,u.username,u.avatar,f.channel,f.reason,f.request_at from friend_add as f join user as u on f.uid = u.id  where f.f_uid = ? order by request_at desc", uid).Rows()
 	if err != nil {
-		print(err)
-		api.R(ctx, global.FAIL, "未知错误", nil)
+		global.Logger.Debugf(err.Error())
+		api.R(ctx, global.FAIL, "服务器错误", nil)
 		return
 	}
 	defer rows.Close()
@@ -221,7 +222,7 @@ func (friend) Del(ctx *gin.Context) {
 	}
 	err := global.Db.Delete(&friendList).Error
 	if err != nil {
-		print(err)
+		global.Logger.Debugf(err.Error())
 		api.R(ctx, global.FAIL, "删除失败", nil)
 		return
 	}

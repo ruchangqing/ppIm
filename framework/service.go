@@ -9,15 +9,17 @@ import (
 	"github.com/olivere/elastic/v7"
 	"github.com/spf13/viper"
 	clientv3 "go.etcd.io/etcd/client/v3"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 	"ppIm/global"
 	"ppIm/model"
-	"ppIm/servers"
 	"ppIm/utils"
 	"strings"
 	"time"
 )
 
 func LoadService() {
+	InitLogger()
 	connectDb()
 	connectRedis()
 	connectElasticsearch()
@@ -25,6 +27,17 @@ func LoadService() {
 	setQiNiu()
 }
 
+// 初始化日志
+func InitLogger() {
+	writeSyncer := GetLogWriter()
+	encoder := GetEncoder()
+	core := zapcore.NewCore(encoder, writeSyncer, zapcore.DebugLevel)
+
+	logger := zap.New(core, zap.AddCaller())
+	global.Logger = logger.Sugar()
+}
+
+// 连接数据库
 func connectDb() {
 	dbType := viper.GetString("db.dbType")
 	host := viper.GetString("db.host")
@@ -43,6 +56,7 @@ func connectDb() {
 	global.Db.SingularTable(true)
 }
 
+// 连接redis
 func connectRedis() {
 	host := viper.GetString("redis.host")
 	port := viper.GetString("redis.port")
@@ -58,6 +72,7 @@ func connectRedis() {
 	}
 }
 
+// 连接es
 func connectElasticsearch() {
 	host := viper.GetString("elasticsearch.host")
 	port := viper.GetString("elasticsearch.port")
@@ -77,20 +92,22 @@ func connectElasticsearch() {
 	_, _ = global.Elasticsearch.CreateIndex("user_location").BodyString(model.CreateUserLocationIndex).Do(context.Background())
 }
 
+// 连接etcd
 func connectEtcd() {
 	etcdString := viper.GetString("cluster.etcd")
 	etcdArr := strings.Split(etcdString, "|")
 	var err error
-	servers.EtcdClient, err = clientv3.New(clientv3.Config{
+	global.Etcd, err = clientv3.New(clientv3.Config{
 		Endpoints:   etcdArr,
 		DialTimeout: 5 * time.Second,
 	})
 	if err != nil {
 		panic("连接Etcd出错：" + err.Error())
 	}
-	//defer EtcdClient.Close()
+	//defer global.Etcd.Close()
 }
 
+// 设置七牛云对象存储
 func setQiNiu() {
 	utils.QiNiuClient.AccessKey = viper.GetString("qiniu.accessKey")
 	utils.QiNiuClient.SecretKey = viper.GetString("qiniu.secretKey")
