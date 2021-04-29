@@ -1,6 +1,7 @@
 app:
   #生产环境改为：release
   mode: "debug"
+
 http:
   #http服务监听
   host: "0.0.0.0"
@@ -8,11 +9,12 @@ http:
   port: "8080"
   #pprof监听端口
   pprof: "0.0.0.0:8081"
+
 db:
   #数据库类型
   dbType: "mysql"
   #数据库地址
-  host: "192.168.125.169"
+  host: "192.168.125.171"
   #数据库端口
   port: "3306"
   #数据库用户名
@@ -23,13 +25,26 @@ db:
   dbname: "ppIm"
   #数据库编码格式
   charset: "utf8mb4"
+
 redis:
   #redis地址
-  host: "192.168.125.169"
+  host: "192.168.125.171"
   #redis端口"
   port: "6379"
   #redis密码
   pass: "0825"
+
+elasticsearch:
+  #es地址
+  host: "192.168.125.171"
+  #es端口
+  port: "9200"
+  #es用户名
+  user: "elastic"
+  #es密码
+  pass: ""
+
+#七牛云对象存储服务，解决分布式文件访问
 qiniu:
   #七牛云accessKey
   accessKey: ""
@@ -37,21 +52,14 @@ qiniu:
   secretKey: ""
   #七牛云bucket
   bucket: ""
-  #七牛云域名
-  domain: ""
+  #七牛云域名，自行修改
+  domain: "http://test.qiniu.com"
   #m用户默认头像地址
   default_avatar: "https://ss0.baidu.com/94o3dSag_xI4khGko9WTAnF6hhy/zhidao/wh%3D450%2C600/sign=e98512f3b5fd5266a77e34109e28bb1d/8d5494eef01f3a2945bbcbd69a25bc315c607cb2.jpg"
-elasticsearch:
-  #es地址
-  host: "192.168.125.169"
-  #es端口
-  port: "9200"
-  #es用户名
-  user: "elastic"
-  #es密码
-  pass: ""
+
+#集群配置
 cluster:
   #etcd服务地址，集群格式：127.0.0.1:2379|127.0.01:2279
-  etcd: "192.168.125.169:2379"
+  etcd: "192.168.125.171:2379"
   #gRPC服务监听端口
   rpc_port: "9901"
