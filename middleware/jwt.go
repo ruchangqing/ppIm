@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
-	"ppIm/api"
+	"ppIm/app/api"
 	"ppIm/global"
 	"time"
 )
@@ -14,7 +14,7 @@ func ValidateJwtToken(ctx *gin.Context) {
 	// 校验header中token值格式是否合法
 	jwtToken := ctx.GetHeader("Login-Token")
 	if len(jwtToken) < 16 {
-		api.R(ctx, global.AUTHFAIL, "鉴权失败", nil)
+		api.R(ctx, global.ApiNoAuth, "鉴权失败", nil)
 		ctx.Abort()
 		return
 	}
@@ -22,7 +22,7 @@ func ValidateJwtToken(ctx *gin.Context) {
 	_, err := ParseToken(ctx, jwtToken)
 	if err != "" {
 		// 解析失败，响应结束
-		api.R(ctx, global.AUTHFAIL, err, nil)
+		api.R(ctx, global.ApiNoAuth, err, nil)
 		ctx.Abort()
 		return
 	}

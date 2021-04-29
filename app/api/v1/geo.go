@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/olivere/elastic/v7"
-	"ppIm/api"
+	"ppIm/app/api"
+	"ppIm/app/model"
 	"ppIm/global"
-	"ppIm/model"
 	"ppIm/utils"
 	"strconv"
 )
@@ -23,7 +23,7 @@ func (geo) Users(ctx *gin.Context) {
 	longitude, err1 := strconv.ParseFloat(ctx.PostForm("longitude"), 64)
 	latitude, err2 := strconv.ParseFloat(ctx.PostForm("latitude"), 64)
 	if err1 != nil || err2 != nil {
-		api.R(ctx, global.FAIL, "数据非法", nil)
+		api.R(ctx, global.ApiFail, "数据非法", nil)
 		return
 	}
 	// 距离范围，默认100
@@ -44,7 +44,7 @@ func (geo) Users(ctx *gin.Context) {
 	sort := elastic.NewGeoDistanceSort("location").Point(latitude, longitude).Asc().DistanceType("arc").Unit("km")
 	res, err3 := global.Elasticsearch.Search().Index("user_location").Query(query).SortBy(sort).From(from).Size(size).Do(context.Background())
 	if err3 != nil {
-		api.R(ctx, global.FAIL, "数据非法", nil)
+		api.R(ctx, global.ApiFail, "数据非法", nil)
 		global.Logger.Debugf(err3.Error())
 		return
 	}
@@ -60,7 +60,7 @@ func (geo) Users(ctx *gin.Context) {
 		var userLocation model.UserLocation
 		err := json.Unmarshal(hit.Source, &userLocation) // json解析结果
 		if err != nil {
-			api.R(ctx, global.FAIL, "服务器错误", gin.H{})
+			api.R(ctx, global.ApiFail, "服务器错误", gin.H{})
 			global.Logger.Debugf(err.Error())
 			return
 		}
@@ -92,7 +92,7 @@ func (geo) Users(ctx *gin.Context) {
 		data = append(data, temp)
 	}
 
-	api.Rt(ctx, global.SUCCESS, "ok", gin.H{
+	api.Rt(ctx, global.ApiSuccess, "ok", gin.H{
 		"list": data,
 	})
 }

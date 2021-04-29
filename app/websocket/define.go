@@ -1,4 +1,4 @@
-package ws
+package websocket
 
 import (
 	"github.com/gorilla/websocket"
@@ -24,17 +24,6 @@ type Message struct {
 	Body   string //消息内容
 }
 
-// 本机连接表
-var Connections = make(map[int]*Connection)
-
-// 已认证连接表
-var UidToClientId = make(map[int]string)
-var UidToClientIdLocker sync.RWMutex
-
-// 连接计数器&&并发锁
-var ClientCounter = 0
-var ClientCounterLocker sync.RWMutex
-
 // 消息指令定义
 const (
 	CmdSuccess                = 1  //成功
@@ -52,13 +41,20 @@ const (
 	CmdReceiveGroupShot       = 14 //收到被踢出群组通知
 )
 
+// 本机连接表
+var Connections = make(map[int]*Connection)
+// 连接计数器&&并发锁
+var ClientCounter = 0
+var ClientCounterLocker sync.RWMutex
+
+// 已认证连接表
+var UidToClientId = make(map[int]string)
+var UidToClientIdLocker sync.RWMutex
+
+
 //生成clientId
 func GenClientId(clientCounter int) string {
 	str := global.ServerAddress + "@@" + strconv.Itoa(clientCounter)
-	//clientId, err := utils.AesEncrypt([]byte(str))
-	//if err != nil {
-	//	fmt.Println("生成clientId出错：" + err.Error())
-	//}
 	clientId := str
 	return clientId
 }

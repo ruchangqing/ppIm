@@ -2,10 +2,10 @@ package v1
 
 import (
 	"github.com/gin-gonic/gin"
-	"ppIm/api"
+	"ppIm/app/api"
+	"ppIm/app/model"
+	"ppIm/app/websocket"
 	"ppIm/global"
-	"ppIm/model"
-	"ppIm/ws"
 	"strconv"
 	"time"
 )
@@ -20,7 +20,7 @@ func (chat) SendToUser(ctx *gin.Context) {
 	messageType := 1 // 目前只支持消息类型文字1
 	body := ctx.PostForm("body")
 	if body == "" {
-		api.R(ctx, global.FAIL, "请输入内容", gin.H{})
+		api.R(ctx, global.ApiFail, "请输入内容", gin.H{})
 		return
 	}
 	uid := int(ctx.MustGet("id").(float64))
@@ -29,7 +29,7 @@ func (chat) SendToUser(ctx *gin.Context) {
 	var count int
 	global.Db.Where("uid = ? and f_uid = ?", uid, toUid).Select("id,uid,f_uid").First(&friendList).Count(&count)
 	if count == 0 {
-		api.R(ctx, global.FAIL, "对方不是你的好友", gin.H{})
+		api.R(ctx, global.ApiFail, "对方不是你的好友", gin.H{})
 		return
 	} else {
 		// 持久化消息记录
@@ -44,17 +44,17 @@ func (chat) SendToUser(ctx *gin.Context) {
 		}
 		global.Db.Create(&chatMessage)
 		// 发送实时消息
-		message := ws.Message{
-			Cmd:    ws.CmdReceiveFriendMessage,
+		message := websocket.Message{
+			Cmd:    websocket.CmdReceiveFriendMessage,
 			FromId: uid,
 			ToId:   toUid,
 			Ope:    0,
 			Type:   messageType,
 			Body:   body,
 		}
-		ws.SendToUser(toUid, message)
+		websocket.SendToUser(toUid, message)
 
-		api.Rt(ctx, global.SUCCESS, "发送成功", gin.H{"id": chatMessage.Id})
+		api.Rt(ctx, global.ApiSuccess, "发送成功", gin.H{"id": chatMessage.Id})
 	}
 }
 
@@ -66,29 +66,29 @@ func (chat) WithdrawFromUser(ctx *gin.Context) {
 	var chatMessage model.ChatMessage
 	global.Db.Where("id = ? AND from_id = ? AND status <> ? AND ope = 0", messageId, uid, -1).First(&chatMessage)
 	if chatMessage.Id == 0 {
-		api.R(ctx, global.FAIL, "消息不存在", gin.H{})
+		api.R(ctx, global.ApiFail, "消息不存在", gin.H{})
 		return
 	}
 	now := time.Now().Unix()
 	// 判断消息发送是否超过2分钟
 	if now > chatMessage.CreatedAt+120 {
-		api.R(ctx, global.FAIL, "消息超过2分钟无法撤回", gin.H{})
+		api.R(ctx, global.ApiFail, "消息超过2分钟无法撤回", gin.H{})
 		return
 	}
 	// 把消息状态改为已撤回
 	global.Db.Model(&chatMessage).Updates(map[string]interface{}{"status": -1})
 	// 通知对方撤回消息
-	message := ws.Message{
-		Cmd:    ws.CmdWithdrawFriendMessage,
+	message := websocket.Message{
+		Cmd:    websocket.CmdWithdrawFriendMessage,
 		FromId: uid,
 		ToId:   chatMessage.ToId,
 		Ope:    0,
 		Type:   0,
 		Body:   strconv.Itoa(chatMessage.Id),
 	}
-	ws.SendToUser(chatMessage.ToId, message)
+	websocket.SendToUser(chatMessage.ToId, message)
 
-	api.Rt(ctx, global.SUCCESS, "撤回成功", gin.H{})
+	api.Rt(ctx, global.ApiSuccess, "撤回成功", gin.H{})
 }
 
 // 发送群消息
@@ -97,19 +97,19 @@ func (chat) SendToGroup(ctx *gin.Context) {
 	groupId, _ := strconv.Atoi(ctx.PostForm("group_id"))
 	body := ctx.PostForm("body")
 	if body == "" {
-		api.R(ctx, global.FAIL, "请输入内容", gin.H{})
+		api.R(ctx, global.ApiFail, "请输入内容", gin.H{})
 		return
 	}
 	var group model.Group
 	global.Db.Where("id = ?", groupId).First(&group)
 	if group.Id == 0 {
-		api.R(ctx, global.FAIL, "群组不存在", gin.H{})
+		api.R(ctx, global.ApiFail, "群组不存在", gin.H{})
 		return
 	}
 	var groupUser model.GroupUser
 	global.Db.Where("group_id = ? AND user_id = ?", groupId, uid).First(&groupUser)
 	if groupUser.Id == 0 {
-		api.R(ctx, global.FAIL, "您不是群成员", gin.H{})
+		api.R(ctx, global.ApiFail, "您不是群成员", gin.H{})
 		return
 	}
 
@@ -137,18 +137,18 @@ func (chat) SendToGroup(ctx *gin.Context) {
 		for _, groupUser := range groupUserList {
 			userIdList = append(userIdList, groupUser.UserId)
 		}
-		message := ws.Message{
-			Cmd:    ws.CmdReceiveGroupMessage,
+		message := websocket.Message{
+			Cmd:    websocket.CmdReceiveGroupMessage,
 			FromId: uid,
 			ToId:   groupId,
 			Ope:    1,
 			Type:   messageType,
 			Body:   body,
 		}
-		ws.SendToGroup(userIdList, message)
+		websocket.SendToGroup(userIdList, message)
 	}
 
-	api.Rt(ctx, global.SUCCESS, "发送成功", gin.H{"messageId": chatGroup.Id})
+	api.Rt(ctx, global.ApiSuccess, "发送成功", gin.H{"messageId": chatGroup.Id})
 }
 
 // 撤回群消息
@@ -159,13 +159,13 @@ func (chat) WithdrawFromGroup(ctx *gin.Context) {
 	var chatMessage model.ChatMessage
 	global.Db.Where("id = ? AND from_id = ? AND status <> ? AND ope = 1", messageId, uid, -1).First(&chatMessage)
 	if chatMessage.Id == 0 {
-		api.R(ctx, global.FAIL, "消息不存在", gin.H{})
+		api.R(ctx, global.ApiFail, "消息不存在", gin.H{})
 		return
 	}
 	now := time.Now().Unix()
 	// 判断消息发送是否超过2分钟
 	if now > chatMessage.CreatedAt+120 {
-		api.R(ctx, global.FAIL, "消息超过2分钟无法撤回", gin.H{})
+		api.R(ctx, global.ApiFail, "消息超过2分钟无法撤回", gin.H{})
 		return
 	}
 	// 把消息状态改为已撤回
@@ -181,16 +181,16 @@ func (chat) WithdrawFromGroup(ctx *gin.Context) {
 		for _, groupUser := range groupUserList {
 			userIdList = append(userIdList, groupUser.UserId)
 		}
-		message := ws.Message{
-			Cmd:    ws.CmdWithdrawGroupMessage,
+		message := websocket.Message{
+			Cmd:    websocket.CmdWithdrawGroupMessage,
 			FromId: uid,
 			ToId:   chatMessage.ToId,
 			Ope:    1,
 			Type:   0,
 			Body:   strconv.Itoa(chatMessage.Id),
 		}
-		ws.SendToGroup(userIdList, message)
+		websocket.SendToGroup(userIdList, message)
 	}
 
-	api.Rt(ctx, global.SUCCESS, "撤回成功", gin.H{})
+	api.Rt(ctx, global.ApiSuccess, "撤回成功", gin.H{})
 }

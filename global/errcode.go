@@ -1,6 +1,8 @@
 package global
 
-const SUCCESS  = 0
-const FAIL 	   = -10000
-const AUTHFAIL = -40001
-const NOTFOUND = -40002
+const (
+	ApiSuccess  = 0
+	ApiFail     = 1000
+	ApiNoAuth   = 1001
+	ApiNotfound = 1002
+)

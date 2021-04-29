@@ -1,13 +1,14 @@
-package ws
+package websocket
 
 import (
 	"github.com/gin-gonic/gin"
-	"ppIm/api"
+	"ppIm/app/api"
 	"ppIm/global"
 )
 
+// websocket本机服务状态
 func StatusApi(ctx *gin.Context) {
-	api.R(ctx, global.SUCCESS, "status", gin.H{
+	api.R(ctx, global.ApiSuccess, "status", gin.H{
 		"connections":   Connections,
 		"uidToClientId": UidToClientId,
 		"online":        len(Connections),

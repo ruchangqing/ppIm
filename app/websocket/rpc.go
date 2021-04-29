@@ -1,10 +1,10 @@
-package ws
+package websocket
 
 import (
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
+	pb "ppIm/app/rpc/proto"
 	"ppIm/global"
-	pb "ppIm/servers/rpc/proto"
 )
 
 // RPC远程调用查询是否在线

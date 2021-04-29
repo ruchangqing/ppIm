@@ -10,11 +10,11 @@ import (
 	"net/http"
 	_ "net/http/pprof"
 	"os"
+	"ppIm/app/rpc"
+	pb "ppIm/app/rpc/proto"
 	"ppIm/global"
 	"ppIm/router"
 	"ppIm/servers"
-	"ppIm/servers/rpc"
-	pb "ppIm/servers/rpc/proto"
 	"ppIm/utils"
 	"time"
 )

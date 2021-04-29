@@ -9,11 +9,11 @@ import (
 )
 
 func Welcome(ctx *gin.Context) {
-	R(ctx, global.SUCCESS, "欢迎使用ppim开源社交项目，定制开发联系微信：liboy825", nil)
+	R(ctx, global.ApiSuccess, "欢迎使用ppim开源社交项目，定制开发联系微信：liboy825", nil)
 }
 
 func NotFound(ctx *gin.Context) {
-	R(ctx, global.NOTFOUND, "Not Found", nil)
+	R(ctx, global.ApiNotfound, "Not Found", nil)
 }
 
 // 响应封装（不带新token）

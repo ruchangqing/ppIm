@@ -3,9 +3,9 @@ package v1
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
-	"ppIm/api"
+	"ppIm/app/api"
+	"ppIm/app/model"
 	"ppIm/global"
-	"ppIm/model"
 	"ppIm/utils"
 	"time"
 )
@@ -21,7 +21,7 @@ func (sign) Login(ctx *gin.Context) {
 	password := ctx.PostForm("password")
 	result, msg := validateParams(&username, &password)
 	if false == result {
-		api.R(ctx, global.FAIL, msg, nil)
+		api.R(ctx, global.ApiFail, msg, nil)
 		return
 	}
 
@@ -30,14 +30,14 @@ func (sign) Login(ctx *gin.Context) {
 	var count int
 	global.Db.Where("username = ?", username).Select("id,username,password,password_salt,nickname,avatar,status").First(&user).Count(&count)
 	if count < 1 {
-		api.R(ctx, global.FAIL, "用户不存在，请更换用户名后重试", nil)
+		api.R(ctx, global.ApiFail, "用户不存在，请更换用户名后重试", nil)
 		return
 	}
 
 	// 验证密码是否合法
 	postPassword := utils.Md5(utils.Md5(password) + user.PasswordSalt)
 	if postPassword != user.Password {
-		api.R(ctx, global.FAIL, "密码错误", nil)
+		api.R(ctx, global.ApiFail, "密码错误", nil)
 		return
 	}
 
@@ -47,7 +47,7 @@ func (sign) Login(ctx *gin.Context) {
 
 	// 生成jwt token和用户信息给用户
 	tokenString := api.MakeJwtToken(user.Id)
-	api.R(ctx, global.SUCCESS, "登录成功", gin.H{
+	api.R(ctx, global.ApiSuccess, "登录成功", gin.H{
 		"t": tokenString,
 		"user": gin.H{
 			"username": username,
@@ -65,7 +65,7 @@ func (sign) Register(ctx *gin.Context) {
 	password := ctx.PostForm("password")
 	result, msg := validateParams(&username, &password)
 	if false == result {
-		api.R(ctx, global.FAIL, msg, nil)
+		api.R(ctx, global.ApiFail, msg, nil)
 		return
 	}
 
@@ -74,7 +74,7 @@ func (sign) Register(ctx *gin.Context) {
 	var count int
 	global.Db.Where("username = ?", username).First(&user).Count(&count)
 	if count > 0 {
-		api.R(ctx, global.FAIL, "用户已存在，请更换用户名后重试", nil)
+		api.R(ctx, global.ApiFail, "用户已存在，请更换用户名后重试", nil)
 		return
 	}
 
@@ -94,13 +94,13 @@ func (sign) Register(ctx *gin.Context) {
 	}
 	if err := global.Db.Create(&user).Error; err != nil {
 		global.Logger.Debugf(err.Error())
-		api.R(ctx, global.FAIL, "服务器错误", nil)
+		api.R(ctx, global.ApiFail, "服务器错误", nil)
 		return
 	}
 
 	// 生成jwt token和用户信息给用户
 	tokenString := api.MakeJwtToken(user.Id)
-	api.R(ctx, global.FAIL, "登录成功", gin.H{
+	api.R(ctx, global.ApiFail, "登录成功", gin.H{
 		"t": tokenString,
 		"user": gin.H{
 			"username": username,

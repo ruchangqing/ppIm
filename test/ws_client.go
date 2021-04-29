@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/gorilla/websocket"
 	"log"
-	"ppIm/ws"
+	"ppIm/app/websocket"
 )
 
 func main() {
@@ -27,7 +27,7 @@ func client() {
 	defer c.Close()
 	fmt.Println("已连接")
 
-	c.WriteJSON(ws.Message{Cmd: 3, Body: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdCI6MTYxOTE0Mzg0OSwiaWQiOjV9.KQ7dOv6bE_fP5NpMehziesFMsZXDAdVrbYBHyZROw40"})
+	c.WriteJSON(websocket.Message{Cmd: 3, Body: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdCI6MTYxOTE0Mzg0OSwiaWQiOjV9.KQ7dOv6bE_fP5NpMehziesFMsZXDAdVrbYBHyZROw40"})
 
 	done := make(chan struct{})
 

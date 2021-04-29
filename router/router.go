@@ -2,11 +2,11 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
-	"ppIm/api"
-	v1 "ppIm/api/v1"
+	"ppIm/app/api"
+	v1 "ppIm/app/api/v1"
+	"ppIm/app/websocket"
 	"ppIm/middleware"
 	"ppIm/servers"
-	"ppIm/ws"
 )
 
 func SetRouter(r *gin.Engine) {
@@ -14,11 +14,11 @@ func SetRouter(r *gin.Engine) {
 	r.Use(middleware.Cors)
 
 	// websocket连接
-	r.GET("/ws", ws.WebsocketEntry)
+	r.GET("/ws", websocket.WebsocketEntry)
 	// websocket服务状态
-	r.GET("/ws/status", ws.StatusApi)
+	r.GET("/ws/status", websocket.StatusApi)
 	// 发送给所有客户端测试群发性能
-	r.GET("/ws/sendToAll", ws.SendToAll)
+	r.GET("/ws/sendToAll", websocket.SendToAll)
 	// 集群服务器列表
 	r.GET("/cluster", servers.Api)
 

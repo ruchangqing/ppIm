@@ -2,8 +2,8 @@ package rpc
 
 import (
 	"golang.org/x/net/context"
-	pb "ppIm/servers/rpc/proto"
-	"ppIm/ws"
+	pb "ppIm/app/rpc/proto"
+	"ppIm/app/websocket"
 )
 
 type imService struct{}
@@ -15,7 +15,7 @@ func (h imService) IsOnline(ctx context.Context, in *pb.IsOnlineRequest) (*pb.Is
 	resp := new(pb.IsOnlineResponse)
 
 	uid := int(in.Uid)
-	resp.IsOnline = ws.LocalIsOnline(uid)
+	resp.IsOnline = websocket.LocalIsOnline(uid)
 
 	return resp, nil
 }
@@ -25,7 +25,7 @@ func (h imService) SendToUser(ctx context.Context, in *pb.SendToUserRequest) (*p
 	resp := new(pb.SendToUserResponse)
 	resp.Result = false
 
-	message := ws.Message{
+	message := websocket.Message{
 		Cmd:    int(in.Cmd),
 		FromId: int(in.FromId),
 		ToId:   int(in.ToId),
@@ -33,7 +33,7 @@ func (h imService) SendToUser(ctx context.Context, in *pb.SendToUserRequest) (*p
 		Type:   int(in.Type),
 		Body:   in.Body,
 	}
-	ws.LocalSendToUser(int(in.ToId), message)
+	websocket.LocalSendToUser(int(in.ToId), message)
 
 	return resp, nil
 }
