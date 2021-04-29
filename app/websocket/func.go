@@ -1,7 +1,7 @@
 package websocket
 
 import (
-	"ppIm/global"
+	"ppIm/lib"
 	"ppIm/servers"
 	"strconv"
 	"strings"
@@ -11,7 +11,7 @@ import (
 func SendToUser(uid int, message Message) {
 	go func() {
 		for _, serverAddress := range servers.Servers {
-			if serverAddress == global.ServerAddress {
+			if serverAddress == lib.ServerAddress {
 				//调用本机方法查询uid在线
 				if LocalIsOnline(uid) {
 					LocalSendToUser(uid, message)

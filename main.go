@@ -2,8 +2,7 @@ package main
 
 import (
 	"fmt"
-	"ppIm/framework"
-	_ "ppIm/global"
+	"ppIm/boot"
 )
 
 func main() {
@@ -15,7 +14,7 @@ func main() {
 	}()
 
 	//服务启动
-	framework.LoadConfig()
-	framework.LoadService()
-	framework.StartServer()
+	boot.LoadConfig()
+	boot.LoadService()
+	boot.StartServer()
 }

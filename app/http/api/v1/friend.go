@@ -2,10 +2,10 @@ package v1
 
 import (
 	"github.com/gin-gonic/gin"
-	"ppIm/app/api"
+	"ppIm/app/http/api"
 	"ppIm/app/model"
 	"ppIm/app/websocket"
-	"ppIm/global"
+	"ppIm/lib"
 	"strconv"
 	"time"
 )
@@ -19,7 +19,7 @@ func (friend) Search(ctx *gin.Context) {
 	uid := int(ctx.MustGet("id").(float64))
 	word := ctx.PostForm("word")
 	if word == "" {
-		api.R(ctx, global.ApiFail, "请输入好友昵称", gin.H{})
+		api.R(ctx, api.Fail, "请输入好友昵称", gin.H{})
 		return
 	}
 	type APIUser struct {
@@ -29,8 +29,8 @@ func (friend) Search(ctx *gin.Context) {
 		Sex      int
 	}
 	var users []APIUser
-	global.Db.Model(&model.User{}).Where("(username LIKE ? or nickname LIKE ?) and id <> ?", "%"+word+"%", "%"+word+"%", uid).Scan(&users)
-	api.Rt(ctx, global.ApiSuccess, "请求成功", gin.H{"list": users})
+	lib.Db.Model(&model.User{}).Where("(username LIKE ? or nickname LIKE ?) and id <> ?", "%"+word+"%", "%"+word+"%", uid).Scan(&users)
+	api.Rt(ctx, api.Success, "请求成功", gin.H{"list": users})
 }
 
 // 好友列表
@@ -45,10 +45,10 @@ func (friend) List(ctx *gin.Context) {
 	}
 	var result Result
 	var results []Result
-	rows, err := global.Db.Raw("select u.id,u.nickname,u.username,u.avatar,u.sex from friend_list as f join user as u on f.f_uid = u.id where f.uid = ?", uid).Rows()
+	rows, err := lib.Db.Raw("select u.id,u.nickname,u.username,u.avatar,u.sex from friend_list as f join user as u on f.f_uid = u.id where f.uid = ?", uid).Rows()
 	if err != nil {
-		global.Logger.Debugf(err.Error())
-		api.R(ctx, global.ApiFail, "服务器错误", nil)
+		lib.Logger.Debugf(err.Error())
+		api.R(ctx, api.Fail, "服务器错误", nil)
 		return
 	}
 	defer rows.Close()
@@ -56,7 +56,7 @@ func (friend) List(ctx *gin.Context) {
 		err = rows.Scan(&result.Id, &result.Nickname, &result.Username, &result.Avatar, &result.Sex)
 		results = append(results, result)
 	}
-	api.Rt(ctx, global.ApiSuccess, "请求成功", gin.H{"lists": results})
+	api.Rt(ctx, api.Success, "请求成功", gin.H{"lists": results})
 }
 
 // 添加好友
@@ -68,27 +68,27 @@ func (friend) Add(ctx *gin.Context) {
 
 	var user model.User
 	var count int
-	global.Db.Where("username = ?", username).Select("id,username").First(&user).Count(&count)
+	lib.Db.Where("username = ?", username).Select("id,username").First(&user).Count(&count)
 	if count < 1 {
-		api.R(ctx, global.ApiFail, "用户未找到", nil)
+		api.R(ctx, api.Fail, "用户未找到", nil)
 		return
 	}
 	if user.Id == uid {
-		api.R(ctx, global.ApiFail, "不能添加自己", nil)
+		api.R(ctx, api.Fail, "不能添加自己", nil)
 		return
 	}
 
 	var friendList model.FriendList
-	global.Db.Where("uid = ? and f_uid = ?", uid, user.Id).Select("id,uid,f_uid").First(&friendList).Count(&count)
+	lib.Db.Where("uid = ? and f_uid = ?", uid, user.Id).Select("id,uid,f_uid").First(&friendList).Count(&count)
 	if count > 0 {
-		api.R(ctx, global.ApiFail, "对方已经是好友", nil)
+		api.R(ctx, api.Fail, "对方已经是好友", nil)
 		return
 	}
 
 	var friendAdd model.FriendAdd
-	global.Db.Where("uid = ? and f_uid = ? and status = 0", uid, user.Id).Select("id,uid,f_uid").First(&friendAdd).Count(&count)
+	lib.Db.Where("uid = ? and f_uid = ? and status = 0", uid, user.Id).Select("id,uid,f_uid").First(&friendAdd).Count(&count)
 	if count > 0 {
-		api.R(ctx, global.ApiFail, "请等待好友同意", nil)
+		api.R(ctx, api.Fail, "请等待好友同意", nil)
 		return
 	}
 
@@ -97,15 +97,15 @@ func (friend) Add(ctx *gin.Context) {
 	friendAdd.Reason = reason
 	friendAdd.Channel = channel
 	friendAdd.RequestAt = time.Now().Unix()
-	if err := global.Db.Create(&friendAdd).Error; err != nil {
-		api.R(ctx, global.ApiFail, "服务器错误", nil)
-		global.Logger.Debugf(err.Error())
+	if err := lib.Db.Create(&friendAdd).Error; err != nil {
+		api.R(ctx, api.Fail, "服务器错误", nil)
+		lib.Logger.Debugf(err.Error())
 		return
 	}
 
 	// 实时通知用户添加请求
 	var me model.User
-	global.Db.Where("id = ?", uid).First(&me)
+	lib.Db.Where("id = ?", uid).First(&me)
 	message := websocket.Message{
 		Cmd:    websocket.CmdReceiveFriendAdd,
 		FromId: uid,
@@ -116,7 +116,7 @@ func (friend) Add(ctx *gin.Context) {
 	}
 	websocket.SendToUser(user.Id, message)
 
-	api.Rt(ctx, global.ApiSuccess, "成功发送添加请求", gin.H{})
+	api.Rt(ctx, api.Success, "成功发送添加请求", gin.H{})
 }
 
 // 收到的好友请求列表
@@ -133,10 +133,10 @@ func (friend) AddReqs(ctx *gin.Context) {
 	}
 	var result Result
 	var results []Result
-	rows, err := global.Db.Raw("select u.id,u.nickname,u.username,u.avatar,f.channel,f.reason,f.request_at from friend_add as f join user as u on f.uid = u.id  where f.f_uid = ? order by request_at desc", uid).Rows()
+	rows, err := lib.Db.Raw("select u.id,u.nickname,u.username,u.avatar,f.channel,f.reason,f.request_at from friend_add as f join user as u on f.uid = u.id  where f.f_uid = ? order by request_at desc", uid).Rows()
 	if err != nil {
-		global.Logger.Debugf(err.Error())
-		api.R(ctx, global.ApiFail, "服务器错误", nil)
+		lib.Logger.Debugf(err.Error())
+		api.R(ctx, api.Fail, "服务器错误", nil)
 		return
 	}
 	defer rows.Close()
@@ -144,7 +144,7 @@ func (friend) AddReqs(ctx *gin.Context) {
 		err = rows.Scan(&result.Id, &result.Nickname, &result.Username, &result.Avatar, &result.Channel, &result.Reason, &result.RequestAt)
 		results = append(results, result)
 	}
-	api.Rt(ctx, global.ApiSuccess, "请求成功", gin.H{"list": results})
+	api.Rt(ctx, api.Success, "请求成功", gin.H{"list": results})
 }
 
 // 处理收到的好友请求
@@ -153,20 +153,20 @@ func (friend) AddHandle(ctx *gin.Context) {
 	fUid, _ := strconv.Atoi(ctx.PostForm("f_uid"))
 	status, _ := strconv.Atoi(ctx.PostForm("status"))
 	if status != 1 && status != -1 {
-		api.R(ctx, global.ApiFail, "非法参数", nil)
+		api.R(ctx, api.Fail, "非法参数", nil)
 		return
 	}
 	uid := int(ctx.MustGet("id").(float64))
 	var friendAdd model.FriendAdd
-	global.Db.Where("uid = ? and f_uid = ? and status = ?", fUid, uid, 0).First(&friendAdd)
+	lib.Db.Where("uid = ? and f_uid = ? and status = ?", fUid, uid, 0).First(&friendAdd)
 	if friendAdd.Id == 0 {
-		api.R(ctx, global.ApiFail, "添加好友请求不存在", nil)
+		api.R(ctx, api.Fail, "添加好友请求不存在", nil)
 		return
 	}
 	now := time.Now().Unix()
-	global.Db.Model(&friendAdd).Updates(map[string]interface{}{"status": status, "pass_at": now})
+	lib.Db.Model(&friendAdd).Updates(map[string]interface{}{"status": status, "pass_at": now})
 	if status == -1 {
-		api.Rt(ctx, global.ApiSuccess, "处理成功", gin.H{})
+		api.Rt(ctx, api.Success, "处理成功", gin.H{})
 		return
 	}
 
@@ -187,16 +187,16 @@ func (friend) AddHandle(ctx *gin.Context) {
 		Role:      2,
 		CreatedAt: now,
 	}
-	err1 := global.Db.Create(&friendList1).Error
-	err2 := global.Db.Create(&friendList2).Error
+	err1 := lib.Db.Create(&friendList1).Error
+	err2 := lib.Db.Create(&friendList2).Error
 	if err1 != nil || err2 != nil {
-		api.R(ctx, global.ApiFail, "未知错误", nil)
+		api.R(ctx, api.Fail, "未知错误", nil)
 		return
 	}
 
 	// 实时通知对方通过了好友请求
 	var me model.User
-	global.Db.Where("id = ?", uid).First(&me)
+	lib.Db.Where("id = ?", uid).First(&me)
 	message := websocket.Message{
 		Cmd:    websocket.CmdReceiveFriendAddResult,
 		FromId: uid,
@@ -207,7 +207,7 @@ func (friend) AddHandle(ctx *gin.Context) {
 	}
 	websocket.SendToUser(fUid, message)
 
-	api.Rt(ctx, global.ApiSuccess, "处理成功", gin.H{})
+	api.Rt(ctx, api.Success, "处理成功", gin.H{})
 }
 
 // 删除好友
@@ -215,16 +215,16 @@ func (friend) Del(ctx *gin.Context) {
 	uid := int(ctx.MustGet("id").(float64))
 	fUid, _ := strconv.Atoi(ctx.PostForm("f_uid"))
 	var friendList model.FriendList
-	global.Db.Where("uid = ? and f_uid = ?", uid, fUid).First(&friendList)
+	lib.Db.Where("uid = ? and f_uid = ?", uid, fUid).First(&friendList)
 	if friendList.Id == 0 {
-		api.R(ctx, global.ApiFail, "对方不是你的好友", nil)
+		api.R(ctx, api.Fail, "对方不是你的好友", nil)
 		return
 	}
-	err := global.Db.Delete(&friendList).Error
+	err := lib.Db.Delete(&friendList).Error
 	if err != nil {
-		global.Logger.Debugf(err.Error())
-		api.R(ctx, global.ApiFail, "删除失败", nil)
+		lib.Logger.Debugf(err.Error())
+		api.R(ctx, api.Fail, "删除失败", nil)
 		return
 	}
-	api.Rt(ctx, global.ApiSuccess, "删除成功", gin.H{})
+	api.Rt(ctx, api.Success, "删除成功", gin.H{})
 }

@@ -2,7 +2,7 @@ package websocket
 
 import (
 	"github.com/gorilla/websocket"
-	"ppIm/global"
+	"ppIm/lib"
 	"strconv"
 	"sync"
 )
@@ -54,7 +54,7 @@ var UidToClientIdLocker sync.RWMutex
 
 //生成clientId
 func GenClientId(clientCounter int) string {
-	str := global.ServerAddress + "@@" + strconv.Itoa(clientCounter)
+	str := lib.ServerAddress + "@@" + strconv.Itoa(clientCounter)
 	clientId := str
 	return clientId
 }

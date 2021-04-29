@@ -1,4 +1,4 @@
-package global
+package lib
 
 import (
 	"github.com/go-redis/redis/v8"
@@ -9,9 +9,9 @@ import (
 )
 
 var (
-	Db                  *gorm.DB
-	Redis               *redis.Client
-	Elasticsearch       *elastic.Client
+	Db                  *gorm.DB                 //数据库客户端实例
+	Redis               *redis.Client            //redis客户端实例
+	Elasticsearch       *elastic.Client          //elasticsearch客户端实例
 	JwtHmacSampleSecret = []byte("pancoiscool!") //jwt加密密钥
 	ServerAddress       string                   //本机集群rpc地址
 	Logger              *zap.SugaredLogger       //zap日志

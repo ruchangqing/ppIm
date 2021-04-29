@@ -2,7 +2,7 @@ package servers
 
 import (
 	"github.com/gin-gonic/gin"
-	"ppIm/app/api"
+	"ppIm/app/http/api"
 	"sync"
 )
 

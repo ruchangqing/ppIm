@@ -1,4 +1,4 @@
-package framework
+package boot
 
 import (
 	"github.com/natefinch/lumberjack"

@@ -1,4 +1,4 @@
-package framework
+package boot
 
 import (
 	"fmt"
@@ -12,7 +12,7 @@ import (
 	"os"
 	"ppIm/app/rpc"
 	pb "ppIm/app/rpc/proto"
-	"ppIm/global"
+	"ppIm/lib"
 	"ppIm/router"
 	"ppIm/servers"
 	"ppIm/utils"
@@ -21,7 +21,7 @@ import (
 
 func StartServer() {
 	go pprofServer()
-	global.ServerAddress = utils.GetIntranetIp() + ":" + viper.GetString("cluster.rpc_port")
+	lib.ServerAddress = utils.GetIntranetIp() + ":" + viper.GetString("cluster.rpc_port")
 	go rpcServer()
 	servers.Servers = servers.GetAllServers()
 	servers.RegisterServer()

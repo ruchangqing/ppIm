@@ -1,42 +1,12 @@
-package middleware
+package service
 
 import (
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
-	"ppIm/app/api"
-	"ppIm/global"
+	"ppIm/lib"
 	"time"
 )
-
-// 鉴权token
-func ValidateJwtToken(ctx *gin.Context) {
-	// 校验header中token值格式是否合法
-	jwtToken := ctx.GetHeader("Login-Token")
-	if len(jwtToken) < 16 {
-		api.R(ctx, global.ApiNoAuth, "鉴权失败", nil)
-		ctx.Abort()
-		return
-	}
-
-	_, err := ParseToken(ctx, jwtToken)
-	if err != "" {
-		// 解析失败，响应结束
-		api.R(ctx, global.ApiNoAuth, err, nil)
-		ctx.Abort()
-		return
-	}
-
-	// redis查询token是否有效
-	/*	cacheKey := fmt.Sprintf("user:token:%s", jwtToken)
-		_, err2 := global.Redis.Get(context.Background(), cacheKey).Result()
-		if err2 == redis.Nil {
-			api.R(ctx, 401, "鉴权失败", nil)
-			ctx.Abort()
-			return
-		}
-	*/
-}
 
 // 解析token
 func ParseToken(ctx *gin.Context, jwtToken string) (int, string) {
@@ -44,7 +14,7 @@ func ParseToken(ctx *gin.Context, jwtToken string) (int, string) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 		}
-		return global.JwtHmacSampleSecret, nil
+		return lib.JwtHmacSampleSecret, nil
 	})
 	// 开始解析token
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {

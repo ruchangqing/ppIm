@@ -1,4 +1,4 @@
-package framework
+package boot
 
 import (
 	"context"
@@ -12,7 +12,7 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"ppIm/app/model"
-	"ppIm/global"
+	"ppIm/lib"
 	"ppIm/utils"
 	"strings"
 	"time"
@@ -34,7 +34,7 @@ func InitLogger() {
 	core := zapcore.NewCore(encoder, writeSyncer, zapcore.DebugLevel)
 
 	logger := zap.New(core, zap.AddCaller())
-	global.Logger = logger.Sugar()
+	lib.Logger = logger.Sugar()
 }
 
 // 连接数据库
@@ -48,12 +48,12 @@ func connectDb() {
 	charset := viper.GetString("db.charset")
 	var err error
 	args := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s&parseTime=True&loc=Local", user, pass, host, port, dbname, charset)
-	global.Db, err = gorm.Open(dbType, args)
+	lib.Db, err = gorm.Open(dbType, args)
 	if err != nil {
 		panic("连接数据库出错：" + err.Error())
 	}
 	// 全局禁用表名复数
-	global.Db.SingularTable(true)
+	lib.Db.SingularTable(true)
 }
 
 // 连接redis
@@ -61,12 +61,12 @@ func connectRedis() {
 	host := viper.GetString("redis.host")
 	port := viper.GetString("redis.port")
 	pass := viper.GetString("redis.pass")
-	global.Redis = redis.NewClient(&redis.Options{
+	lib.Redis = redis.NewClient(&redis.Options{
 		Addr:     fmt.Sprintf("%s:%s", host, port),
 		Password: pass,
 		DB:       0,
 	})
-	_, err := global.Redis.Ping(context.Background()).Result()
+	_, err := lib.Redis.Ping(context.Background()).Result()
 	if err != nil {
 		panic("连接Redis出错：" + err.Error())
 	}
@@ -79,7 +79,7 @@ func connectElasticsearch() {
 	user := viper.GetString("elasticsearch.user")
 	pass := viper.GetString("elasticsearch.pass")
 	var err error
-	global.Elasticsearch, err = elastic.NewClient(
+	lib.Elasticsearch, err = elastic.NewClient(
 		elastic.SetSniff(false),
 		elastic.SetURL("http://"+host+":"+port),
 		elastic.SetBasicAuth(user, pass),
@@ -89,7 +89,7 @@ func connectElasticsearch() {
 	}
 
 	// 创建用户位置索引
-	_, _ = global.Elasticsearch.CreateIndex("user_location").BodyString(model.CreateUserLocationIndex).Do(context.Background())
+	_, _ = lib.Elasticsearch.CreateIndex("user_location").BodyString(model.CreateUserLocationIndex).Do(context.Background())
 }
 
 // 连接etcd
@@ -97,14 +97,13 @@ func connectEtcd() {
 	etcdString := viper.GetString("cluster.etcd")
 	etcdArr := strings.Split(etcdString, "|")
 	var err error
-	global.Etcd, err = clientv3.New(clientv3.Config{
+	lib.Etcd, err = clientv3.New(clientv3.Config{
 		Endpoints:   etcdArr,
 		DialTimeout: 5 * time.Second,
 	})
 	if err != nil {
 		panic("连接Etcd出错：" + err.Error())
 	}
-	//defer global.Etcd.Close()
 }
 
 // 设置七牛云对象存储
