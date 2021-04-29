@@ -6,8 +6,6 @@ http:
   host: "0.0.0.0"
   #http服务端口
   port: "8080"
-  #http接口响应格式，还支持xml
-  responseType: "json"
   #pprof监听端口
   pprof: "0.0.0.0:8081"
 db:

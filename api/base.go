@@ -3,7 +3,6 @@ package api
 import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
-	"github.com/spf13/viper"
 	"net/http"
 	"ppIm/global"
 	"time"
@@ -19,16 +18,8 @@ func NotFound(ctx *gin.Context) {
 
 // 响应封装（不带新token）
 func R(ctx *gin.Context, code int, msg string, data gin.H) {
-	responseType := viper.GetString("http.responseType")
 	data = gin.H{"code": code, "msg": msg, "data": data}
-	switch responseType {
-	case "json":
-		ctx.JSON(http.StatusOK, data)
-	case "xml":
-		ctx.XML(http.StatusOK, data)
-	default:
-		ctx.JSON(http.StatusOK, data)
-	}
+	ctx.JSON(http.StatusOK, data)
 }
 
 // 响应封装（带新token）
@@ -43,16 +34,8 @@ func Rt(ctx *gin.Context, code int, msg string, data gin.H) {
 	//global.Redis.Del(context.Background(), cacheKey)
 	data["t"] = MakeJwtToken(id)
 
-	responseType := viper.GetString("http.responseType")
 	data = gin.H{"code": code, "msg": msg, "data": data}
-	switch responseType {
-	case "json":
-		ctx.JSON(http.StatusOK, data)
-	case "xml":
-		ctx.XML(http.StatusOK, data)
-	default:
-		ctx.JSON(http.StatusOK, data)
-	}
+	ctx.JSON(http.StatusOK, data)
 }
 
 // 生成用户token
