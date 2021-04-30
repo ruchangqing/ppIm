@@ -3,10 +3,10 @@ package v1
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"os"
 	"path"
 	"ppIm/app/http/api"
 	"ppIm/app/model"
+	"ppIm/app/service"
 	"ppIm/app/websocket"
 	"ppIm/lib"
 	"ppIm/utils"
@@ -249,14 +249,10 @@ func (chat) Upload(ctx *gin.Context) {
 		lib.Logger.Debugf(err.Error())
 		return
 	}
-	// 七牛云上传地址
 	uploadPath := fmt.Sprintf("chat/%d_%d%s", id, now, fileExt)
-	err = utils.QiNiuClient.Upload(localPath, uploadPath)
-	// 删除本地缓存
-	os.Remove(localPath)
+	err = service.UploadToQiNiu(uploadPath, localPath)
 	if err != nil {
 		api.R(ctx, api.Fail, "服务器错误", nil)
-		lib.Logger.Debugf(err.Error())
 		return
 	}
 

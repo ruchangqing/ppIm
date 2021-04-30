@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"os"
 	"path"
 	"ppIm/app/http/api"
 	"ppIm/app/model"
+	"ppIm/app/service"
 	"ppIm/lib"
 	"ppIm/utils"
 	"strconv"
@@ -56,6 +56,7 @@ func (user) UpdateAvatar(ctx *gin.Context) {
 	}
 	id := int(ctx.MustGet("id").(float64))
 	now := time.Now().Unix()
+
 	// 本地缓存地址
 	localPath := fmt.Sprintf("runtime/upload/%d_%d%s", id, now, fileExt)
 	if err := ctx.SaveUploadedFile(file, localPath); err != nil {
@@ -65,12 +66,9 @@ func (user) UpdateAvatar(ctx *gin.Context) {
 	}
 	// 七牛云上传地址
 	uploadPath := fmt.Sprintf("avatar/%d_%d%s", id, now, fileExt)
-	err = utils.QiNiuClient.Upload(localPath, uploadPath)
-	// 删除本地缓存
-	os.Remove(localPath)
+	err = service.UploadToQiNiu(uploadPath, localPath)
 	if err != nil {
 		api.R(ctx, api.Fail, "服务器错误", nil)
-		lib.Logger.Debugf(err.Error())
 		return
 	}
 
