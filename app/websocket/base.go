@@ -88,18 +88,19 @@ func WebsocketEntry(ctx *gin.Context) {
 						Type: TypePrompt,
 					}
 					conn.WriteJSON(message)
+				} else {
+					c.Uid = id
+					UidToClientIdLocker.Lock()
+					UidToClientId[c.Uid] = c.ClientId // 认证成功后注册到已认证连接表，方便查询对应clientId
+					UidToClientIdLocker.Unlock()
+					message := Message{
+						Cmd:  CmdSignSuccess,
+						Body: "认证成功",
+						Ope:  OpeSystem,
+						Type: TypePrompt,
+					}
+					conn.WriteJSON(message)
 				}
-				c.Uid = id
-				UidToClientIdLocker.Lock()
-				UidToClientId[c.Uid] = c.ClientId // 认证成功后注册到已认证连接表，方便查询对应clientId
-				UidToClientIdLocker.Unlock()
-				message := Message{
-					Cmd:  CmdSignSuccess,
-					Body: "认证成功",
-					Ope:  OpeSystem,
-					Type: TypePrompt,
-				}
-				conn.WriteJSON(message)
 			}
 		} else {
 			if c.Uid > 0 {
