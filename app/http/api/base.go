@@ -9,7 +9,7 @@ import (
 )
 
 func Welcome(ctx *gin.Context) {
-	R(ctx, Success, "欢迎使用ppim开源社交项目，定制开发联系微信：liboy825", nil)
+	R(ctx, Success, "欢迎使用，承接项目开发，请联系微信：freePan_1995", nil)
 }
 
 func NotFound(ctx *gin.Context) {

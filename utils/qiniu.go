@@ -42,8 +42,8 @@ func (q QiNiu) Upload(localFile string, fileName string) error {
 
 	err := formUploader.PutFile(context.Background(), &ret, upToken, fileName, localFile, &putExtra)
 	if err != nil {
-		fmt.Println("七牛云上传失败：" + err.Error())
-		return errors.New("上传失败")
+		fmt.Println()
+		return errors.New("七牛云上传失败：" + err.Error())
 	}
 	return nil
 }

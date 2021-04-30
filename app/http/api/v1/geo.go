@@ -60,7 +60,7 @@ func (geo) Users(ctx *gin.Context) {
 		var userLocation model.UserLocation
 		err := json.Unmarshal(hit.Source, &userLocation) // json解析结果
 		if err != nil {
-			api.R(ctx, api.Fail, "服务器错误", gin.H{})
+			api.R(ctx, api.Fail, "服务器错误", nil)
 			lib.Logger.Debugf(err.Error())
 			return
 		}

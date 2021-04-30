@@ -38,14 +38,13 @@ func (user) UpdateNickname(ctx *gin.Context) {
 
 // 用户更新头像
 func (user) UpdateAvatar(ctx *gin.Context) {
-
 	file, err := ctx.FormFile("avatar")
 	if err != nil {
 		api.R(ctx, api.Fail, "请选择图片", nil)
 		return
 	}
 	if file.Size/1024 > 2048 {
-		api.R(ctx, api.Fail, "图片大小限制在2mb", nil)
+		api.R(ctx, api.Fail, "文件太大", nil)
 		return
 	}
 
@@ -60,7 +59,7 @@ func (user) UpdateAvatar(ctx *gin.Context) {
 	// 本地缓存地址
 	localPath := fmt.Sprintf("runtime/upload/%d_%d%s", id, now, fileExt)
 	if err := ctx.SaveUploadedFile(file, localPath); err != nil {
-		api.R(ctx, api.Fail, "服务器错误", nil)
+		api.R(ctx, api.Fail, "上传错误", nil)
 		lib.Logger.Debugf(err.Error())
 		return
 	}

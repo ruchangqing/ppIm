@@ -20,14 +20,14 @@ func (group) Create(ctx *gin.Context) {
 	uid := int(ctx.MustGet("id").(float64))
 	name := ctx.PostForm("name")
 	if name == "" {
-		api.R(ctx, api.Fail, "请输入群名称", gin.H{})
+		api.R(ctx, api.Fail, "请输入群名称", nil)
 		return
 	}
 	var group model.Group
 	var count int
 	lib.Db.Where("name = ?", name).First(&group).Count(&count)
 	if count > 0 {
-		api.R(ctx, api.Fail, "群组已存在", gin.H{})
+		api.R(ctx, api.Fail, "群组已存在", nil)
 		return
 	}
 
@@ -66,7 +66,7 @@ func (group) Create(ctx *gin.Context) {
 func (group) Search(ctx *gin.Context) {
 	word := ctx.PostForm("word")
 	if word == "" {
-		api.R(ctx, api.Fail, "请输入群组名称", gin.H{})
+		api.R(ctx, api.Fail, "请输入群组名称", nil)
 		return
 	}
 	var groups []model.Group
@@ -96,23 +96,23 @@ func (group) Join(ctx *gin.Context) {
 	var group model.Group
 	lib.Db.Where("id = ?", groupId).First(&group)
 	if group.Id == 0 {
-		api.R(ctx, api.Fail, "群组不存在", gin.H{})
+		api.R(ctx, api.Fail, "群组不存在", nil)
 		return
 	}
 	if group.OUid == uid {
-		api.R(ctx, api.Fail, "你已经是群主", gin.H{})
+		api.R(ctx, api.Fail, "你已经是群主", nil)
 		return
 	}
 	var groupUser model.GroupUser
 	lib.Db.Where("group_id = ? and user_id = ?", groupId, uid).First(&groupUser)
 	if groupUser.Id > 0 {
-		api.R(ctx, api.Fail, "你已经在群组里", gin.H{})
+		api.R(ctx, api.Fail, "你已经在群组里", nil)
 		return
 	}
 	var groupJoin model.GroupJoin
 	lib.Db.Where("group_id = ? and user_id = ?", groupId, uid).First(&groupJoin)
 	if groupJoin.Id > 0 {
-		api.R(ctx, api.Fail, "你的申请加入群组请求已经在处理中", gin.H{})
+		api.R(ctx, api.Fail, "你的申请加入群组请求已经在处理中", nil)
 		return
 	}
 	groupJoin.GroupId = groupId
@@ -132,7 +132,7 @@ func (group) Join(ctx *gin.Context) {
 		websocket.SendToUser(group.OUid, message)
 		api.Rt(ctx, api.Success, "申请成功", gin.H{})
 	} else {
-		api.R(ctx, api.Fail, "申请失败", gin.H{})
+		api.R(ctx, api.Fail, "申请失败", nil)
 	}
 }
 
@@ -160,23 +160,23 @@ func (group) JoinHandle(ctx *gin.Context) {
 	joinId, _ := strconv.Atoi(ctx.PostForm("join_id"))
 	status, _ := strconv.Atoi(ctx.PostForm("status")) // 1同意，-拒绝
 	if status != 0 && status != 1 {
-		api.R(ctx, api.Fail, "非法参数", gin.H{})
+		api.R(ctx, api.Fail, "非法参数", nil)
 		return
 	}
 	var groupJoin model.GroupJoin
 	lib.Db.Where("id = ?", joinId).First(&groupJoin)
 	if groupJoin.Id == 0 {
-		api.R(ctx, api.Fail, "加群申请不存在", gin.H{})
+		api.R(ctx, api.Fail, "加群申请不存在",nil)
 		return
 	}
 	var group model.Group
 	lib.Db.Where("id = ?", groupJoin.GroupId).First(&group)
 	if group.Id == 0 {
-		api.R(ctx, api.Fail, "群组不存在", gin.H{})
+		api.R(ctx, api.Fail, "群组不存在", nil)
 		return
 	}
 	if group.OUid != uid {
-		api.R(ctx, api.Fail, "您不是群组，无法处理申请", gin.H{})
+		api.R(ctx, api.Fail, "您不是群组，无法处理申请", nil)
 		return
 	}
 
@@ -214,7 +214,7 @@ func (group) JoinHandle(ctx *gin.Context) {
 			websocket.SendToUser(groupJoin.UserId, message)
 			api.Rt(ctx, api.Success, "处理成功", gin.H{})
 		} else {
-			api.R(ctx, api.Fail, "处理失败", gin.H{})
+			api.R(ctx, api.Fail, "处理失败", nil)
 		}
 	} else if status == 0 {
 		// 拒绝加群
@@ -230,7 +230,7 @@ func (group) Leave(ctx *gin.Context) {
 	var groupUser model.GroupUser
 	lib.Db.Where("uid = ? AND group_id = ?", uid, groupId).First(&groupUser)
 	if groupUser.Id == 0 {
-		api.R(ctx, api.Fail, "你不在群里", gin.H{})
+		api.R(ctx, api.Fail, "你不在群里", nil)
 		return
 	}
 	lib.Db.Delete(&groupUser)
@@ -245,17 +245,17 @@ func (group) Shot(ctx *gin.Context) {
 	var group model.Group
 	lib.Db.Where("id = ?", groupId).First(&group)
 	if group.Id == 0 {
-		api.R(ctx, api.Fail, "群组不存在", gin.H{})
+		api.R(ctx, api.Fail, "群组不存在", nil)
 		return
 	}
 	if group.OUid != uid {
-		api.R(ctx, api.Fail, "你不是群主", gin.H{})
+		api.R(ctx, api.Fail, "你不是群主", nil)
 		return
 	}
 	var groupUser model.GroupUser
 	lib.Db.Where("user_id = ? AND group_id = ?", userId, groupId).First(&groupUser)
 	if groupUser.Id == 0 {
-		api.R(ctx, api.Fail, "用户不在群里", gin.H{})
+		api.R(ctx, api.Fail, "用户不在群里", nil)
 		return
 	}
 	lib.Db.Delete(&groupUser)

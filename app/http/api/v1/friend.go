@@ -19,7 +19,7 @@ func (friend) Search(ctx *gin.Context) {
 	uid := int(ctx.MustGet("id").(float64))
 	word := ctx.PostForm("word")
 	if word == "" {
-		api.R(ctx, api.Fail, "请输入好友昵称", gin.H{})
+		api.R(ctx, api.Fail, "请输入好友昵称", nil)
 		return
 	}
 	type APIUser struct {

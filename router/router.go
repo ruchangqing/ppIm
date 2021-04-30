@@ -98,10 +98,16 @@ func SetRouter(r *gin.Engine) {
 
 		// 聊天系统
 		chat := im.Group("/chat")
-		// 发送消息给用户
+		// 发送好友消息
 		chat.POST("/send/user", v1.Chat.SendToUser)
-		// 撤回消息
+		// 撤回好友消息
 		chat.POST("/withdraw/user", v1.Chat.WithdrawFromUser)
+		// 发送群组消息
+		chat.POST("/send/group", v1.Chat.SendToGroup)
+		// 撤回群组消息
+		chat.POST("/withdraw/group", v1.Chat.WithdrawFromGroup)
+		// 上传聊天附件
+		chat.POST("/upload", v1.Chat.Upload)
 	}
 
 }
