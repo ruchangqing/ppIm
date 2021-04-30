@@ -65,9 +65,12 @@ func WebsocketEntry(ctx *gin.Context) {
 		if err := json.Unmarshal(msg, &message); err != nil {
 			// 接收到非json数据
 			lib.Logger.Debugf(err.Error())
-			message := Message{}
-			message.Cmd = CmdFail
-			message.Body = "消息格式错误"
+			message := Message{
+				Cmd:  CmdFail,
+				Body: "消息格式错误",
+				Ope:  OpeSystem,
+				Type: TypePrompt,
+			}
 			conn.WriteJSON(message)
 			continue
 		}
@@ -78,26 +81,35 @@ func WebsocketEntry(ctx *gin.Context) {
 				jwtToken := message.Body
 				id, err := service.ParseToken(ctx, jwtToken)
 				if err != "" {
-					message := Message{}
-					message.Cmd = CmdFail
-					message.Body = "认证失败"
+					message := Message{
+						Cmd:  CmdFail,
+						Body: "认证失败",
+						Ope:  OpeSystem,
+						Type: TypePrompt,
+					}
 					conn.WriteJSON(message)
 				}
 				c.Uid = id
 				UidToClientIdLocker.Lock()
 				UidToClientId[c.Uid] = c.ClientId // 认证成功后注册到已认证连接表，方便查询对应clientId
 				UidToClientIdLocker.Unlock()
-				message := Message{}
-				message.Cmd = CmdSignSuccess
-				message.Body = "认证成功"
+				message := Message{
+					Cmd:  CmdSignSuccess,
+					Body: "认证成功",
+					Ope:  OpeSystem,
+					Type: TypePrompt,
+				}
 				conn.WriteJSON(message)
 			}
 		} else {
 			if c.Uid > 0 {
 			} else {
-				message := Message{}
-				message.Cmd = CmdFail
-				message.Body = "你还未认证"
+				message := Message{
+					Cmd:  CmdFail,
+					Body: "你还未认证",
+					Ope:  OpeSystem,
+					Type: TypePrompt,
+				}
 				conn.WriteJSON(message)
 			}
 		}

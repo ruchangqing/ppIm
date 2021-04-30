@@ -110,8 +110,8 @@ func (friend) Add(ctx *gin.Context) {
 		Cmd:    websocket.CmdReceiveFriendAdd,
 		FromId: uid,
 		ToId:   user.Id,
-		Ope:    2,
-		Type:   0,
+		Ope:    websocket.OpeFriend,
+		Type:   websocket.TypePrompt,
 		Body:   "您收到一条好友添加请求",
 	}
 	websocket.SendToUser(user.Id, message)
@@ -201,8 +201,8 @@ func (friend) AddHandle(ctx *gin.Context) {
 		Cmd:    websocket.CmdReceiveFriendAddResult,
 		FromId: uid,
 		ToId:   fUid,
-		Ope:    2,
-		Type:   0,
+		Ope:    websocket.OpeFriend,
+		Type:   websocket.TypePrompt,
 		Body:   "对方通过了你的好友请求",
 	}
 	websocket.SendToUser(fUid, message)

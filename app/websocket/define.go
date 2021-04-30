@@ -26,8 +26,7 @@ type Message struct {
 
 // 消息指令定义
 const (
-	CmdSuccess                = 1  //成功
-	CmdFail                   = 2  //失败
+	CmdFail                   = 2  //通用失败
 	CmdSign                   = 3  //登录
 	CmdSignSuccess            = 4  //登录成功
 	CmdReceiveFriendMessage   = 6  //收到好友消息
@@ -41,8 +40,27 @@ const (
 	CmdReceiveGroupShot       = 14 //收到被踢出群组通知
 )
 
+//消息通道
+const (
+	OpeFriend = 0 //好友消息
+	OpeGroup  = 1 //群消息
+	OpeSystem = 2 //系统消息
+)
+
+//消息类型
+const (
+	TypeText    = 0
+	TypePicture = 1
+	TypeVoice   = 2
+	TypeVideo   = 3
+	TypeGeo     = 4
+	TypeFile    = 6
+	TypePrompt  = 10
+)
+
 // 本机连接表
 var Connections = make(map[int]*Connection)
+
 // 连接计数器&&并发锁
 var ClientCounter = 0
 var ClientCounterLocker sync.RWMutex
@@ -50,7 +68,6 @@ var ClientCounterLocker sync.RWMutex
 // 已认证连接表
 var UidToClientId = make(map[int]string)
 var UidToClientIdLocker sync.RWMutex
-
 
 //生成clientId
 func GenClientId(clientCounter int) string {

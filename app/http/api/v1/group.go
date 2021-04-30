@@ -125,8 +125,8 @@ func (group) Join(ctx *gin.Context) {
 			Cmd:    websocket.CmdReceiveGroupJoin,
 			FromId: uid,
 			ToId:   group.Id,
-			Ope:    2,
-			Type:   0,
+			Ope:    websocket.OpeGroup,
+			Type:   websocket.TypePrompt,
 			Body:   "对方申请加入群组",
 		}
 		websocket.SendToUser(group.OUid, message)
@@ -207,8 +207,8 @@ func (group) JoinHandle(ctx *gin.Context) {
 				Cmd:    websocket.CmdReceiveGroupJoinResult,
 				FromId: groupJoin.GroupId,
 				ToId:   groupJoin.UserId,
-				Ope:    2,
-				Type:   0,
+				Ope:    websocket.OpeGroup,
+				Type:   websocket.TypePrompt,
 				Body:   "群主同意您加入群组",
 			}
 			websocket.SendToUser(groupJoin.UserId, message)
@@ -264,8 +264,8 @@ func (group) Shot(ctx *gin.Context) {
 		Cmd:    websocket.CmdReceiveGroupShot,
 		FromId: groupId,
 		ToId:   userId,
-		Ope:    2,
-		Type:   0,
+		Ope:    websocket.OpeGroup,
+		Type:   websocket.TypePrompt,
 		Body:   "你被踢出群组",
 	}
 	websocket.SendToUser(userId, message)

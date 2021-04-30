@@ -48,7 +48,7 @@ func (chat) SendToUser(ctx *gin.Context) {
 			Cmd:    websocket.CmdReceiveFriendMessage,
 			FromId: uid,
 			ToId:   toUid,
-			Ope:    0,
+			Ope:    websocket.OpeFriend,
 			Type:   messageType,
 			Body:   body,
 		}
@@ -82,8 +82,8 @@ func (chat) WithdrawFromUser(ctx *gin.Context) {
 		Cmd:    websocket.CmdWithdrawFriendMessage,
 		FromId: uid,
 		ToId:   chatMessage.ToId,
-		Ope:    0,
-		Type:   0,
+		Ope:    websocket.OpeFriend,
+		Type:   websocket.TypePrompt,
 		Body:   strconv.Itoa(chatMessage.Id),
 	}
 	websocket.SendToUser(chatMessage.ToId, message)
@@ -141,7 +141,7 @@ func (chat) SendToGroup(ctx *gin.Context) {
 			Cmd:    websocket.CmdReceiveGroupMessage,
 			FromId: uid,
 			ToId:   groupId,
-			Ope:    1,
+			Ope:    websocket.OpeGroup,
 			Type:   messageType,
 			Body:   body,
 		}
@@ -185,8 +185,8 @@ func (chat) WithdrawFromGroup(ctx *gin.Context) {
 			Cmd:    websocket.CmdWithdrawGroupMessage,
 			FromId: uid,
 			ToId:   chatMessage.ToId,
-			Ope:    1,
-			Type:   0,
+			Ope:    websocket.OpeGroup,
+			Type:   websocket.TypePrompt,
 			Body:   strconv.Itoa(chatMessage.Id),
 		}
 		websocket.SendToGroup(userIdList, message)
