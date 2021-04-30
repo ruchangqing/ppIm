@@ -1,2 +1,3 @@
 .idea
 /runtime/gin.log
+/runtime/logs/log.log
